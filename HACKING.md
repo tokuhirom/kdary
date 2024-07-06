@@ -73,7 +73,7 @@ DoubleArray は、`DoubleArrayImpl<Int>` のことなので、typealias で OK
 
 ### BitVector
 
-これは?
+BitVector の実装。テストとかないので、テストとかは自分で書く。
 
 ### Keyset
 

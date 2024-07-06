@@ -1,4 +1,4 @@
-package me.geso.dartsclonekt
+package me.geso.kdary
 
 // <DoubleArrayUnit> はダブル配列ユニットの型であり、実際には<IdType>のラッパーです。
 @JvmInline

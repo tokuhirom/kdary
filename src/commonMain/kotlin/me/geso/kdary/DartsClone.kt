@@ -1,6 +1,6 @@
 // Darts.kt
 
-package me.geso.dartsclonekt
+package me.geso.kdary
 
 // This header assumes that <int> and <unsigned int> are 32-bit integer types.
 //

@@ -4,7 +4,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 }
 
-group = "me.geso.dartsclonekt"
+group = "me.geso.kdary"
 version = "1.0-SNAPSHOT"
 
 allprojects {

@@ -1,4 +1,4 @@
-package me.geso.dartsclonekt
+package me.geso.kdary
 
 import okio.buffer
 import okio.sink

@@ -1,4 +1,4 @@
-package me.geso.dartsclonekt
+package me.geso.kdary
 
 // Succinct bit vector.
 class BitVector {
