@@ -82,9 +82,10 @@ class BitVector {
 
         internal fun popCount(unit: UInt): UInt {
             var u = unit
-            u = (u and 0xAAAAAAAAu shr 1) + (u and 0x55555555u)
-            u = (u and 0xCCCCCCCCu shr 2) + (u and 0x33333333u)
-            u = (u shr 4) + (u and 0x0F0F0F0Fu)
+            u = ((u and 0xAAAAAAAAu) shr 1) + (u and 0x55555555u)
+            u = ((u and 0xCCCCCCCCu) shr 2) + (u and 0x33333333u)
+            // unit = ((unit >> 4) + unit) & 0x0F0F0F0F;
+            u = ((u shr 4) + u) and 0x0F0F0F0Fu
             u += u shr 8
             u += u shr 16
             return u and 0xFFu
