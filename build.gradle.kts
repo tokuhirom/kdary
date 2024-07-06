@@ -22,5 +22,10 @@ kotlin {
                 implementation("com.squareup.okio:okio:3.9.0")
             }
         }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
     }
 }
