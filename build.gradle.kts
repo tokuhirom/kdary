@@ -18,6 +18,9 @@ kotlin {
 
     sourceSets {
         val commonMain by getting {
+            dependencies {
+                implementation("com.squareup.okio:okio:3.9.0")
+            }
         }
     }
 }

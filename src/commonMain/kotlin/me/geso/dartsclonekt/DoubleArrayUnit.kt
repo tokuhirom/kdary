@@ -1,9 +1,9 @@
 package me.geso.dartsclonekt
 
 // <DoubleArrayUnit> はダブル配列ユニットの型であり、実際には<IdType>のラッパーです。
-class DoubleArrayUnit {
-    private var unit: IdType = 0u
-
+class DoubleArrayUnit(
+    private val unit: IdType = 0u,
+) {
     // hasLeaf() はユニットからすぐに派生したリーフユニットかどうかを返します（trueの場合）またはそうでない場合（false）。
     fun hasLeaf(): Boolean {
         return ((unit.toInt() shr 8) and 1) == 1

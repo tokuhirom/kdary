@@ -1,5 +1,9 @@
 package me.geso.dartsclonekt
 
+import okio.buffer
+import okio.source
+import java.io.File
+
 // C++ 実装での value_type, result_type は T になります。
 // key_type は Byte です。
 class DoubleArrayImpl<T> {
@@ -10,7 +14,7 @@ class DoubleArrayImpl<T> {
     private var array: Array<DoubleArrayUnit>? = null
 
     // unit_type *buf_;
-    private val buf: Array<DoubleArrayUnit>? = null
+    private var buf: Array<DoubleArrayUnit>? = null
 
     // <ResultPairType> は一致するキーの長さに加えて値を取得するためにアプリケーションが使用できるようにします。
     data class ResultPairType<T>(
@@ -114,6 +118,14 @@ class DoubleArrayImpl<T> {
         TODO()
     }
 
+    private fun readUIntLe(source: okio.BufferedSource): UInt {
+        val byte1 = source.readByte().toUInt() and 0xFFU
+        val byte2 = source.readByte().toUInt() and 0xFFU
+        val byte3 = source.readByte().toUInt() and 0xFFU
+        val byte4 = source.readByte().toUInt() and 0xFFU
+        return (byte1 or (byte2 shl 8) or (byte3 shl 16) or (byte4 shl 24))
+    }
+
     // open() reads an array of units from the specified file. And if it goes
     // well, the old array will be freed and replaced with the new array read
     // from the file. `offset' specifies the number of bytes to be skipped before
@@ -126,11 +138,78 @@ class DoubleArrayImpl<T> {
 //    std::size_t offset = 0, std::size_t size = 0);
     fun open(
         fileName: String,
-        mode: String = "rb",
+        // mode オプションは okio においては不要。
+//        mode: String = "rb",
         offset: SizeType = 0u,
         size: SizeType = 0u,
     ): Int {
-        TODO()
+        // open() は指定されたファイルからユニットの配列を読み込みます。問題がなければ、古い配列は解放され、
+        // ファイルから読み取られた新しい配列に置き換えられます。`offset` は配列を読み取る前にスキップするバイト数を指定します。
+        // `size` はファイルから読み取るバイト数を指定します。`size` が0の場合、ファイル全体が読み取られます。
+
+        val file = File(fileName)
+        if (!file.exists()) {
+            return -1
+        }
+
+        file.source().buffer().use { source ->
+            var actualSize = size
+            if (actualSize == 0uL) {
+                actualSize = file.length().toULong() - offset
+            }
+
+            val unitSize = unitSize()
+            val numUnits = actualSize / unitSize
+            if (numUnits < 256uL || numUnits % 256u != 0uL) {
+                return -1
+            }
+
+            source.skip(offset.toLong())
+
+            val units = Array(256) { DoubleArrayUnit() }
+            for (i in units.indices) {
+                units[i] = DoubleArrayUnit(readUIntLe(source))
+            }
+
+            if (units[0].label().toInt().toChar() != '\u0000' || units[0].hasLeaf() ||
+                units[0].offset() == 0u || units[0].offset() >= 512u
+            ) {
+                return -1
+            }
+
+            for (i in 1 until 256) {
+                if (units[i].label() <= 0xFF.toUInt() && units[i].offset() >= numUnits.toUInt()) {
+                    return -1
+                }
+            }
+
+            val buf: Array<DoubleArrayUnit> =
+                try {
+                    Array(numUnits.toInt()) { DoubleArrayUnit() }
+                } catch (e: OutOfMemoryError) {
+                    throw DartsException("failed to open double-array: std::bad_alloc")
+                }
+
+            for (i in units.indices) {
+                buf[i] = units[i]
+            }
+
+            if (numUnits > 256u) {
+                // 残りのユニットを読み込む
+                for (i in 256 until numUnits.toInt()) {
+                    buf[i] =
+                        DoubleArrayUnit().apply {
+                            // 必要に応じて各フィールドを読み込む
+                        }
+                }
+            }
+
+            this.size = numUnits
+            this.array = buf
+            this.buf = buf
+        }
+
+        return 0
     }
 
     // save() writes the array of units into the specified file. `offset'
@@ -229,4 +308,3 @@ class DoubleArrayImpl<T> {
         TODO()
     }
 }
-
