@@ -1,6 +1,5 @@
-package me.geso.dartsclonekt
+package me.geso.kdary
 
-import me.geso.kdary.BitVector
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
