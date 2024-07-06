@@ -230,5 +230,3 @@ class DoubleArrayImpl<T> {
     }
 }
 
-// typedef DoubleArrayImpl<void, void, int, void> DoubleArray;
-typealias DoubleArray = DoubleArrayImpl<Int>
