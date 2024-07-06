@@ -26,7 +26,7 @@ private fun writeUIntLe(
 
 // C++ 実装での value_type, result_type は T になります。
 // key_type は Byte です。
-class DoubleArrayImpl<T: Number> {
+class DoubleArrayImpl<T : Number> {
     private var size: SizeType = 0u
 
     //   typedef Details::DoubleArrayUnit unit_type;
@@ -456,6 +456,7 @@ class DoubleArrayImpl<T: Number> {
         } else {
             @Suppress("UNCHECKED_CAST")
             unit = array?.get((id xor unit.offset()).toInt()) ?: return -2 as T
+            @Suppress("UNCHECKED_CAST")
             unit.value() as T
         }
     }

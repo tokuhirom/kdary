@@ -67,3 +67,20 @@ C++ の char は kotlin では Char ではなく Byte だと思う。
 
 DoubleArray は、`DoubleArrayImpl<Int>` のことなので、typealias で OK
 
+### AutoArray, AutoPool, AutoStack
+
+これは実際、kotlin だと不要そうだが?
+
+### BitVector
+
+これは?
+
+### Keyset
+
+これは必要そう
+
+### DawgNode, DawgUnit, DawgBuilder, DoubleArrayBuilder
+
+これも必要そう
+
+これらを利用して、DoubleArrayImpl<A, B, T, C>::build を実装するということになるようだ。
