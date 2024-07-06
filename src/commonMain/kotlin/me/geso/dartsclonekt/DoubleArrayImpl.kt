@@ -26,7 +26,7 @@ private fun writeUIntLe(
 
 // C++ 実装での value_type, result_type は T になります。
 // key_type は Byte です。
-class DoubleArrayImpl<T> {
+class DoubleArrayImpl<T: Number> {
     private var size: SizeType = 0u
 
     //   typedef Details::DoubleArrayUnit unit_type;
@@ -416,6 +416,50 @@ class DoubleArrayImpl<T> {
         keyPos: SizeType,
         length: SizeType = 0u,
     ): T {
-        TODO()
+        var id = nodePos.toUInt()
+        var nodePosVar = nodePos.toInt()
+        var keyPosVar = keyPos.toInt()
+        var lengthVar = length.toInt()
+
+        @Suppress("UNCHECKED_CAST")
+        var unit = array?.get(id.toInt()) ?: return -2 as T
+
+        if (length != 0uL) {
+            while (keyPosVar < lengthVar) {
+                id = id xor (unit.offset() xor key[keyPosVar].toUInt())
+                @Suppress("UNCHECKED_CAST")
+                unit = array?.get(id.toInt()) ?: return -2 as T
+                if (unit.label() != key[keyPosVar].toUInt()) {
+                    @Suppress("UNCHECKED_CAST")
+                    return -2 as T
+                }
+                nodePosVar = id.toInt()
+                keyPosVar++
+            }
+        } else {
+            while (key[keyPosVar].toInt() != 0) {
+                id = id xor (unit.offset() xor key[keyPosVar].toUInt())
+                @Suppress("UNCHECKED_CAST")
+                unit = array?.get(id.toInt()) ?: return -2 as T
+                if (unit.label() != key[keyPosVar].toUInt()) {
+                    @Suppress("UNCHECKED_CAST")
+                    return -2 as T
+                }
+                nodePosVar = id.toInt()
+                keyPosVar++
+            }
+        }
+
+        return if (!unit.hasLeaf()) {
+            @Suppress("UNCHECKED_CAST")
+            -1 as T
+        } else {
+            @Suppress("UNCHECKED_CAST")
+            unit = array?.get((id xor unit.offset()).toInt()) ?: return -2 as T
+            unit.value() as T
+        }
     }
+
+    // TODO: `as T` が多すぎる。 kotlin ならば、もう少しうまくやれるんじゃないか?
+    // 例外を投げた方が良いかもしれない。
 }
