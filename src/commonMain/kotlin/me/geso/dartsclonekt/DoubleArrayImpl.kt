@@ -1,8 +1,28 @@
 package me.geso.dartsclonekt
 
 import okio.buffer
+import okio.sink
 import okio.source
 import java.io.File
+
+private fun readUIntLe(source: okio.BufferedSource): UInt {
+    val byte1 = source.readByte().toUInt() and 0xFFU
+    val byte2 = source.readByte().toUInt() and 0xFFU
+    val byte3 = source.readByte().toUInt() and 0xFFU
+    val byte4 = source.readByte().toUInt() and 0xFFU
+    return (byte1 or (byte2 shl 8) or (byte3 shl 16) or (byte4 shl 24))
+}
+
+// ユニットのデータをリトルエンディアンで書き込む関数
+private fun writeUIntLe(
+    sink: okio.BufferedSink,
+    value: UInt,
+) {
+    sink.writeByte((value and 0xFFU).toInt())
+    sink.writeByte(((value shr 8) and 0xFFU).toInt())
+    sink.writeByte(((value shr 16) and 0xFFU).toInt())
+    sink.writeByte(((value shr 24) and 0xFFU).toInt())
+}
 
 // C++ 実装での value_type, result_type は T になります。
 // key_type は Byte です。
@@ -118,14 +138,6 @@ class DoubleArrayImpl<T> {
         TODO()
     }
 
-    private fun readUIntLe(source: okio.BufferedSource): UInt {
-        val byte1 = source.readByte().toUInt() and 0xFFU
-        val byte2 = source.readByte().toUInt() and 0xFFU
-        val byte3 = source.readByte().toUInt() and 0xFFU
-        val byte4 = source.readByte().toUInt() and 0xFFU
-        return (byte1 or (byte2 shl 8) or (byte3 shl 16) or (byte4 shl 24))
-    }
-
     // open() reads an array of units from the specified file. And if it goes
     // well, the old array will be freed and replaced with the new array read
     // from the file. `offset' specifies the number of bytes to be skipped before
@@ -220,10 +232,22 @@ class DoubleArrayImpl<T> {
 //    std::size_t offset = 0) const;
     fun save(
         fileName: String,
-        mode: String = "wb",
+//        mode: String = "wb",
         offset: SizeType,
-    ) {
-        TODO()
+    ): Int {
+        if (size == 0uL) {
+            return -1
+        }
+
+        val file = File(fileName)
+        file.sink().buffer().use { sink ->
+            sink.write(ByteArray(offset.toInt())) // オフセット分の空バイトを書き込み
+            array?.forEach { unit ->
+                writeUIntLe(sink, unit.unit)
+            }
+        }
+
+        return 0
     }
 
     // The 1st exactMatchSearch() tests whether the given key exists or not, and
