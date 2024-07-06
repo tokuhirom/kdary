@@ -40,7 +40,16 @@ class DoubleArrayImpl<T> {
     data class ResultPairType<T>(
         var value: T,
         var length: SizeType,
-    )
+    ) {
+        fun set(
+            value: DoubleArrayUnit,
+            length: SizeType,
+        ) {
+            @Suppress("UNCHECKED_CAST")
+            this.value = value as T
+            this.length = length
+        }
+    }
 
     // <DoubleArrayImpl> has 2 kinds of set_result()s. The 1st set_result() is to
     // set a value to a <value_type>. The 2nd set_result() is to set a value and
@@ -343,7 +352,49 @@ class DoubleArrayImpl<T> {
         length: SizeType = 0u,
         nodePos: SizeType = 0u,
     ): SizeType {
-        TODO()
+        var numResults: SizeType = 0u
+        var nodePosVar = nodePos.toInt()
+        var lengthVar = length.toInt()
+
+        var unit = array?.get(nodePosVar) ?: return numResults
+        nodePosVar = nodePosVar xor unit.offset().toInt()
+
+        if (length != 0uL) {
+            for (i in 0 until lengthVar) {
+                nodePosVar = nodePosVar xor (unit.offset().toInt() xor (key[i].toUInt() and 0xFFU).toInt())
+                unit = array?.get(nodePosVar) ?: return numResults
+                if (unit.label() != (key[i].toUInt() and 0xFFU)) {
+                    return numResults
+                }
+
+                nodePosVar = nodePosVar xor unit.offset().toInt()
+                if (unit.hasLeaf()) {
+                    if (numResults < maxNumResults) {
+                        results[numResults.toInt()].set(unit, (i + 1).toULong())
+                    }
+                    numResults++
+                }
+            }
+        } else {
+            while (key[lengthVar].toInt() != 0) {
+                nodePosVar = nodePosVar xor (unit.offset().toInt() xor (key[lengthVar].toUInt() and 0xFFU).toInt())
+                unit = array?.get(nodePosVar) ?: return numResults
+                if (unit.label() != (key[lengthVar].toUInt() and 0xFFU)) {
+                    return numResults
+                }
+
+                nodePosVar = nodePosVar xor unit.offset().toInt()
+                if (unit.hasLeaf()) {
+                    if (numResults < maxNumResults) {
+                        results[numResults.toInt()].set(unit, (lengthVar + 1).toULong())
+                    }
+                    numResults++
+                }
+                lengthVar++
+            }
+        }
+
+        return numResults
     }
 
     // In Darts-clone, a dictionary is a deterministic finite-state automaton
