@@ -2,8 +2,8 @@
 
 package darts
 
-import java.lang.Exception
 import java.lang.RuntimeException
+import kotlin.Exception
 
 const val DARTS_VERSION = "0.32"
 
@@ -12,7 +12,9 @@ const val DARTS_VERSION = "0.32"
 // line 123 of "darts.h" throws a <Darts.Exception> which has a pointer to
 // "darts.h:123: exception: error message". The message is available by using
 // what() as well as that of <std::exception>.
-fun DARTS_THROW(msg: String): Nothing = throw Darts.Exception("$msg")
+fun DARTS_THROW(msg: String): Nothing = throw DartsException(msg)
+
+class DartsException(message: String): Exception(message)
 
 object Darts {
 
