@@ -61,6 +61,8 @@ C++ の char は kotlin では Char ではなく Byte だと思う。
 一旦、class 宣言内に書いてある分だけさらっと実装。
 配列は速度重視で List ではなく Array を使う。
 
+ファイル操作については、kotlin/native や kotlin/js でも利用することを想定し、OkIO を使うことにする。
+
 ### DoubleArray
 
 DoubleArray は、`DoubleArrayImpl<Int>` のことなので、typealias で OK

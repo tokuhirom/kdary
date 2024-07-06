@@ -284,8 +284,44 @@ class DoubleArrayImpl<T> {
         key: Array<KeyType>,
         length: SizeType = 0u,
         nodePos: SizeType = 0u,
-    ): ResultPairType<T> {
-        TODO()
+    ): T {
+        var nodePosVar = nodePos.toInt()
+        var lengthVar = length.toInt()
+        var result: T?
+
+        @Suppress("UNCHECKED_CAST")
+        result = -1 as T
+//        setResult(result, -1 as T, 0)
+
+        var unit = array?.get(nodePosVar) ?: return result
+
+        if (lengthVar != 0) {
+            for (i in 0 until lengthVar) {
+                nodePosVar = nodePosVar xor (unit.offset().toInt() xor (key[i].toUInt() and 0xFFU).toInt())
+                unit = array?.get(nodePosVar) ?: return result
+                if (unit.label() != (key[i].toUInt() and 0xFFU)) {
+                    return result
+                }
+            }
+        } else {
+            while (lengthVar < key.size && key[lengthVar] != 0.toByte()) {
+                nodePosVar = nodePosVar xor (unit.offset().toInt() xor (key[lengthVar].toUInt() and 0xFFU).toInt())
+                unit = array?.get(nodePosVar) ?: return result
+                if (unit.label() != (key[lengthVar].toUInt() and 0xFFU)) {
+                    return result
+                }
+                lengthVar++
+            }
+        }
+
+        if (!unit.hasLeaf()) {
+            return result
+        }
+
+        unit = array?.get(nodePosVar xor unit.offset().toInt()) ?: return result
+        @Suppress("UNCHECKED_CAST")
+        result = unit.unit as T
+        return result
     }
 
     // commonPrefixSearch() searches for keys which match a prefix of the given
