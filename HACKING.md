@@ -45,6 +45,23 @@ e40ce4627526985a7767444b6ed6893ab6ff8983 の時点。
 
 さらっと 47行目まで実装した。
 
+### DoubleArrayUnit
+
 つづいて DoubleArrayUnit を実装。81行目まで実装。1931行目まであるので、まだまだ先は長い。
 
+### Exception
+
 Exception は DartsException という名前で定義。簡単にすんだので 106行目までクリア。
+
+### DoubleArrayImpl
+
+続いて DoubleArrayImpl。いよいよ本編という感じ。
+C++ の char は kotlin では Char ではなく Byte だと思う。
+
+一旦、class 宣言内に書いてある分だけさらっと実装。
+配列は速度重視で List ではなく Array を使う。
+
+### DoubleArray
+
+DoubleArray は、`DoubleArrayImpl<Int>` のことなので、typealias で OK
+

@@ -1,3 +1,3 @@
 package me.geso.dartsclonekt
 
-class DartsException(message: String): Exception(message)
+class DartsException(message: String) : Exception(message)

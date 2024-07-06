@@ -11,9 +11,14 @@ package me.geso.dartsclonekt
 // sequences of <char_type>s. <uchar_type> is the unsigned type of <char_type>.
 typealias ValueType = Int
 
+// KeyType は  drts-clone では Char だが、Kotlin の Char は 16bit なので Byte にしている。
+// Byte は signed 8bit。
+typealias KeyType = Byte
+
 // typedef unsigned int id_type;
 typealias IdType = UInt
 
 // typedef int (*progress_func_type)(std::size_t, std::size_t);
+// SizeType は size_t のこと。
 typealias SizeType = ULong
 typealias ProgressFuncType = (SizeType, SizeType) -> Int
