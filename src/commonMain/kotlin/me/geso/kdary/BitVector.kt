@@ -2,7 +2,7 @@ package me.geso.kdary
 
 // Succinct bit vector.
 class BitVector {
-    private val units: MutableList<UInt> = mutableListOf() // UInt 型に変更
+    private val units: MutableList<UInt> = mutableListOf()
     private lateinit var ranks: Array<UInt>
     private var numOnes: UInt = 0u
     private var size: UInt = 0u
