@@ -36,6 +36,8 @@ typealias KeyType = Byte
 // typedef unsigned int id_type;
 typealias IdType = UInt
 
+internal fun ValueType.toIdType(): IdType = this.toUInt()
+
 // typedef int (*progress_func_type)(std::size_t, std::size_t);
 // SizeType は size_t のこと。
 typealias SizeType = ULong

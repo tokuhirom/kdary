@@ -1,10 +1,12 @@
 package me.geso.kdary
 
+import javax.management.Query.or
+
 /**
  * Unit of double-array builder.
  */
 class DoubleArrayBuilderUnit {
-    private var unit: UInt = 0u
+    private var unit: IdType = 0u
 
     fun setHasLeaf(hasLeaf: Boolean) {
         unit =
@@ -15,15 +17,15 @@ class DoubleArrayBuilderUnit {
             }
     }
 
-    fun setValue(value: Int) {
-        unit = value.toUInt() or (1u shl 31)
+    fun setValue(value: ValueType) {
+        unit = value.toIdType() or (1u shl 31)
     }
 
-    fun setLabel(label: UByte) {
+    fun setLabel(label: UCharType) {
         unit = (unit and 0xFFFFFF00u) or label.toUInt()
     }
 
-    fun setOffset(offset: UInt) {
+    fun setOffset(offset: IdType) {
         if (offset >= (1u shl 29)) {
             throw IllegalArgumentException("failed to modify unit: too large offset")
         }
