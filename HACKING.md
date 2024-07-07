@@ -98,5 +98,7 @@ BitVector の実装。テストとかないので、テストとかは自分で�
 - DoubleArrayUnit
 - Keyset
 
-- DoubleArrayImpl は複雑なので後で。
+以下は複雑なので後回し。
 
+- DoubleArrayImpl
+- DoubleArrayBuilder 

@@ -19,7 +19,7 @@ class DawgUnit(
 
     fun hasSibling(): Boolean = (unit and 1u) == 1u
 
-    fun value(): ValueType = (unit shr 1).toInt()
+    fun value(): ValueType = (unit shr 1).toValueType()
 
     fun isState(): Boolean = (unit and 2u) == 2u
 }
