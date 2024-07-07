@@ -9,22 +9,22 @@ class KeysetTest {
     @Test
     fun testKeyset() {
         val keys = arrayOf("apple", "banana", "cherry")
-        val lengths = intArrayOf(5, 6, 6)
+        val lengths = arrayOf<SizeType>(5u, 6u, 6u)
         val values = arrayOf(1, 2, 3)
-        val keyset = Keyset(3, keys, lengths, values)
+        val keyset = Keyset(3u, keys, lengths, values)
 
-        assertEquals(3, keyset.numKeys())
+        assertEquals(3u, keyset.numKeys())
         assertEquals("apple", keyset.keys(0))
-        assertEquals('b', keyset.keys(1, 0))
-        assertEquals(6, keyset.lengths(2))
+        assertEquals('b', keyset.keys(1u, 0u))
+        assertEquals(6u, keyset.lengths(2u))
         assertTrue(keyset.hasLengths())
         assertTrue(keyset.hasValues())
-        assertEquals(2, keyset.values(1))
+        assertEquals(2, keyset.values(1u))
 
-        assertEquals('\u0000', keyset.keys(0, 10)) // Out of bounds
+        assertEquals('\u0000', keyset.keys(0u, 10u)) // Out of bounds
         assertFailsWith<NoSuchElementException> {
-            val noValuesKeyset = Keyset<Int>(3, keys, lengths, null)
-            noValuesKeyset.values(0)
+            val noValuesKeyset = Keyset<Int>(3u, keys, lengths, null)
+            noValuesKeyset.values(0u)
         }
     }
 }

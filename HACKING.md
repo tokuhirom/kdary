@@ -93,6 +93,7 @@ BitVector の実装。テストとかないので、テストとかは自分で�
 
 以下を修正した。
 
+- DawgNode
 - DoubleArrayBuilderExtraUnit
 - DoubleArrayBuilderUnit
 - DoubleArrayUnit
