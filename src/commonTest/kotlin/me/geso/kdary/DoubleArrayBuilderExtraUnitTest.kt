@@ -10,14 +10,14 @@ class DoubleArrayBuilderExtraUnitTest {
     fun testSetPrev() {
         val unit = DoubleArrayBuilderExtraUnit()
         unit.setPrev(42u)
-        assertEquals(42u, unit.getPrev())
+        assertEquals(42u, unit.prev())
     }
 
     @Test
     fun testSetNext() {
         val unit = DoubleArrayBuilderExtraUnit()
         unit.setNext(24u)
-        assertEquals(24u, unit.getNext())
+        assertEquals(24u, unit.next())
     }
 
     @Test

@@ -153,7 +153,7 @@ class DoubleArrayBuilder(
             if (isValidOffset(id, offset)) {
                 return offset
             }
-            unfixedId = extras(unfixedId).getNext()
+            unfixedId = extras(unfixedId).next()
         } while (unfixedId != extrasHead)
 
         return units.size().toUInt() or (id and LOWER_MASK.toUInt())
@@ -187,13 +187,13 @@ class DoubleArrayBuilder(
         }
 
         if (id == extrasHead) {
-            extrasHead = extras(id).getNext()
+            extrasHead = extras(id).next()
             if (extrasHead == id) {
                 extrasHead = units.size().toUInt()
             }
         }
-        extras(extras(id).getPrev()).setNext(extras(id).getNext())
-        extras(extras(id).getNext()).setPrev(extras(id).getPrev())
+        extras(extras(id).prev()).setNext(extras(id).next())
+        extras(extras(id).next()).setPrev(extras(id).prev())
         extras(id).setIsFixed(true)
     }
 
@@ -225,10 +225,10 @@ class DoubleArrayBuilder(
         extras(srcNumUnits.toUInt()).setPrev((destNumUnits - 1).toUInt())
         extras((destNumUnits - 1).toUInt()).setNext(srcNumUnits.toUInt())
 
-        extras(srcNumUnits.toUInt()).setPrev(extras(extrasHead).getPrev())
+        extras(srcNumUnits.toUInt()).setPrev(extras(extrasHead).prev())
         extras((destNumUnits - 1).toUInt()).setNext(extrasHead)
 
-        extras(extras(extrasHead).getPrev()).setNext(srcNumUnits.toUInt())
+        extras(extras(extrasHead).prev()).setNext(srcNumUnits.toUInt())
         extras(extrasHead).setPrev((destNumUnits - 1).toUInt())
     }
 

@@ -90,6 +90,13 @@ BitVector の実装。テストとかないので、テストとかは自分で�
 2024-07-07 に続きを実装。
 
 一通り実装してみたが、 型が一部あってない部分があることがわかったので、全体的に見直していく。
-Keyset, DoubleArrayUnit をとりあえず修正。
-DoubleArrayImpl は複雑なので後で。
+
+以下を修正した。
+
+- DoubleArrayBuilderExtraUnit
+- DoubleArrayBuilderUnit
+- DoubleArrayUnit
+- Keyset
+
+- DoubleArrayImpl は複雑なので後で。
 

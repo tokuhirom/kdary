@@ -4,16 +4,16 @@ package me.geso.kdary
  * Extra unit of double-array builder.
  */
 class DoubleArrayBuilderExtraUnit {
-    private var prev: UInt = 0u
-    private var next: UInt = 0u
+    private var prev: IdType = 0u
+    private var next: IdType = 0u
     private var isFixed: Boolean = false
     private var isUsed: Boolean = false
 
-    fun setPrev(prev: UInt) {
+    fun setPrev(prev: IdType) {
         this.prev = prev
     }
 
-    fun setNext(next: UInt) {
+    fun setNext(next: IdType) {
         this.next = next
     }
 
@@ -25,9 +25,9 @@ class DoubleArrayBuilderExtraUnit {
         this.isUsed = isUsed
     }
 
-    fun getPrev(): UInt = prev
+    fun prev(): IdType = prev
 
-    fun getNext(): UInt = next
+    fun next(): IdType = next
 
     fun isFixed(): Boolean = isFixed
 
