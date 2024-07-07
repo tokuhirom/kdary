@@ -11,6 +11,24 @@ package me.geso.kdary
 // sequences of <char_type>s. <uchar_type> is the unsigned type of <char_type>.
 typealias ValueType = Int
 
+internal fun Int.toSizeType(): SizeType = this.toULong()
+
+internal fun <T> T.toValueType(): ValueType {
+    return when (this) {
+        is Int -> {
+            return this
+        }
+
+        is ULong -> {
+            return this.toInt()
+        }
+
+        else -> {
+            throw IllegalArgumentException("Unsupported type: $this")
+        }
+    }
+}
+
 // KeyType は  drts-clone では Char だが、Kotlin の Char は 16bit なので Byte にしている。
 // Byte は signed 8bit。
 typealias KeyType = Byte

@@ -1,48 +1,40 @@
 package me.geso.kdary
 
 class Keyset<T>(
-    private val numKeys: Int,
+    private val numKeys: SizeType,
     private val keys: Array<String>,
-    private val lengths: IntArray?,
+    private val lengths: Array<SizeType>?,
     private val values: Array<T>?,
 ) {
-    fun numKeys(): Int {
-        return numKeys
-    }
+    fun numKeys(): SizeType = numKeys
 
-    fun keys(id: Int): String {
-        return keys[id]
-    }
+    fun keys(id: Int): String = keys[id]
 
     fun keys(
-        keyId: Int,
-        charId: Int,
+        keyId: SizeType,
+        charId: SizeType,
     ): Char {
-        if (hasLengths() && charId >= lengths!![keyId]) {
+        if (hasLengths() && charId >= lengths!![keyId.toInt()]) {
             return '\u0000'
         }
-        return keys[keyId].getOrNull(charId) ?: '\u0000'
+        return keys[keyId.toInt()].getOrNull(charId.toInt()) ?: '\u0000'
     }
 
-    fun hasLengths(): Boolean {
-        return lengths != null
-    }
+    fun hasLengths(): Boolean = lengths != null
 
-    fun lengths(id: Int): Int {
+    fun lengths(id: SizeType): SizeType {
         if (hasLengths()) {
-            return lengths!![id]
+            return lengths!![id.toInt()]
         }
-        return keys[id].length
+        return keys[id.toInt()].length.toSizeType()
     }
 
-    fun hasValues(): Boolean {
-        return values != null
-    }
+    fun hasValues(): Boolean = values != null
 
-    fun values(id: Int): T {
+    fun values(id: SizeType): ValueType {
         if (hasValues()) {
-            return values!![id]
+            return values!![id.toInt()].toValueType()
         }
-        throw NoSuchElementException("No value present for key with id $id")
+        return id.toValueType()
     }
 }
