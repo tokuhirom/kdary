@@ -5,9 +5,7 @@ class AutoPool<T> {
     private var sizeProp: Int = 0
     private var capacityProp: Int = 0
 
-    operator fun get(id: Int): T {
-        return buf[id] ?: throw IndexOutOfBoundsException("Array index out of range: $id")
-    }
+    operator fun get(id: Int): T = buf[id] ?: throw IndexOutOfBoundsException("Array index out of range: $id")
 
     operator fun set(
         id: Int,
@@ -16,13 +14,9 @@ class AutoPool<T> {
         buf[id] = value
     }
 
-    fun isEmpty(): Boolean {
-        return sizeProp == 0
-    }
+    fun isEmpty(): Boolean = sizeProp == 0
 
-    fun size(): Int {
-        return sizeProp
-    }
+    fun size(): Int = sizeProp
 
     fun clear() {
         resize(0)

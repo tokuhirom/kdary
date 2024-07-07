@@ -1,12 +1,12 @@
 package me.geso.kdary
 
 // Memory management of array.
-class AutoArray<T>(array: Array<T>? = null) {
+class AutoArray<T>(
+    array: Array<T>? = null,
+) {
     private var arrayProp: Array<T>? = array
 
-    operator fun get(id: Int): T {
-        return arrayProp?.get(id) ?: throw IndexOutOfBoundsException("Array is null")
-    }
+    operator fun get(id: Int): T = arrayProp?.get(id) ?: throw IndexOutOfBoundsException("Array is null")
 
     operator fun set(
         id: Int,
@@ -15,9 +15,7 @@ class AutoArray<T>(array: Array<T>? = null) {
         arrayProp?.set(id, value) ?: throw IndexOutOfBoundsException("Array is null")
     }
 
-    fun isEmpty(): Boolean {
-        return arrayProp == null
-    }
+    fun isEmpty(): Boolean = arrayProp == null
 
     fun clear() {
         arrayProp = null

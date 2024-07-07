@@ -33,35 +33,22 @@ class DawgNode {
         this.hasSibling = hasSibling
     }
 
-    fun child(): IdType {
-        return child
-    }
+    fun child(): IdType = child
 
-    fun sibling(): IdType {
-        return sibling
-    }
+    fun sibling(): IdType = sibling
 
-    fun value(): ValueType {
-        return child.toInt()
-    }
+    fun value(): ValueType = child.toInt()
 
-    fun label(): UCharType {
-        return label
-    }
+    fun label(): UCharType = label
 
-    fun isState(): Boolean {
-        return isState
-    }
+    fun isState(): Boolean = isState
 
-    fun hasSibling(): Boolean {
-        return hasSibling
-    }
+    fun hasSibling(): Boolean = hasSibling
 
-    fun unit(): IdType {
-        return if (label == 0.toUByte()) {
+    fun unit(): IdType =
+        if (label == 0.toUByte()) {
             (child shl 1) or (if (hasSibling) 1u else 0u)
         } else {
             (child shl 2) or (if (isState) 2u else 0u) or (if (hasSibling) 1u else 0u)
         }
-    }
 }

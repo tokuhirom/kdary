@@ -3,7 +3,9 @@ package me.geso.kdary
 /**
  * Fixed unit of Directed Acyclic Word Graph (DAWG).
  */
-class DawgUnit(private var unit: IdType = 0u) {
+class DawgUnit(
+    private var unit: IdType = 0u,
+) {
     constructor(unit: DawgUnit) : this(unit.unit)
 
     fun unit(): IdType = unit
