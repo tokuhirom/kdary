@@ -14,7 +14,7 @@ class AutoPool<T> {
         buf[id] = value
     }
 
-    fun isEmpty(): Boolean = sizeProp == 0
+    fun empty(): Boolean = sizeProp == 0
 
     fun size(): Int = sizeProp
 

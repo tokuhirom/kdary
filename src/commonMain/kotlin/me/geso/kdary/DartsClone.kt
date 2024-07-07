@@ -12,6 +12,8 @@ package me.geso.kdary
 typealias UCharType = UByte
 typealias ValueType = Int
 
+internal fun ULong.toIdType(): IdType = this.toUInt()
+
 internal fun Int.toSizeType(): SizeType = this.toULong()
 
 internal fun <T> T.toValueType(): ValueType {

@@ -6,7 +6,7 @@ class AutoStack<T> {
     val size: Int
         get() = pool.size()
 
-    fun isEmpty(): Boolean = pool.isEmpty()
+    fun isEmpty(): Boolean = pool.empty()
 
     fun top(): T = pool[size - 1]
 

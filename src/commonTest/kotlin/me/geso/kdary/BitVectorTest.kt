@@ -46,9 +46,9 @@ class BitVectorTest {
     @Test
     fun testIsEmpty() {
         val bitVector = BitVector()
-        assertTrue(bitVector.isEmpty)
+        assertTrue(bitVector.empty)
         bitVector.append()
-        assertFalse(bitVector.isEmpty)
+        assertFalse(bitVector.empty)
     }
 
     @Test
@@ -60,7 +60,7 @@ class BitVectorTest {
         }
         bitVector.build()
         bitVector.clear()
-        assertTrue(bitVector.isEmpty)
+        assertTrue(bitVector.empty)
         assertEquals(0u, bitVector.numOnes())
         assertEquals(0u, bitVector.size())
     }

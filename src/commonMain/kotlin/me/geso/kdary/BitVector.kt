@@ -2,27 +2,16 @@ package me.geso.kdary
 
 // Succinct bit vector.
 class BitVector {
-    private val units: MutableList<UInt> = mutableListOf()
-    private lateinit var ranks: Array<UInt>
-    private var numOnes: UInt = 0u
-    private var size: UInt = 0u
-
-    val isEmpty: Boolean
-        get() = units.isEmpty()
-
-    // 1 の総数を返すメソッド
-    fun numOnes(): UInt = numOnes
-
-    // 全ビット数を返すメソッド
-    fun size(): UInt = size
+    private val units: AutoPool<IdType> = AutoPool()
+    private var ranks: AutoArray<IdType> = AutoArray()
+    private var numOnes: SizeType = 0u
+    private var size: SizeType = 0u
 
     // 指定したインデックスのビット値を返す
-    operator fun get(id: UInt): Boolean {
-        return (units[(id / UNIT_SIZE).toInt()] shr (id % UNIT_SIZE).toInt() and 1u) == 1u
-    }
+    operator fun get(id: UInt): Boolean = (units[(id / UNIT_SIZE).toInt()] shr (id % UNIT_SIZE).toInt() and 1u) == 1u
 
     // 指定したインデックスまでの 1 の数を返す
-    fun rank(id: UInt): UInt {
+    fun rank(id: SizeType): IdType {
         val unitId = (id / UNIT_SIZE).toInt()
         val offset = (id % UNIT_SIZE).toInt()
         val mask = (1u shl offset) - 1u
@@ -31,7 +20,7 @@ class BitVector {
 
     // 指定したインデックスのビットを設定する
     fun set(
-        id: UInt,
+        id: SizeType,
         bit: Boolean,
     ) {
         val unitId = (id / UNIT_SIZE).toInt()
@@ -42,25 +31,37 @@ class BitVector {
         }
     }
 
-    fun toList(): List<Boolean> {
-        return (0u until size).map { get(it) }
-    }
+    val empty: Boolean
+        get() = units.empty()
+
+    // 1 の総数を返すメソッド
+    fun numOnes(): SizeType = numOnes
+
+    // 全ビット数を返すメソッド
+    fun size(): SizeType = size
+
+//    fun toList(): List<Boolean> = (0u until size).map { get(it) }
 
     // 新しいビットを追加する
     fun append() {
-        if ((size % UNIT_SIZE) == 0u) {
-            units.add(0u)
+        if ((size % UNIT_SIZE) == 0uL) {
+            units.append(0u)
         }
         size++
     }
 
     // ランク配列を構築する
     fun build() {
-        ranks = Array(units.size) { 0u }
+        // pass new Array, tht size is units.size()
+        ranks.reset(
+            Array(units.size()) {
+                0u
+            },
+        )
         numOnes = 0u
-        for (i in units.indices) {
-            ranks[i] = numOnes
-            println(units[i])
+        // for (std::size_t i = 0; i < units_.size(); ++i) {
+        for (i in 0 until units.size()) {
+            ranks[i] = numOnes.toIdType()
             numOnes += popCount(units[i])
         }
     }
@@ -68,9 +69,7 @@ class BitVector {
     // 全データをクリアする
     fun clear() {
         units.clear()
-        ranks = emptyArray()
-        numOnes = 0u
-        size = 0u
+        ranks.clear()
     }
 
     companion object {
@@ -80,7 +79,7 @@ class BitVector {
         // sizeof(id_type) * 8
         private const val UNIT_SIZE = 32u
 
-        internal fun popCount(unit: UInt): UInt {
+        internal fun popCount(unit: IdType): IdType {
             var u = unit
             u = ((u and 0xAAAAAAAAu) shr 1) + (u and 0x55555555u)
             u = ((u and 0xCCCCCCCCu) shr 2) + (u and 0x33333333u)

@@ -12,14 +12,14 @@ class AutoPoolTest {
         val autoPool = AutoPool<Int>()
 
         // Test isEmpty()
-        assertTrue(autoPool.isEmpty())
+        assertTrue(autoPool.empty())
 
         // Test pushBack()
         autoPool.pushBack(1)
         autoPool.pushBack(2)
         autoPool.pushBack(3)
         assertEquals(3, autoPool.size())
-        assertFalse(autoPool.isEmpty())
+        assertFalse(autoPool.empty())
         assertEquals(1, autoPool[0])
         assertEquals(2, autoPool[1])
         assertEquals(3, autoPool[2])
@@ -70,7 +70,7 @@ class AutoPoolTest {
 
         // Test clear()
         autoPool.clear()
-        assertTrue(autoPool.isEmpty())
+        assertTrue(autoPool.empty())
         assertEquals(0, autoPool.size())
     }
 }
