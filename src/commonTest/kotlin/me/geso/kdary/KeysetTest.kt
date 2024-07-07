@@ -2,7 +2,6 @@ package me.geso.kdary
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class KeysetTest {
@@ -22,9 +21,9 @@ class KeysetTest {
         assertEquals(2, keyset.values(1u))
 
         assertEquals('\u0000', keyset.keys(0u, 10u)) // Out of bounds
-        assertFailsWith<NoSuchElementException> {
+        run {
             val noValuesKeyset = Keyset<Int>(3u, keys, lengths, null)
-            noValuesKeyset.values(0u)
+            assertEquals(10, noValuesKeyset.values(10u))
         }
     }
 }
