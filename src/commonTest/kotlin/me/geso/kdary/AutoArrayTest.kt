@@ -2,8 +2,8 @@ package me.geso.kdary
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class AutoArrayTest {
     @Test
