@@ -1,14 +1,16 @@
 package me.geso.kdary
 
+/**
+ * Memory management of stack.
+ */
 class AutoStack<T> {
     private val pool = AutoPool<T>()
 
-    val size: Int
-        get() = pool.size()
+    fun top(): T = pool[size() - 1]
 
-    fun isEmpty(): Boolean = pool.empty()
+    fun empty(): Boolean = pool.empty()
 
-    fun top(): T = pool[size - 1]
+    fun size(): Int = pool.size()
 
     fun push(value: T) {
         pool.pushBack(value)

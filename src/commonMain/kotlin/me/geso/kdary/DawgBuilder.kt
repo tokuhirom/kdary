@@ -284,7 +284,7 @@ class DawgBuilder {
 
     fun appendNode(): IdType {
         val id: IdType
-        if (recycleBin.isEmpty()) {
+        if (recycleBin.empty()) {
             id = nodes.size().toUInt()
             nodes.append(DawgNode())
         } else {
