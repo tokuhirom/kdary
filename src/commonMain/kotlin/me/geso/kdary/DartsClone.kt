@@ -9,6 +9,7 @@ package me.geso.kdary
 // most significant bit (MSB) of each value is used to represent whether the
 // corresponding unit is a leaf or not. Also, the keys are represented by
 // sequences of <char_type>s. <uchar_type> is the unsigned type of <char_type>.
+typealias UCharType = UByte
 typealias ValueType = Int
 
 internal fun Int.toSizeType(): SizeType = this.toULong()

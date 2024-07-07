@@ -1,7 +1,8 @@
 package me.geso.kdary
 
-typealias UCharType = UByte
-
+/**
+ * Node of Directed Acyclic Word Graph (DAWG).
+ */
 class DawgNode {
     private var child: IdType = 0u
     private var sibling: IdType = 0u
@@ -18,7 +19,7 @@ class DawgNode {
     }
 
     fun setValue(value: ValueType) {
-        this.child = value.toUInt()
+        this.child = value.toIdType()
     }
 
     fun setLabel(label: UCharType) {
@@ -37,7 +38,7 @@ class DawgNode {
 
     fun sibling(): IdType = sibling
 
-    fun value(): ValueType = child.toInt()
+    fun value(): ValueType = child.toValueType()
 
     fun label(): UCharType = label
 
