@@ -16,7 +16,7 @@ class DawgBuilderTest {
     fun testInit() {
         val builder = DawgBuilder()
         builder.init()
-        assertEquals(1, builder.size())
+        assertEquals(1u, builder.size())
         assertEquals(0u, builder.root())
         assertEquals(0.toUByte(), builder.label(0u))
         assertEquals(0u, builder.child(0u))
@@ -28,7 +28,7 @@ class DawgBuilderTest {
         builder.init()
         builder.insert("key", 3, 1)
         // ノード一個なので1が返ってくるはず。
-        assertEquals(1, builder.size())
+        assertEquals(1u, builder.size())
     }
 
     @Test
@@ -37,7 +37,7 @@ class DawgBuilderTest {
         builder.init()
         builder.insert("key", 3, 1)
         builder.finish()
-        assertEquals(5, builder.size())
+        assertEquals(5u, builder.size())
         assertFalse(builder.isIntersection(0u))
     }
 
@@ -47,7 +47,7 @@ class DawgBuilderTest {
         builder.init()
         builder.insert("key", 3, 1)
         builder.clear()
-        assertEquals(0, builder.size())
+        assertEquals(0u, builder.size())
     }
 
     @Test
@@ -129,6 +129,6 @@ class DawgBuilderTest {
         val builder = DawgBuilder()
         builder.init()
         builder.insert("key", 3, 1)
-        assertEquals(1, builder.size())
+        assertEquals(1u, builder.size())
     }
 }

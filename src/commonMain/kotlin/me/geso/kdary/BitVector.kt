@@ -54,13 +54,13 @@ class BitVector {
     fun build() {
         // pass new Array, tht size is units.size()
         ranks.reset(
-            Array(units.size()) {
+            Array(units.size().toInt()) {
                 0u
             },
         )
         numOnes = 0u
         // for (std::size_t i = 0; i < units_.size(); ++i) {
-        for (i in 0 until units.size()) {
+        for (i in 0 until units.size().toInt()) {
             ranks[i] = numOnes.toIdType()
             numOnes += popCount(units[i])
         }

@@ -6,11 +6,11 @@ package me.geso.kdary
 class AutoStack<T> {
     private val pool = AutoPool<T>()
 
-    fun top(): T = pool[size() - 1]
+    fun top(): T = pool[(size() - 1u).toInt()]
 
     fun empty(): Boolean = pool.empty()
 
-    fun size(): Int = pool.size()
+    fun size(): SizeType = pool.size()
 
     fun push(value: T) {
         pool.pushBack(value)

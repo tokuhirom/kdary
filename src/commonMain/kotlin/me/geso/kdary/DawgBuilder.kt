@@ -8,7 +8,7 @@ class DawgBuilder {
     private val table = AutoPool<IdType>()
     private val nodeStack = AutoStack<IdType>()
     private val recycleBin = AutoStack<IdType>()
-    private var numStates: Int = 0
+    private var numStates: SizeType = 0u
 
     init {
         clear()
@@ -28,19 +28,20 @@ class DawgBuilder {
 
     fun isIntersection(id: IdType): Boolean = isIntersections[id]
 
-    fun intersectionId(id: IdType): IdType = isIntersections.rank(id) - 1u
+    fun intersectionId(id: IdType): IdType = isIntersections.rank(id.toSizeType()) - 1u
 
     fun numIntersections(): Int = isIntersections.numOnes().toInt()
 
-    fun size(): Int = units.size()
+    fun size(): SizeType = units.size()
 
     fun init() {
-        table.resize(INITIAL_TABLE_SIZE, 0u)
+        // table は MutableList で実装されているので、初期サイズを無理に指定する必要はない
+//        table.resize(INITIAL_TABLE_SIZE, 0u)
 
         appendNode()
         appendUnit()
 
-        numStates = 1
+        numStates = 1u
 
         nodes[0].setLabel(0xFF.toUByte())
         nodeStack.push(0u)
@@ -128,7 +129,7 @@ class DawgBuilder {
         table.clear()
         nodeStack.clear()
         recycleBin.clear()
-        numStates = 0
+        numStates = 0u
     }
 
     private fun flush(id: IdType) {
@@ -149,7 +150,7 @@ class DawgBuilder {
 
             val (hashId, matchId) = findNode(nodeId)
             if (matchId != 0u) {
-                isIntersections.set(matchId, true)
+                isIntersections.set(matchId.toSizeType(), true)
             } else {
                 var unitId: IdType = 0u
                 for (j in 0 until numSiblings.toInt()) {
@@ -182,9 +183,10 @@ class DawgBuilder {
     private fun expandTable() {
         val tableSize = table.size() shl 1
         table.clear()
-        table.resize(tableSize, 0u)
+        // table は MutableList で実装されているので、初期サイズを無理に指定する必要はない
+//        table.resize(tableSize, 0u)
 
-        for (i in 1 until units.size()) {
+        for (i in 1uL until units.size()) {
             val id = i.toUInt()
             if (labels[id.toInt()] == 0.toUByte() || units[id.toInt()].isState()) {
                 val (hashId, _) = findUnit(id)
@@ -299,7 +301,7 @@ class DawgBuilder {
         isIntersections.append()
         units.append(DawgUnit()) // Initialize with default constructor
         labels.append(0.toUByte()) // Initialize with default value
-        return isIntersections.size() - 1u
+        return (isIntersections.size() - 1uL).toIdType()
     }
 
     private fun freeNode(id: IdType) {

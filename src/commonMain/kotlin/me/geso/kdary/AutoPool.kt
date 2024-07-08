@@ -1,9 +1,11 @@
 package me.geso.kdary
 
+/**
+ * Memory management of resizable array.
+ */
 class AutoPool<T> {
-    private var buf: MutableList<T?> = mutableListOf()
-    private var sizeProp: Int = 0
-    private var capacityProp: Int = 0
+    // This implementation is based on MutableList.
+    private var buf: MutableList<T> = mutableListOf()
 
     operator fun get(id: Int): T = buf[id] ?: throw IndexOutOfBoundsException("Array index out of range: $id")
 
@@ -14,15 +16,12 @@ class AutoPool<T> {
         buf[id] = value
     }
 
-    fun empty(): Boolean = sizeProp == 0
+    fun empty(): Boolean = buf.isEmpty()
 
-    fun size(): Int = sizeProp
+    fun size(): SizeType = buf.size.toSizeType()
 
     fun clear() {
-        resize(0)
         buf.clear()
-        sizeProp = 0
-        capacityProp = 0
     }
 
     fun pushBack(value: T) {
@@ -30,66 +29,58 @@ class AutoPool<T> {
     }
 
     fun popBack() {
-        buf[--sizeProp] = null
+        buf.removeLast()
     }
 
-    fun append() {
-        if (sizeProp == capacityProp) resizeBuffer(sizeProp + 1)
-        buf.add(sizeProp, null as T?)
-        sizeProp++
-    }
+    // append, resize, reserve を実装する。
 
+    /*
+      void append() {
+    if (size_ == capacity_)
+      resize_buf(size_ + 1);
+    new(&(*this)[size_++]) T;
+  }
+  void append(const T &value) {
+    if (size_ == capacity_)
+      resize_buf(size_ + 1);
+    new(&(*this)[size_++]) T(value);
+  }
+     */
+
+    // XXX 引数無しの append は使い道なさそうなので実装せず。
     fun append(value: T) {
-        if (sizeProp == capacityProp) resizeBuffer(sizeProp + 1)
-        buf.add(sizeProp, value)
-        sizeProp++
+        buf.add(value)
     }
 
-    fun resize(size: Int) {
-        while (sizeProp > size) {
-            buf[--sizeProp] = null
-        }
-        if (size > capacityProp) {
-            resizeBuffer(size)
-        }
-        while (sizeProp < size) {
-            buf.add(sizeProp, null as T?)
-            sizeProp++
-        }
-    }
+    /*
 
-    fun resize(
-        size: Int,
-        value: T,
-    ) {
-        while (sizeProp > size) {
-            buf[--sizeProp] = null
-        }
-        if (size > capacityProp) {
-            resizeBuffer(size)
-        }
-        while (sizeProp < size) {
-            buf.add(sizeProp, value)
-            sizeProp++
-        }
+  void resize(std::size_t size) {
+    while (size_ > size) {
+      (*this)[--size_].~T();
     }
+    if (size > capacity_) {
+      resize_buf(size);
+    }
+    while (size_ < size) {
+      new(&(*this)[size_++]) T;
+    }
+  }
+  void resize(std::size_t size, const T &value) {
+    while (size_ > size) {
+      (*this)[--size_].~T();
+    }
+    if (size > capacity_) {
+      resize_buf(size);
+    }
+    while (size_ < size) {
+      new(&(*this)[size_++]) T(value);
+    }
+  }
 
-    fun reserve(size: Int) {
-        if (size > capacityProp) {
-            resizeBuffer(size)
-        }
+  void reserve(std::size_t size) {
+    if (size > capacity_) {
+      resize_buf(size);
     }
-
-    private fun resizeBuffer(size: Int) {
-        var capacity = if (size >= capacityProp * 2) size else 1
-        while (capacity < size) {
-            capacity = capacity shl 1
-        }
-        val newBuf = MutableList<T?>(capacity) { null }
-        for (i in 0 until sizeProp) {
-            newBuf[i] = buf[i]
-        }
-        buf = newBuf
-        capacityProp = capacity
-    }
+  }
+     */
 }
