@@ -72,9 +72,7 @@ class AutoPool<T> {
     }
 
     fun reserve(numUnits: SizeType) {
-        if (numUnits.toInt() > buf.size) {
-            buf = buf.toMutableList()
-        }
+        // do nothing in kotlin
     }
 
     /*

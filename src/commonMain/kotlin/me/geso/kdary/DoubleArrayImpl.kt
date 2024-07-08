@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package me.geso.kdary
 
 import okio.buffer
@@ -115,13 +117,58 @@ class DoubleArrayImpl<T : Number> {
 //    Details::progress_func_type progress_func = NULL);
     fun build(
         numKeys: SizeType,
-        // TODO: ここのパラメータ間違ってそう Array<UByteArray> かも
-        keys: Array<KeyType>,
+        keys: Array<UByteArray>,
         lengths: Array<SizeType>? = null,
         values: Array<T>? = null,
         progressFunc: ProgressFuncType? = null,
     ): Int {
-        TODO()
+        /*
+template <typename A, typename B, typename T, typename C>
+int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
+    const key_type * const *keys, const std::size_t *lengths,
+    const value_type *values, Details::progress_func_type progress_func) {
+  Details::Keyset<value_type> keyset(num_keys, keys, lengths, values);
+
+  Details::DoubleArrayBuilder builder(progress_func);
+  builder.build(keyset);
+
+  std::size_t size = 0;
+  unit_type *buf = NULL;
+  builder.copy(&size, &buf);
+
+  clear();
+
+  size_ = size;
+  array_ = buf;
+  buf_ = buf;
+
+  if (progress_func != NULL) {
+    progress_func(num_keys + 1, num_keys + 1);
+  }
+
+  return 0;
+}
+         */
+        val keyset = Keyset(numKeys, keys, lengths, values)
+
+        val builder = DoubleArrayBuilder(progressFunc)
+        builder.build(keyset)
+
+//        std::size_t size = 0;
+//        unit_type *buf = NULL;
+//        builder.copy(&size, &buf);
+        // C++ ではポインタの参照を渡しているが、kotlin では返り値とするのが自然。
+        val buf = builder.copy()
+
+        clear()
+
+        this.size = buf.size.toSizeType()
+        this.array = buf
+        this.buf = buf
+
+        progressFunc?.invoke(numKeys + 1u, numKeys + 1u)
+
+        return 0
     }
 
     // open() reads an array of units from the specified file. And if it goes

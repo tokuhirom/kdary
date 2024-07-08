@@ -5,8 +5,10 @@ import javax.management.Query.or
 /**
  * Unit of double-array builder.
  */
-class DoubleArrayBuilderUnit {
-    private var unit: IdType = 0u
+class DoubleArrayBuilderUnit(
+    private var unit: IdType = 0u,
+) {
+    fun unit(): IdType = unit
 
     fun setHasLeaf(hasLeaf: Boolean) {
         unit =

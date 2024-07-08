@@ -31,11 +31,28 @@ class DoubleArrayBuilder(
         }
     }
 
-    fun copy(
-        sizePtr: Array<SizeType>?,
-        bufPtr: Array<DoubleArrayBuilderUnit?>?,
-    ) {
-        TODO("ここは呼び出し元の実装タイミングで実装した方が間違いがなさそう")
+    fun copy(): Array<DoubleArrayUnit> {
+        /*
+        inline void DoubleArrayBuilder::copy(std::size_t *size_ptr,
+            DoubleArrayUnit **buf_ptr) const {
+          if (size_ptr != NULL) {
+         *size_ptr = units_.size();
+          }
+          if (buf_ptr != NULL) {
+         *buf_ptr = new DoubleArrayUnit[units_.size()];
+            unit_type *units = reinterpret_cast<unit_type *>(*buf_ptr);
+            for (std::size_t i = 0; i < units_.size(); ++i) {
+              units[i] = units_[i];
+            }
+          }
+        }
+         */
+
+        // kotlin の配列はサイズを持っているので、、size_ptr は不要。
+        return (0uL until units.size())
+            .map {
+                DoubleArrayUnit(units[it.toInt()].unit())
+            }.toTypedArray()
     }
 
     fun clear() {
