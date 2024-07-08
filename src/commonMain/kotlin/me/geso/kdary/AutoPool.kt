@@ -71,6 +71,12 @@ class AutoPool<T> {
         }
     }
 
+    fun reserve(numUnits: SizeType) {
+        if (numUnits.toInt() > buf.size) {
+            buf = buf.toMutableList()
+        }
+    }
+
     /*
 
   void resize(std::size_t size) {
@@ -101,5 +107,37 @@ class AutoPool<T> {
       resize_buf(size);
     }
   }
+
+  template <typename T>
+void AutoPool<T>::resize_buf(std::size_t size) {
+  std::size_t capacity;
+  if (size >= capacity_ * 2) {
+    capacity = size;
+  } else {
+    capacity = 1;
+    while (capacity < size) {
+      capacity <<= 1;
+    }
+  }
+
+  AutoArray<char> buf;
+  try {
+    buf.reset(new char[sizeof(T) * capacity]);
+  } catch (const std::bad_alloc &) {
+    DARTS_THROW("failed to resize pool: std::bad_alloc");
+  }
+
+  if (size_ > 0) {
+    T *src = reinterpret_cast<T *>(&buf_[0]);
+    T *dest = reinterpret_cast<T *>(&buf[0]);
+    for (std::size_t i = 0; i < size_; ++i) {
+      new(&dest[i]) T(src[i]);
+      src[i].~T();
+    }
+  }
+
+  buf_.swap(&buf);
+  capacity_ = capacity;
+}
      */
 }

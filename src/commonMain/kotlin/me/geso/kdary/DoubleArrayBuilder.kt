@@ -67,8 +67,7 @@ class DoubleArrayBuilder(
         while (numUnits < dawg.size()) {
             numUnits = numUnits shl 1
         }
-        // TODO: reserve は不要?
-//        units.reserve(numUnits)
+        units.reserve(numUnits)
 
         table.reset(Array(dawg.numIntersections()) { 0u })
 
@@ -165,8 +164,7 @@ class DoubleArrayBuilder(
         while (numUnits < keyset.numKeys()) {
             numUnits = numUnits shl 1
         }
-        // reserve は不要?
-        // units.reserve(numUnits)
+        units.reserve(numUnits)
 
         extras.reset(Array(NUM_EXTRAS) { DoubleArrayBuilderExtraUnit() })
 
