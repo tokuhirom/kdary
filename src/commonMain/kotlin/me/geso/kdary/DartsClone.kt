@@ -20,10 +20,6 @@ internal fun IdType.toSizeType(): SizeType = this.toULong()
 
 internal fun UInt.toValueType(): ValueType = this.toInt()
 
-// KeyType は  drts-clone では Char だが、Kotlin の Char は 16bit なので Byte にしている。
-// Byte は signed 8bit。
-typealias KeyType = Byte
-
 // typedef unsigned int id_type;
 typealias IdType = UInt
 

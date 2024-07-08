@@ -24,6 +24,10 @@ private fun writeUIntLe(
     sink.writeByte(((value shr 24) and 0xFFU).toInt())
 }
 
+// KeyType は  drts-clone では Char だが、Kotlin の Char は 16bit なので Byte にしている。
+// Byte は signed 8bit。
+private typealias KeyType = Byte
+
 // C++ 実装での value_type, result_type は T になります。
 // key_type は Byte です。
 class DoubleArrayImpl<T : Number> {
@@ -41,37 +45,16 @@ class DoubleArrayImpl<T : Number> {
         var value: T,
         var length: SizeType,
     ) {
+        // set_result 相当
         fun set(
-            value: DoubleArrayUnit,
+            value: T,
             length: SizeType,
         ) {
             @Suppress("UNCHECKED_CAST")
-            this.value = value as T
+            this.value = value
             this.length = length
         }
     }
-
-    // <DoubleArrayImpl> has 2 kinds of set_result()s. The 1st set_result() is to
-    // set a value to a <value_type>. The 2nd set_result() is to set a value and
-    // a length to a <result_pair_type>. By using set_result()s, search methods
-    // can return the 2 kinds of results in the same way.
-    // Why the set_result()s are non-static? It is for compatibility.
-    //
-    // The 1st set_result() takes a length as the 3rd argument but it is not
-    // used. If a compiler does a good job, codes for getting the length may be
-    // removed.
-//    void set_result(value_type *result, value_type value, std::size_t) const {
-//        *result = value;
-//    }
-    // The 2nd set_result() uses both `value' and `length'.
-//    void set_result(result_pair_type *result,
-//    value_type value, std::size_t length) const {
-//        result->value = value;
-//        result->length = length;
-//    }
-
-    // TODO: この 2つの set_result() は Kotlin でどう書き換えるのか？
-    // おそらく、拡張関数として実装するのが素直で、インスタンスメソッドにはならない。
 
     // setArray() はクリア() を呼び出して古い配列に割り当てられたメモリを解放し、その後新しい配列を設定します。
     // この関数はメモリマップド配列を設定するのに便利です。
@@ -83,6 +66,7 @@ class DoubleArrayImpl<T : Number> {
         ptr: Array<DoubleArrayUnit>?,
         size: SizeType = 0u,
     ) {
+        clear()
         array = ptr
         this.size = size
     }
@@ -90,32 +74,24 @@ class DoubleArrayImpl<T : Number> {
     // array() はユニットの配列を返します
     fun array(): Array<DoubleArrayUnit>? = array
 
-    // clear メソッドは C++ だとメモリーの解放を行うが、Kotlin だと GC がやってくれるので不要。
-//    void clear() {
+    // clear メソッドは C++ だとメモリーの解放を行うが、Kotlin だと GC がやってくれるからあまり意味はないかも。
+    fun clear() {
+        size = 0u
+        array = null
+        buf = null
+    }
 
     // unit_size() returns the size of each unit. The size must be 4 bytes.
-//    std::size_t unit_size() const {
-//        return sizeof(unit_type);
-//    }
     fun unitSize(): SizeType = 4u
 
     // size() returns the number of units. It can be 0 if set_array() is used.
-//    std::size_t size() const {
-//        return size_;
-//    }
     fun size(): SizeType = size
 
     // total_size() returns the total size of the array in bytes.
-//    std::size_t total_size() const {
-//        return unit_size() * size();
-//    }
     fun totalSize(): SizeType = unitSize() * size()
 
     // empty() returns true if the array is empty.
-//    std::size_t nonzero_size() const {
-//        return size();
-//    }
-    fun nonzeroSize(): SizeType = size
+    fun nonzeroSize(): SizeType = size()
 
     // build() constructs a dictionary from given key-value pairs. If `lengths'
     // is NULL, `keys' is handled as an array of zero-terminated strings. If
@@ -139,6 +115,7 @@ class DoubleArrayImpl<T : Number> {
 //    Details::progress_func_type progress_func = NULL);
     fun build(
         numKeys: SizeType,
+        // TODO: ここのパラメータ間違ってそう Array<UByteArray> かも
         keys: Array<KeyType>,
         lengths: Array<SizeType>? = null,
         values: Array<T>? = null,
@@ -192,8 +169,10 @@ class DoubleArrayImpl<T : Number> {
                 units[i] = DoubleArrayUnit(readUIntLe(source))
             }
 
-            if (units[0].label().toInt().toChar() != '\u0000' || units[0].hasLeaf() ||
-                units[0].offset() == 0u || units[0].offset() >= 512u
+            if (units[0].label().toInt().toChar() != '\u0000' ||
+                units[0].hasLeaf() ||
+                units[0].offset() == 0u ||
+                units[0].offset() >= 512u
             ) {
                 return -1
             }
@@ -415,51 +394,58 @@ class DoubleArrayImpl<T : Number> {
         nodePos: SizeType,
         keyPos: SizeType,
         length: SizeType = 0u,
-    ): T {
-        var id = nodePos.toUInt()
-        var nodePosVar = nodePos.toInt()
-        var keyPosVar = keyPos.toInt()
-        var lengthVar = length.toInt()
+    ): TraverseResult = traverseInternal(key, nodePos, keyPos, length)
 
-        @Suppress("UNCHECKED_CAST")
-        var unit = array?.get(id.toInt()) ?: return -2 as T
+    private fun traverseInternal(
+        key: Array<KeyType>,
+        nodePosParam: SizeType,
+        keyPosParam: SizeType,
+        length: SizeType = 0u,
+    ): TraverseResult {
+        var id: IdType = nodePosParam.toIdType()
+
+        var unit = array?.get(id.toInt()) ?: return TraverseResult(-2, nodePosParam, keyPosParam)
+
+        // 変更するために、var にアサインする
+        var nodePos = nodePosParam
+        var keyPos = keyPosParam
 
         if (length != 0uL) {
-            while (keyPosVar < lengthVar) {
-                id = id xor (unit.offset() xor key[keyPosVar].toUInt())
-                @Suppress("UNCHECKED_CAST")
-                unit = array?.get(id.toInt()) ?: return -2 as T
-                if (unit.label() != key[keyPosVar].toUInt()) {
-                    @Suppress("UNCHECKED_CAST")
-                    return -2 as T
+            while (keyPos < length) {
+                id = id xor (unit.offset() xor key[keyPos.toInt()].toUInt())
+                unit = array?.get(id.toInt()) ?: return -2
+                if (unit.label() != key[keyPos.toInt()].toUInt()) {
+                    return TraverseResult(-2, nodePos, keyPos)
                 }
-                nodePosVar = id.toInt()
-                keyPosVar++
+                nodePos = id.toSizeType()
+
+                keyPos++
             }
         } else {
-            while (key[keyPosVar].toInt() != 0) {
-                id = id xor (unit.offset() xor key[keyPosVar].toUInt())
-                @Suppress("UNCHECKED_CAST")
-                unit = array?.get(id.toInt()) ?: return -2 as T
-                if (unit.label() != key[keyPosVar].toUInt()) {
-                    @Suppress("UNCHECKED_CAST")
-                    return -2 as T
+            while (key[keyPos.toInt()].toInt() != 0) {
+                id = id xor (unit.offset() xor key[keyPos.toInt()].toUInt())
+                unit = array?.get(id.toInt()) ?: return -2
+                if (unit.label() != key[keyPos.toInt()].toUInt()) {
+                    return TraverseResult(-2, nodePos, keyPos)
                 }
-                nodePosVar = id.toInt()
-                keyPosVar++
+                nodePos = id.toSizeType()
+                keyPos++
             }
         }
 
         return if (!unit.hasLeaf()) {
-            @Suppress("UNCHECKED_CAST")
-            -1 as T
+            TraverseResult(-1, nodePos, keyPos)
         } else {
-            @Suppress("UNCHECKED_CAST")
-            unit = array?.get((id xor unit.offset()).toInt()) ?: return -2 as T
-            @Suppress("UNCHECKED_CAST")
-            unit.value() as T
+            unit = array?.get((id xor unit.offset()).toInt()) ?: return -2
+            TraverseResult(unit.value(), nodePos, keyPos)
         }
     }
+
+    data class TraverseResult(
+        val status: Int,
+        val nodePos: SizeType? = null,
+        val keyPos: SizeType? = null,
+    )
 
     // TODO: `as T` が多すぎる。 kotlin ならば、もう少しうまくやれるんじゃないか?
     // 例外を投げた方が良いかもしれない。

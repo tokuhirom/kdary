@@ -114,7 +114,9 @@ buildFromKeyset が難しい。
 Keyset はどう作るか?
 
 UByteArray があったのでこれを活用することにした。
-- DoubleArrayImpl
+- DoubleArrayBuilder
 が一通り見直し終わり。
 
-DoubleArrayBuilder は、まだ。
+DoubleArrayImpl は、まだ。
+- build
+- exactMatchSearch
