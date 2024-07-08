@@ -4,6 +4,7 @@ import okio.buffer
 import okio.sink
 import okio.source
 import java.io.File
+import kotlin.experimental.and
 
 private fun readUIntLe(source: okio.BufferedSource): UInt {
     val byte1 = source.readByte().toUInt() and 0xFFU
@@ -326,50 +327,64 @@ class DoubleArrayImpl<T : Number> {
 //    std::size_t node_pos = 0) const;
     fun commonPrefixSearch(
         key: Array<KeyType>,
-        results: Array<ResultPairType<T>>,
+        results: Array<ResultPairType<ValueType>>,
         maxNumResults: SizeType,
         length: SizeType = 0u,
         nodePos: SizeType = 0u,
+    ): SizeType = commonPrefixSearchInternal(key, results, maxNumResults, length, nodePos)
+
+    private fun commonPrefixSearchInternal(
+        key: Array<KeyType>,
+        results: Array<ResultPairType<ValueType>>,
+        maxNumResults: SizeType,
+        lengthParam: SizeType = 0u,
+        nodePosParam: SizeType = 0u,
     ): SizeType {
         var numResults: SizeType = 0u
-        var nodePosVar = nodePos.toInt()
-        var lengthVar = length.toInt()
 
-        var unit = array?.get(nodePosVar) ?: return numResults
-        nodePosVar = nodePosVar xor unit.offset().toInt()
+        var nodePos: SizeType = nodePosParam
+        var length: SizeType = lengthParam
 
-        if (length != 0uL) {
-            for (i in 0 until lengthVar) {
-                nodePosVar = nodePosVar xor (unit.offset().toInt() xor (key[i].toUInt() and 0xFFU).toInt())
-                unit = array?.get(nodePosVar) ?: return numResults
-                if (unit.label() != (key[i].toUInt() and 0xFFU)) {
+        var unit: DoubleArrayUnit = array?.get(nodePos.toInt()) ?: return numResults
+        nodePos = nodePos xor unit.offset().toSizeType()
+
+        if (lengthParam != 0uL) {
+            for (i in 0uL until length) {
+                // TODO ここのビット操作がめっちゃ怪しい
+                nodePos = nodePos xor key[i.toInt()].toUByte().toInt().toSizeType()
+                unit = array?.get(nodePos.toInt()) ?: return numResults
+                if (unit.label() != (key[i.toInt()].toUInt() and 0xFFU)) {
                     return numResults
                 }
 
-                nodePosVar = nodePosVar xor unit.offset().toInt()
+                nodePos = nodePos xor unit.offset().toSizeType()
                 if (unit.hasLeaf()) {
                     if (numResults < maxNumResults) {
-                        results[numResults.toInt()].set(unit, (i + 1).toULong())
+                        val v = array?.get(nodePos.toInt())?.value() ?: throw IllegalStateException()
+                        results[numResults.toInt()].set(v, (i + 1u))
                     }
                     numResults++
                 }
             }
         } else {
-            while (key[lengthVar].toInt() != 0) {
-                nodePosVar = nodePosVar xor (unit.offset().toInt() xor (key[lengthVar].toUInt() and 0xFFU).toInt())
-                unit = array?.get(nodePosVar) ?: return numResults
-                if (unit.label() != (key[lengthVar].toUInt() and 0xFFU)) {
+            while (key[length.toInt()] != 0.toByte()) {
+                // xor が怪しい
+                nodePos = nodePos xor key[length.toInt()].toUByte().toInt().toSizeType()
+                unit = array?.get(nodePos.toInt()) ?: return numResults
+                if (unit.label() != key[length.toInt()].toUByte().toIdType()) {
                     return numResults
                 }
 
-                nodePosVar = nodePosVar xor unit.offset().toInt()
+                nodePos = nodePos xor unit.offset().toSizeType()
                 if (unit.hasLeaf()) {
                     if (numResults < maxNumResults) {
-                        results[numResults.toInt()].set(unit, (lengthVar + 1).toULong())
+                        val v = array?.get(nodePos.toInt())?.value() ?: throw IllegalStateException()
+                        results[numResults.toInt()].set(v, (length + 1u))
                     }
                     numResults++
                 }
-                lengthVar++
+
+                length++
             }
         }
 
@@ -413,7 +428,7 @@ class DoubleArrayImpl<T : Number> {
         if (length != 0uL) {
             while (keyPos < length) {
                 id = id xor (unit.offset() xor key[keyPos.toInt()].toUInt())
-                unit = array?.get(id.toInt()) ?: return -2
+                unit = array?.get(id.toInt()) ?: return TraverseResult(-2, nodePos, keyPos)
                 if (unit.label() != key[keyPos.toInt()].toUInt()) {
                     return TraverseResult(-2, nodePos, keyPos)
                 }
@@ -424,7 +439,7 @@ class DoubleArrayImpl<T : Number> {
         } else {
             while (key[keyPos.toInt()].toInt() != 0) {
                 id = id xor (unit.offset() xor key[keyPos.toInt()].toUInt())
-                unit = array?.get(id.toInt()) ?: return -2
+                unit = array?.get(id.toInt()) ?: return TraverseResult(-2, nodePos, keyPos)
                 if (unit.label() != key[keyPos.toInt()].toUInt()) {
                     return TraverseResult(-2, nodePos, keyPos)
                 }
@@ -436,7 +451,7 @@ class DoubleArrayImpl<T : Number> {
         return if (!unit.hasLeaf()) {
             TraverseResult(-1, nodePos, keyPos)
         } else {
-            unit = array?.get((id xor unit.offset()).toInt()) ?: return -2
+            unit = array?.get((id xor unit.offset()).toInt()) ?: return TraverseResult(-2, nodePos, keyPos)
             TraverseResult(unit.value(), nodePos, keyPos)
         }
     }

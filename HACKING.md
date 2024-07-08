@@ -120,3 +120,8 @@ UByteArray があったのでこれを活用することにした。
 DoubleArrayImpl は、まだ。
 - build
 - exactMatchSearch
+
+DoubleArrayImpl を実装していく。
+- traverse を言ったん対応した。
+- commonPrefixSearch の対応が必要そう。
+

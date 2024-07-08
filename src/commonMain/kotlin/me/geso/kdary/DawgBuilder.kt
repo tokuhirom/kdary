@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package me.geso.kdary
 
 class DawgBuilder {
