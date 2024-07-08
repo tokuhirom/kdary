@@ -33,7 +33,7 @@ class Keyset<T>(
 
     fun values(id: SizeType): ValueType {
         if (hasValues()) {
-            return values!![id.toInt()].toValueType()
+            return values!![id.toInt()]!!.toValueType()
         }
         return id.toValueType()
     }

@@ -18,10 +18,14 @@ internal fun Int.toSizeType(): SizeType = this.toULong()
 
 internal fun IdType.toSizeType(): SizeType = this.toULong()
 
-internal fun <T> T.toValueType(): ValueType {
+internal fun <T : Any> T.toValueType(): ValueType {
     return when (this) {
         is Int -> {
             return this
+        }
+
+        is UInt -> {
+            return this.toInt()
         }
 
         is ULong -> {
@@ -29,7 +33,7 @@ internal fun <T> T.toValueType(): ValueType {
         }
 
         else -> {
-            throw IllegalArgumentException("Unsupported type: $this")
+            throw IllegalArgumentException("Unsupported type: ${this::class.simpleName}")
         }
     }
 }
