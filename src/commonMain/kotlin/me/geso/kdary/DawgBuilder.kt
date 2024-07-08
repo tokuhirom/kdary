@@ -63,18 +63,18 @@ class DawgBuilder {
     }
 
     fun insert(
-        key: String,
-        length: Int,
+        key: UByteArray,
+        length: SizeType,
         value: ValueType,
     ) {
         if (value < 0) {
             throw IllegalArgumentException("failed to insert key: negative value")
-        } else if (length == 0) {
+        } else if (length == 0uL) {
             throw IllegalArgumentException("failed to insert key: zero-length key")
         }
 
         var id = 0u
-        var keyPos = 0
+        var keyPos: SizeType = 0uL
 
         while (keyPos <= length) {
             val childId = nodes[id.toInt()].child()
@@ -82,7 +82,7 @@ class DawgBuilder {
                 break
             }
 
-            val keyLabel = if (keyPos < length) key[keyPos].code.toUByte() else 0u
+            val keyLabel = if (keyPos < length) key[keyPos.toInt()] else 0u
             if (keyPos < length && keyLabel == 0.toUByte()) {
                 throw IllegalArgumentException("failed to insert key: invalid null character")
             }
@@ -104,7 +104,7 @@ class DawgBuilder {
         }
 
         while (keyPos <= length) {
-            val keyLabel = if (keyPos < length) key[keyPos].code.toUByte() else 0u
+            val keyLabel = if (keyPos < length) key[keyPos.toInt()] else 0u
             val childId = appendNode()
 
             if (nodes[id.toInt()].child() == 0u) {

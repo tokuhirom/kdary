@@ -5,6 +5,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalUnsignedTypes::class)
+fun String.toUByteArray(): UByteArray = this.toByteArray().toUByteArray()
+
+@OptIn(ExperimentalUnsignedTypes::class)
 class DawgBuilderTest {
     @Test
     fun testRoot() {
@@ -26,7 +30,7 @@ class DawgBuilderTest {
     fun testInsert() {
         val builder = DawgBuilder()
         builder.init()
-        builder.insert("key", 3, 1)
+        builder.insert("key".toUByteArray(), 3u, 1)
         // ノード一個なので1が返ってくるはず。
         assertEquals(1u, builder.size())
     }
@@ -35,7 +39,7 @@ class DawgBuilderTest {
     fun testFinish() {
         val builder = DawgBuilder()
         builder.init()
-        builder.insert("key", 3, 1)
+        builder.insert("key".toUByteArray(), 3u, 1)
         builder.finish()
         assertEquals(5u, builder.size())
         assertFalse(builder.isIntersection(0u))
@@ -45,7 +49,7 @@ class DawgBuilderTest {
     fun testClear() {
         val builder = DawgBuilder()
         builder.init()
-        builder.insert("key", 3, 1)
+        builder.insert("key".toUByteArray(), 3u, 1)
         builder.clear()
         assertEquals(0u, builder.size())
     }
@@ -54,7 +58,7 @@ class DawgBuilderTest {
     fun testChild() {
         val builder = DawgBuilder()
         builder.init()
-        builder.insert("key", 3, 1)
+        builder.insert("key".toUByteArray(), 3u, 1)
         assertEquals(0u, builder.child(0u))
     }
 
@@ -62,7 +66,7 @@ class DawgBuilderTest {
     fun testSibling() {
         val builder = DawgBuilder()
         builder.init()
-        builder.insert("key", 3, 1)
+        builder.insert("key".toUByteArray(), 3u, 1)
         assertEquals(0u, builder.sibling(0u))
     }
 
@@ -70,7 +74,7 @@ class DawgBuilderTest {
     fun testValue() {
         val builder = DawgBuilder()
         builder.init()
-        builder.insert("key", 3, 1)
+        builder.insert("key".toUByteArray(), 3u, 1)
         builder.finish()
         assertEquals(1, builder.value(3u)) // Value set in the last node
     }
@@ -79,7 +83,7 @@ class DawgBuilderTest {
     fun testIsLeaf() {
         val builder = DawgBuilder()
         builder.init()
-        builder.insert("key", 3, 1)
+        builder.insert("key".toUByteArray(), 3u, 1)
         val leafNodeId = builder.child(0u)
         assertTrue(builder.isLeaf(leafNodeId))
     }
@@ -88,7 +92,7 @@ class DawgBuilderTest {
     fun testLabel() {
         val builder = DawgBuilder()
         builder.init()
-        builder.insert("key", 3, 1)
+        builder.insert("key".toUByteArray(), 3u, 1)
         val firstNodeId = builder.child(0u)
         val secondNodeId = builder.child(firstNodeId)
         val thirdNodeId = builder.child(secondNodeId)
@@ -101,7 +105,7 @@ class DawgBuilderTest {
     fun testIsIntersection() {
         val builder = DawgBuilder()
         builder.init()
-        builder.insert("key", 3, 1)
+        builder.insert("key".toUByteArray(), 3u, 1)
         builder.finish()
         assertFalse(builder.isIntersection(0u))
     }
@@ -110,7 +114,7 @@ class DawgBuilderTest {
     fun testIntersectionId() {
         val builder = DawgBuilder()
         builder.init()
-        builder.insert("key", 3, 1)
+        builder.insert("key".toUByteArray(), 3u, 1)
         builder.finish()
         assertEquals(0xFFFFFFFFu, builder.intersectionId(0u))
     }
@@ -119,7 +123,7 @@ class DawgBuilderTest {
     fun testNumIntersections() {
         val builder = DawgBuilder()
         builder.init()
-        builder.insert("key", 3, 1)
+        builder.insert("key".toUByteArray(), 3u, 1)
         builder.finish()
         assertEquals(0, builder.numIntersections())
     }
@@ -128,7 +132,7 @@ class DawgBuilderTest {
     fun testSize() {
         val builder = DawgBuilder()
         builder.init()
-        builder.insert("key", 3, 1)
+        builder.insert("key".toUByteArray(), 3u, 1)
         assertEquals(1u, builder.size())
     }
 }

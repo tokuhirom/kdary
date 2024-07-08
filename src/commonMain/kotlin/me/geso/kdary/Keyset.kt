@@ -2,22 +2,22 @@ package me.geso.kdary
 
 class Keyset<T>(
     private val numKeys: SizeType,
-    private val keys: Array<String>,
+    private val keys: Array<UByteArray>,
     private val lengths: Array<SizeType>?,
     private val values: Array<T>?,
 ) {
     fun numKeys(): SizeType = numKeys
 
-    fun keys(id: Int): String = keys[id]
+    fun keys(id: SizeType): UByteArray = keys[id.toInt()]
 
     fun keys(
         keyId: SizeType,
         charId: SizeType,
-    ): Char {
+    ): UCharType {
         if (hasLengths() && charId >= lengths!![keyId.toInt()]) {
-            return '\u0000'
+            return 0.toUByte()
         }
-        return keys[keyId.toInt()].getOrNull(charId.toInt()) ?: '\u0000'
+        return keys[keyId.toInt()].getOrNull(charId.toInt()) ?: 0.toUByte()
     }
 
     fun hasLengths(): Boolean = lengths != null
@@ -26,7 +26,7 @@ class Keyset<T>(
         if (hasLengths()) {
             return lengths!![id.toInt()]
         }
-        return keys[id.toInt()].length.toSizeType()
+        return keys[id.toInt()].size.toSizeType()
     }
 
     fun hasValues(): Boolean = values != null

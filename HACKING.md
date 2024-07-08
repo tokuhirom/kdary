@@ -102,5 +102,19 @@ BitVector の実装。テストとかないので、テストとかは自分で�
 
 以下は複雑なので後回し。
 
-- DoubleArrayImpl
 - DoubleArrayBuilder 
+- DoubleArrayImpl
+
+## 2024-07-08
+
+DoubleArrayBuilder を全体的に見直していく。
+
+buildFromKeyset が難しい。
+
+Keyset はどう作るか?
+
+UByteArray があったのでこれを活用することにした。
+- DoubleArrayImpl
+が一通り見直し終わり。
+
+DoubleArrayBuilder は、まだ。
