@@ -37,4 +37,24 @@ class Keyset<T>(
         }
         return id.toValueType()
     }
+
+    private fun <T : Any> T.toValueType(): ValueType {
+        return when (this) {
+            is Int -> {
+                return this
+            }
+
+            is UInt -> {
+                return this.toInt()
+            }
+
+            is ULong -> {
+                return this.toInt()
+            }
+
+            else -> {
+                throw IllegalArgumentException("Unsupported type: ${this::class.simpleName}")
+            }
+        }
+    }
 }

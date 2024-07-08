@@ -18,25 +18,7 @@ internal fun Int.toSizeType(): SizeType = this.toULong()
 
 internal fun IdType.toSizeType(): SizeType = this.toULong()
 
-internal fun <T : Any> T.toValueType(): ValueType {
-    return when (this) {
-        is Int -> {
-            return this
-        }
-
-        is UInt -> {
-            return this.toInt()
-        }
-
-        is ULong -> {
-            return this.toInt()
-        }
-
-        else -> {
-            throw IllegalArgumentException("Unsupported type: ${this::class.simpleName}")
-        }
-    }
-}
+internal fun UInt.toValueType(): ValueType = this.toInt()
 
 // KeyType は  drts-clone では Char だが、Kotlin の Char は 16bit なので Byte にしている。
 // Byte は signed 8bit。
