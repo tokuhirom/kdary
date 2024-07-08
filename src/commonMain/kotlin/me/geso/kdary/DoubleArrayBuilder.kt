@@ -67,7 +67,7 @@ class DoubleArrayBuilder(
         while (numUnits < dawg.size()) {
             numUnits = numUnits shl 1
         }
-        // reserve は不要
+        // TODO: reserve は不要?
 //        units.reserve(numUnits)
 
         table.reset(Array(dawg.numIntersections()) { 0u })
@@ -131,8 +131,7 @@ class DoubleArrayBuilder(
         dawgId: IdType,
         dicId: IdType,
     ): UInt {
-        // ここでの resize は不要だと思う。
-//        labels.resize(0)
+        labels.resize(0uL, 0.toUByte())
 
         var dawgChildId: IdType = dawg.child(dawgId)
         while (dawgChildId != 0u) {
@@ -259,8 +258,7 @@ void DoubleArrayBuilder::build_from_keyset(const Keyset<T> &keyset,
         depth: SizeType,
         dicId: IdType,
     ): IdType {
-        // ここでの resize は不要だと思う。
-//        labels.resize(0)
+        labels.resize(0uL, 0.toUByte())
 
         var vaue: ValueType = -1
         for (i: SizeType in begin until end) {
@@ -373,8 +371,9 @@ void DoubleArrayBuilder::build_from_keyset(const Keyset<T> &keyset,
             fixBlock(srcNumBlocks - NUM_EXTRA_BLOCKS.toIdType())
         }
 
-        // ここでの resize は不要だと思う。
-//        units.resize(destNumUnits)
+        units.resize(destNumUnits.toSizeType()) {
+            DoubleArrayBuilderUnit()
+        }
 
         if (destNumBlocks > NUM_EXTRA_BLOCKS.toIdType()) {
             for (id in srcNumUnits until destNumUnits) {
