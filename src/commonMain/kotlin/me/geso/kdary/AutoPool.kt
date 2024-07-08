@@ -35,11 +35,6 @@ class AutoPool<T> {
     // append, resize, reserve を実装する。
 
     /*
-      void append() {
-    if (size_ == capacity_)
-      resize_buf(size_ + 1);
-    new(&(*this)[size_++]) T;
-  }
   void append(const T &value) {
     if (size_ == capacity_)
       resize_buf(size_ + 1);
