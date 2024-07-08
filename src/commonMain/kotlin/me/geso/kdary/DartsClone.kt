@@ -18,6 +18,8 @@ internal fun Int.toSizeType(): SizeType = this.toULong()
 
 internal fun IdType.toSizeType(): SizeType = this.toULong()
 
+internal fun UByte.toSizeType(): UInt = this.toUInt()
+
 internal fun UInt.toValueType(): ValueType = this.toInt()
 
 // typedef unsigned int id_type;

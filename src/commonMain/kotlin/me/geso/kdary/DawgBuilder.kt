@@ -286,7 +286,7 @@ class DawgBuilder {
         return hashValue
     }
 
-    fun appendNode(): IdType {
+    private fun appendNode(): IdType {
         val id: IdType
         if (recycleBin.empty()) {
             id = nodes.size().toUInt()

@@ -4,7 +4,6 @@ import okio.buffer
 import okio.sink
 import okio.source
 import java.io.File
-import kotlin.experimental.and
 
 private fun readUIntLe(source: okio.BufferedSource): UInt {
     val byte1 = source.readByte().toUInt() and 0xFFU
@@ -269,37 +268,43 @@ class DoubleArrayImpl<T : Number> {
 //    template <class U>
 //    inline U exactMatchSearch(const key_type *key, std::size_t length = 0,
 //    std::size_t node_pos = 0) const;
-    fun exactMatchSearch(
+    fun <U> exactMatchSearch(
         key: Array<KeyType>,
         length: SizeType = 0u,
         nodePos: SizeType = 0u,
-    ): T {
-        var nodePosVar = nodePos.toInt()
-        var lengthVar = length.toInt()
-        var result: T?
+    ): U = exactMatchSearch(key, length, nodePos)
 
-        @Suppress("UNCHECKED_CAST")
-        result = -1 as T
+    private fun exactMatchSearchInternal(
+        key: Array<KeyType>,
+        lengthParam: SizeType = 0u,
+        nodePosParam: SizeType = 0u,
+    ): Int {
+        var result: Int?
+        result = -1
 //        setResult(result, -1 as T, 0)
 
-        var unit = array?.get(nodePosVar) ?: return result
+        // var に入れ直す
+        var nodePos = nodePosParam
+        var length = lengthParam
 
-        if (lengthVar != 0) {
-            for (i in 0 until lengthVar) {
-                nodePosVar = nodePosVar xor (unit.offset().toInt() xor (key[i].toUInt() and 0xFFU).toInt())
-                unit = array?.get(nodePosVar) ?: return result
-                if (unit.label() != (key[i].toUInt() and 0xFFU)) {
+        var unit = array?.get(nodePos.toInt()) ?: return result
+
+        if (length != 0uL) {
+            for (i in 0uL until length) {
+                nodePos = nodePos xor (unit.offset().toInt() xor key[i.toInt()].toUByte().toInt()).toSizeType()
+                unit = array?.get(nodePos.toInt()) ?: return result
+                if (unit.label() != (key[i.toInt()].toUInt() and 0xFFU)) {
                     return result
                 }
             }
         } else {
-            while (lengthVar < key.size && key[lengthVar] != 0.toByte()) {
-                nodePosVar = nodePosVar xor (unit.offset().toInt() xor (key[lengthVar].toUInt() and 0xFFU).toInt())
-                unit = array?.get(nodePosVar) ?: return result
-                if (unit.label() != (key[lengthVar].toUInt() and 0xFFU)) {
+            while (length < key.size.toSizeType() && key[length.toInt()] != 0.toByte()) {
+                nodePos = nodePos xor (unit.offset().toInt() xor key[length.toInt()].toUByte().toInt()).toSizeType()
+                unit = array?.get(nodePos.toInt()) ?: return result
+                if (unit.label() != (key[length.toInt()].toUInt() and 0xFFU)) {
                     return result
                 }
-                lengthVar++
+                length++
             }
         }
 
@@ -307,9 +312,8 @@ class DoubleArrayImpl<T : Number> {
             return result
         }
 
-        unit = array?.get(nodePosVar xor unit.offset().toInt()) ?: return result
-        @Suppress("UNCHECKED_CAST")
-        result = unit.unit as T
+        unit = array?.get(nodePos.toInt() xor unit.offset().toInt()) ?: return result
+        result = unit.unit.toInt()
         return result
     }
 
