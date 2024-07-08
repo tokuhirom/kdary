@@ -37,8 +37,7 @@ class DawgBuilder {
     fun size(): SizeType = units.size()
 
     fun init() {
-        // table は MutableList で実装されているので、初期サイズを無理に指定する必要はない
-//        table.resize(INITIAL_TABLE_SIZE, 0u)
+        table.resize(INITIAL_TABLE_SIZE.toSizeType(), 0u)
 
         appendNode()
         appendUnit()
@@ -185,8 +184,7 @@ class DawgBuilder {
     private fun expandTable() {
         val tableSize = table.size() shl 1
         table.clear()
-        // table は MutableList で実装されているので、初期サイズを無理に指定する必要はない
-//        table.resize(tableSize, 0u)
+        table.resize(tableSize, 0u)
 
         for (i in 1uL until units.size()) {
             val id = i.toUInt()

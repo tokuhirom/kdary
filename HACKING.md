@@ -125,3 +125,8 @@ DoubleArrayImpl を実装していく。
 - traverse を言ったん対応した。
 - commonPrefixSearch の対応が必要そう。
 
+DoubleArrayImpl の実装が xor 周りが結構怪しい。c++ の方の型とあってない箇所がありそうなので、このへんは実際に動かしながらデバッグ
+していくしかない。
+
+よくわからんけど、DawgBuilderTest がこけてるので、これを先に対応しよう。
+

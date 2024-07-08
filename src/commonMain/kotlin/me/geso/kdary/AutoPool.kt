@@ -52,6 +52,18 @@ class AutoPool<T> {
         buf.add(value)
     }
 
+    fun resize(
+        tableSize: SizeType,
+        value: T,
+    ) {
+        while (buf.size > tableSize.toInt()) {
+            buf.removeLast()
+        }
+        while (buf.size < tableSize.toInt()) {
+            buf.add(value)
+        }
+    }
+
     /*
 
   void resize(std::size_t size) {
