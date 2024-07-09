@@ -2,6 +2,9 @@
 
 package me.geso.kdary
 
+/**
+ * DAWG -> double-array converter.
+ */
 class DoubleArrayBuilder(
     private val progressFunc: ProgressFuncType?,
 ) {

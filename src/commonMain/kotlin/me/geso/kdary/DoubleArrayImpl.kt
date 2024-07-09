@@ -117,6 +117,7 @@ class DoubleArrayImpl<T : Number> {
 //    Details::progress_func_type progress_func = NULL);
     fun build(
         numKeys: SizeType,
+        // XXX keys は sorted であること。
         keys: Array<UByteArray>,
         lengths: Array<SizeType>? = null,
         values: Array<T>? = null,
@@ -302,12 +303,73 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
 //        result = exactMatchSearch<U>(key, length, node_pos);
 //    }
     fun exactMatchSearch(
-        key: Array<KeyType>,
-        result: ResultPairType<T>,
+        key: UByteArray,
         length: SizeType = 0u,
         nodePos: SizeType = 0u,
-    ) {
-        TODO()
+    ): ResultPairType<Int> {
+        /*
+template <typename A, typename B, typename T, typename C>
+template <typename U>
+inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
+    std::size_t length, std::size_t node_pos) const {
+  U result;
+  set_result(&result, static_cast<value_type>(-1), 0);
+
+  unit_type unit = array_[node_pos];
+  if (length != 0) {
+    for (std::size_t i = 0; i < length; ++i) {
+      node_pos ^= unit.offset() ^ static_cast<uchar_type>(key[i]);
+      unit = array_[node_pos];
+      if (unit.label() != static_cast<uchar_type>(key[i])) {
+        return result;
+      }
+    }
+  } else {
+    for ( ; key[length] != '\0'; ++length) {
+      node_pos ^= unit.offset() ^ static_cast<uchar_type>(key[length]);
+      unit = array_[node_pos];
+      if (unit.label() != static_cast<uchar_type>(key[length])) {
+        return result;
+      }
+    }
+  }
+
+  if (!unit.has_leaf()) {
+    return result;
+  }
+  unit = array_[node_pos ^ unit.offset()];
+  set_result(&result, static_cast<value_type>(unit.value()), length);
+  return result;
+}
+         */
+        val unit = array?.get(nodePos.toInt()) ?: return ResultPairType(-1, 0u)
+        if (length != 0uL) {
+            for (i in 0uL until length) {
+                // TODO xor 動いてる?
+                var nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
+                val unit = array?.get(nodePos.toInt()) ?: return ResultPairType(-1, 0u)
+                if (unit.label() != key[i.toInt()].toUInt()) {
+                    return ResultPairType(-1, 0u)
+                }
+            }
+        } else {
+            var length = 0uL
+            while (key[length.toInt()] != 0.toUByte()) {
+                // TODO xor 動いてる?
+                var nodePos = nodePos xor ((unit.offset() xor key[length.toInt()].toUInt()).toULong())
+                val unit = array?.get(nodePos.toInt()) ?: return ResultPairType(-1, 0u)
+                if (unit.label() != key[length.toInt()].toUInt()) {
+                    return ResultPairType(-1, 0u)
+                }
+                length++
+            }
+        }
+
+        if (!unit.hasLeaf()) {
+            return ResultPairType(-1, 0u)
+        }
+        val unit2 = array?.get(nodePos.toInt() xor unit.offset().toInt()) ?: return ResultPairType(-1, 0u)
+        return ResultPairType(unit2.value(), length)
     }
 
     // The 2nd exactMatchSearch() returns a result instead of updating the 2nd

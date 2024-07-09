@@ -131,4 +131,20 @@ DoubleArrayImpl の実装が xor 周りが結構怪しい。c++ の方の型と�
 よくわからんけど、DawgBuilderTest がこけてるので、これを先に対応しよう。
 直した。
 
+## 2024-07-09
 
+DoubleArrayImplTest の実装を進める。test/test-darts.cc を参考にして、実装していく。 
+まずは、exactMatchSearch が通ることを目指す。
+
+```
+failed to build double-array: wrong key order
+java.lang.IllegalArgumentException: failed to build double-array: wrong key order
+	at me.geso.kdary.DoubleArrayBuilder.arrangeFromKeyset-lK5RzIA(DoubleArrayBuilder.kt:298)
+	at me.geso.kdary.DoubleArrayBuilder.buildFromKeyset--0U3RB0(DoubleArrayBuilder.kt:241)
+	at me.geso.kdary.DoubleArrayBuilder.buildFromKeyset(DoubleArrayBuilder.kt:195)
+```
+
+arrangeFromKeyset が失敗しているので、これをデバッグする。
+
+`DoubleArray.build()` の引数はソート済みである必要があるようだ。
+std::set がソート済みであることを利用しているので、それを考慮する。
