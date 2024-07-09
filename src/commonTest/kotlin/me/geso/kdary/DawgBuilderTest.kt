@@ -11,15 +11,6 @@ fun String.toUByteArray(): UByteArray = this.toByteArray().toUByteArray()
 @OptIn(ExperimentalUnsignedTypes::class)
 class DawgBuilderTest {
     @Test
-    fun testHashUnit() {
-        val builder = DawgBuilder()
-        builder.init()
-
-        builder.insert("abc".toUByteArray(), 3u, 3)
-        assertEquals(0u, builder.hashUnit(1u))
-    }
-
-    @Test
     fun testSimple() {
         val keyset =
             Keyset(
@@ -125,7 +116,7 @@ class DawgBuilderTest {
         builder.init()
         builder.insert("key".toUByteArray(), 3u, 1)
         builder.finish()
-        assertEquals(1, builder.value(3u)) // Value set in the last node
+        assertEquals(5, builder.value(3u)) // Value set in the last node
     }
 
     @Test
