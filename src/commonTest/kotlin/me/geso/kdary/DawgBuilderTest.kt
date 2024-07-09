@@ -11,6 +11,55 @@ fun String.toUByteArray(): UByteArray = this.toByteArray().toUByteArray()
 @OptIn(ExperimentalUnsignedTypes::class)
 class DawgBuilderTest {
     @Test
+    fun testHashUnit() {
+        val builder = DawgBuilder()
+        builder.init()
+
+        builder.insert("abc".toUByteArray(), 3u, 3)
+        assertEquals(0u, builder.hashUnit(1u))
+    }
+
+    @Test
+    fun testSimple() {
+        val keyset =
+            Keyset(
+                1u,
+                keys = arrayOf("abc").map { it.toUByteArray() }.toTypedArray(),
+                lengths = arrayOf(3u),
+                values = arrayOf(1),
+            )
+
+        val builder = DawgBuilder()
+        builder.init()
+        for (i: SizeType in 0uL until keyset.numKeys()) {
+            builder.insert(keyset.keys(i), keyset.lengths(i), keyset.values(i))
+        }
+
+        for (i: SizeType in 0uL until builder.nodes.size()) {
+            println(
+                "i: $i, unit=${builder.nodes[i.toInt()].unit()}",
+            )
+        }
+
+        builder.finish()
+
+        assertEquals(5u, builder.size())
+        assertEquals(0u, builder.root())
+        for (i: SizeType in 0uL until builder.size()) {
+            println(
+                "i: $i, unit: ${builder.units[i.toInt()].unit()}," +
+                    " label: ${builder.labels[i.toInt()]}," +
+                    " is_intersection: ${builder.isIntersection(i.toUInt())}",
+            )
+        }
+        println(builder.units)
+        println(builder.units.size())
+        println(builder.labels)
+        println(builder.isIntersections)
+        assertEquals(0, builder.numIntersections())
+    }
+
+    @Test
     fun testRoot() {
         val builder = DawgBuilder()
         assertEquals(0u, builder.root())

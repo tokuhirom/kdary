@@ -6,7 +6,7 @@ package me.geso.kdary
  * DAWG -> double-array converter.
  */
 class DoubleArrayBuilder(
-    private val progressFunc: ProgressFuncType?,
+    private val progressFunc: ProgressFuncType? = null,
 ) {
     private val units = AutoPool<DoubleArrayBuilderUnit>()
     private val extras = AutoArray<DoubleArrayBuilderExtraUnit>()

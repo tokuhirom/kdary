@@ -3,10 +3,10 @@
 package me.geso.kdary
 
 class DawgBuilder {
-    private val nodes = AutoPool<DawgNode>()
-    private val units = AutoPool<DawgUnit>()
-    private val labels = AutoPool<UCharType>()
-    private val isIntersections = BitVector()
+    internal val nodes = AutoPool<DawgNode>()
+    internal val units = AutoPool<DawgUnit>()
+    internal val labels = AutoPool<UCharType>()
+    internal val isIntersections = BitVector()
     private val table = AutoPool<IdType>()
     private val nodeStack = AutoStack<IdType>()
     private val recycleBin = AutoStack<IdType>()
@@ -52,7 +52,6 @@ class DawgBuilder {
         flush(0u)
 
         units[0] = DawgUnit(nodes[0].unit())
-//        units[0u] = nodes[0u].unit()
         labels[0] = nodes[0].label()
 
         nodes.clear()
@@ -61,6 +60,8 @@ class DawgBuilder {
         recycleBin.clear()
 
         isIntersections.build()
+
+        // 結局、units, labels, isIntersections, numStates が残る。
     }
 
     fun insert(
@@ -68,6 +69,7 @@ class DawgBuilder {
         length: SizeType,
         value: ValueType,
     ) {
+        debug("insert(BEGIN $length)")
         if (value < 0) {
             throw IllegalArgumentException("failed to insert key: negative value")
         } else if (length == 0uL) {
@@ -120,6 +122,7 @@ class DawgBuilder {
             keyPos++
         }
         nodes[id.toInt()].setValue(value)
+        debug("insert(END $length)")
     }
 
     fun clear() {
@@ -134,7 +137,9 @@ class DawgBuilder {
     }
 
     private fun flush(id: IdType) {
+        debug("BEGIN flush($id)")
         while (nodeStack.top() != id) {
+            debug("nodes[3].unit=${nodes[3].unit()}")
             val nodeId = nodeStack.top()
             nodeStack.pop()
 
@@ -149,7 +154,7 @@ class DawgBuilder {
                 i = nodes[i.toInt()].sibling()
             }
 
-            val (hashId, matchId) = findNode(nodeId)
+            var (hashId, matchId) = findNode(nodeId)
             if (matchId != 0u) {
                 isIntersections.set(matchId.toSizeType(), true)
             } else {
@@ -164,8 +169,8 @@ class DawgBuilder {
                     unitId--
                     i = nodes[i.toInt()].sibling()
                 }
-                val newMatchId = unitId + 1u
-                table[hashId.toInt()] = newMatchId
+                matchId = unitId + 1u
+                table[hashId.toInt()] = matchId
                 numStates++
             }
 
@@ -176,12 +181,15 @@ class DawgBuilder {
                 i = next
             }
 
+            debug("nodeStack.top=${nodeStack.top()}, matchId=$matchId")
             nodes[nodeStack.top().toInt()].setChild(matchId)
         }
         nodeStack.pop()
+        debug("END flush($id)")
     }
 
     private fun expandTable() {
+        debug("BEGIN expandTable()")
         val tableSize = table.size() shl 1
         table.clear()
         table.resize(tableSize, 0u)
@@ -210,19 +218,25 @@ class DawgBuilder {
 
     // 引数でポインタを受け取っていたところを多値を返すように変更
     private fun findNode(nodeId: IdType): Pair<UInt, IdType> {
+        debug("BEGIN findNode($nodeId)")
         var hashId = hashNode(nodeId) % table.size().toUInt()
+        debug("findNode, first hashId: $nodeId, $hashId")
         while (true) {
+            debug("findNode, hashId=$hashId")
             val unitId = table[hashId.toInt()]
             if (unitId == 0u) {
+                debug("unit_id=0 $hashId")
                 break
             }
 
             if (areEqual(nodeId, unitId)) {
+                debug("END findNode($nodeId) -> ($hashId, $unitId)")
                 return hashId to unitId
             }
 
             hashId = (hashId + 1u) % table.size().toUInt()
         }
+        debug("END findNode($nodeId) -> ($hashId, 0u)")
         return hashId to 0u
     }
 
@@ -256,7 +270,7 @@ class DawgBuilder {
         return true
     }
 
-    private fun hashUnit(id: IdType): IdType {
+    internal fun hashUnit(id: IdType): IdType {
         var hashValue: IdType = 0u
         var currentId = id
         while (currentId != 0u) {
@@ -273,14 +287,18 @@ class DawgBuilder {
     }
 
     private fun hashNode(id: IdType): IdType {
+        debug("BEGIN hash_node($id)")
         var hashValue: IdType = 0u
         var currentId = id
         while (currentId != 0u) {
             val unit = nodes[currentId.toInt()].unit()
             val label = nodes[currentId.toInt()].label()
+            debug("xor(BEGIN)::: currentId=$currentId, $hashValue, $label, unit=$unit")
             hashValue = hashValue xor hash((label.toUInt() shl 24) xor unit)
+            debug("xor(END)::: $hashValue")
             currentId = nodes[currentId.toInt()].sibling()
         }
+        debug("hashNode($currentId)=$hashValue")
         return hashValue
     }
 

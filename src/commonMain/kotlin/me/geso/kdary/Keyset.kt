@@ -8,6 +8,10 @@ class Keyset<T>(
     private val lengths: Array<SizeType>?,
     private val values: Array<T>?,
 ) {
+    init {
+        assert(numKeys == keys.size.toSizeType())
+    }
+
     fun numKeys(): SizeType = numKeys
 
     fun keys(id: SizeType): UByteArray = keys[id.toInt()]
