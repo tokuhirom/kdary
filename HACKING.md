@@ -148,3 +148,26 @@ arrangeFromKeyset が失敗しているので、これをデバッグする。
 
 `DoubleArray.build()` の引数はソート済みである必要があるようだ。
 std::set がソート済みであることを利用しているので、それを考慮する。
+
+散々調べた結果、`DawgBuilder::flush` の中で、以下のようなコードがあった。
+
+```kotlin
+var (hashId, matchId) = findNode(nodeId)
+if (matchId != 0u) {
+    // snip
+} else {
+    val newMatchId = unitId + 1u
+    table[hashId.toInt()] = newMatchId
+}
+
+nodes[nodeStack.top().toInt()].setChild(matchId)
+```
+
+ここで、 matchId への代入はスコープを抜けた後で使うので、新しく変数を定義せずに以下のようにしなくてはいけなかった。
+
+```kotlin
+matchId = unitId + 1u
+table[hashId.toInt()] = matchId
+```
+
+こういう副作用があるコードの変換が chatgpt は苦手。

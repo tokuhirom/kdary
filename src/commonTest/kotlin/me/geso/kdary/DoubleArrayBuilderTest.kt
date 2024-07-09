@@ -3,6 +3,7 @@
 package me.geso.kdary
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class DoubleArrayBuilderTest {
     @Test
@@ -21,6 +22,8 @@ class DoubleArrayBuilderTest {
         buf.forEachIndexed { index, doubleArrayUnit ->
             println("index: $index, unit: $doubleArrayUnit")
         }
+        assertEquals(98304u, buf[0].unit)
+        assertEquals(98401u, buf[1].unit)
     }
 
     @Test
