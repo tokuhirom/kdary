@@ -4,6 +4,8 @@ package me.geso.kdary
 
 import kotlin.random.Random
 import kotlin.test.Test
+import kotlin.test.assertEquals
+
 // static const std::size_t NUM_VALID_KEYS = 1 << 16;
 // static const std::size_t NUM_INVALID_KEYS = 1 << 17;
 //
@@ -173,6 +175,24 @@ void test_dic(const T &dic, const std::vector<const char *> &keys,
 //            assert(result.value == values[i])
 //            assert(result.length == lengths[i])
         }
+    }
+
+    @Test
+    fun simple() {
+        /*
+  Darts::DoubleArray da;
+  da.build(1, (const char *[]){"abc"}, (std::size_t[]) {3}, (int[]) {1});
+  std::cout << "----------" << std::endl;
+
+  int v = da.exactMatchSearch<int>("abc");
+  std::cout << v << std::endl;
+         */
+        val dic = DoubleArray()
+        dic.build(1.toSizeType(), arrayOf("abc".toUByteArray() + 0.toUByte()), arrayOf(3.toSizeType()), arrayOf(1))
+        println("----------")
+        val v = dic.exactMatchSearch("abc".toUByteArray() + 0.toUByte(), 3u)
+        println(v)
+        assertEquals(1, v.value)
     }
 
     companion object {

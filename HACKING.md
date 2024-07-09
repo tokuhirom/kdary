@@ -171,3 +171,16 @@ table[hashId.toInt()] = matchId
 ```
 
 こういう副作用があるコードの変換が chatgpt は苦手。
+
+さて、次に `DoubleArrayImpl::exactMatchSearch` を検証する。
+
+```
+Index 1 out of bounds for length 1
+java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1
+	at kotlin.UByteArray.get-w2LRezQ(UByteArray.kt:29)
+	at me.geso.kdary.DoubleArrayImpl.exactMatchSearch-vxpkxVs(DoubleArrayImpl.kt:357)
+	at me.geso.kdary.DoubleArrayImpl.exactMatchSearch-vxpkxVs$default(DoubleArrayImpl.kt:305)
+	at me.geso.kdary.DoubleArrayImplTest.testDic(DoubleArrayImplTest.kt:162)
+```
+
+というような例外が発生してしまう。

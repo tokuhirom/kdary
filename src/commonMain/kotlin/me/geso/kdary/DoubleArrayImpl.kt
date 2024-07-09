@@ -304,8 +304,14 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
 //    }
     fun exactMatchSearch(
         key: UByteArray,
-        length: SizeType = 0u,
+//        length: SizeType = key.size.toSizeType(),
         nodePos: SizeType = 0u,
+    ): ResultPairType<Int> = exactMatchSearchInternal(key, nodePos)
+
+    private fun exactMatchSearchInternal(
+        key: UByteArray,
+//        length: SizeType = 0u,
+        nodePosParam: SizeType = 0u,
     ): ResultPairType<Int> {
         /*
 template <typename A, typename B, typename T, typename C>
@@ -342,34 +348,49 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
   return result;
 }
          */
-        val unit = array?.get(nodePos.toInt()) ?: return ResultPairType(-1, 0u)
+        var unit = array?.get(nodePosParam.toInt()) ?: return ResultPairType(-1, 0u)
+        var nodePos = nodePosParam
+        val length = key.size.toSizeType()
         if (length != 0uL) {
             for (i in 0uL until length) {
                 // TODO xor 動いてる?
-                var nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
-                val unit = array?.get(nodePos.toInt()) ?: return ResultPairType(-1, 0u)
+                debug("nodePos: $nodePos, unit.offset(): ${unit.offset()}, key[length]: ${key[length.toInt()]}")
+                nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
+                debug("xor result=$nodePos")
+                unit = array?.get(nodePos.toInt()) ?: return ResultPairType(-1, 0u)
+                debug("unit.label=${unit.label()}, key[length]=${key[length.toInt()]}")
                 if (unit.label() != key[i.toInt()].toUInt()) {
                     return ResultPairType(-1, 0u)
                 }
             }
         } else {
+            // kotlin 前提なら、UByteArray に size がつくので、こっちのブランチはたぶん不要。
+            error("Should not reach here")
+            /*
             var length = 0uL
             while (key[length.toInt()] != 0.toUByte()) {
                 // TODO xor 動いてる?
-                var nodePos = nodePos xor ((unit.offset() xor key[length.toInt()].toUInt()).toULong())
-                val unit = array?.get(nodePos.toInt()) ?: return ResultPairType(-1, 0u)
+                debug("nodePos: $nodePos, unit.offset(): ${unit.offset()}, key[length]: ${key[length.toInt()]}")
+                nodePos = nodePos xor ((unit.offset() xor key[length.toInt()].toUInt()).toULong())
+                debug("xor result=$nodePos")
+                unit = array?.get(nodePos.toInt()) ?: return ResultPairType(-1, 0u)
+                // printf("unit.label=%c", unit.label());
+                debug("unit.label=${unit.label()}, key[length]=${key[length.toInt()]}")
                 if (unit.label() != key[length.toInt()].toUInt()) {
+                    debug("label not match: ${unit.label()} != ${key[length.toInt()]}")
                     return ResultPairType(-1, 0u)
                 }
                 length++
             }
+             */
         }
 
+        debug("Checking leaf: ${unit.hasLeaf()}")
         if (!unit.hasLeaf()) {
             return ResultPairType(-1, 0u)
         }
-        val unit2 = array?.get(nodePos.toInt() xor unit.offset().toInt()) ?: return ResultPairType(-1, 0u)
-        return ResultPairType(unit2.value(), length)
+        unit = array?.get(nodePos.toInt() xor unit.offset().toInt()) ?: return ResultPairType(-1, 0u)
+        return ResultPairType(unit.value(), length)
     }
 
     // The 2nd exactMatchSearch() returns a result instead of updating the 2nd
