@@ -393,60 +393,6 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         return ResultPairType(unit.value(), length)
     }
 
-    // The 2nd exactMatchSearch() returns a result instead of updating the 2nd
-    // argument. So, the following exactMatchSearch() has only 3 arguments.
-//    template <class U>
-//    inline U exactMatchSearch(const key_type *key, std::size_t length = 0,
-//    std::size_t node_pos = 0) const;
-    fun <U> exactMatchSearch(
-        key: Array<KeyType>,
-        length: SizeType = 0u,
-        nodePos: SizeType = 0u,
-    ): U = exactMatchSearch(key, length, nodePos)
-
-    private fun exactMatchSearchInternal(
-        key: Array<KeyType>,
-        lengthParam: SizeType = 0u,
-        nodePosParam: SizeType = 0u,
-    ): Int {
-        var result: Int?
-        result = -1
-//        setResult(result, -1 as T, 0)
-
-        // var に入れ直す
-        var nodePos = nodePosParam
-        var length = lengthParam
-
-        var unit = array?.get(nodePos.toInt()) ?: return result
-
-        if (length != 0uL) {
-            for (i in 0uL until length) {
-                nodePos = nodePos xor (unit.offset().toInt() xor key[i.toInt()].toUByte().toInt()).toSizeType()
-                unit = array?.get(nodePos.toInt()) ?: return result
-                if (unit.label() != (key[i.toInt()].toUInt() and 0xFFU)) {
-                    return result
-                }
-            }
-        } else {
-            while (length < key.size.toSizeType() && key[length.toInt()] != 0.toByte()) {
-                nodePos = nodePos xor (unit.offset().toInt() xor key[length.toInt()].toUByte().toInt()).toSizeType()
-                unit = array?.get(nodePos.toInt()) ?: return result
-                if (unit.label() != (key[length.toInt()].toUInt() and 0xFFU)) {
-                    return result
-                }
-                length++
-            }
-        }
-
-        if (!unit.hasLeaf()) {
-            return result
-        }
-
-        unit = array?.get(nodePos.toInt() xor unit.offset().toInt()) ?: return result
-        result = unit.unit.toInt()
-        return result
-    }
-
     // commonPrefixSearch() searches for keys which match a prefix of the given
     // string. If `length' is 0, `key' is handled as a zero-terminated string.
     // The values and the lengths of at most `max_num_results' matched keys are
