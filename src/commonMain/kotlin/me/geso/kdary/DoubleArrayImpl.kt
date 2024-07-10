@@ -236,12 +236,7 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
                 }
             }
 
-            val buf: Array<DoubleArrayUnit> =
-                try {
-                    Array(numUnits.toInt()) { DoubleArrayUnit() }
-                } catch (e: OutOfMemoryError) {
-                    throw DartsException("failed to open double-array: std::bad_alloc")
-                }
+            val buf: Array<DoubleArrayUnit> = Array(numUnits.toInt()) { DoubleArrayUnit() }
 
             for (i in units.indices) {
                 buf[i] = units[i]
