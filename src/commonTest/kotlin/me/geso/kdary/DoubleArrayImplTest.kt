@@ -16,17 +16,14 @@ import kotlin.test.assertEquals
 // generate_invalid_keys(NUM_INVALID_KEYS, valid_keys, &invalid_keys);
 
 class DoubleArrayImplTest {
-    private val validKeys = mutableSetOf<UByteArray>()
-    private val invalidKeys = mutableSetOf<UByteArray>()
+    private val random = Random(seed = 0)
+    private val validKeys = generateValidKeys(NUM_VALID_KEYS, random)
+    private val invalidKeys = generateInvalidKeys(NUM_INVALID_KEYS, validKeys, random)
     private val keys: MutableList<UByteArray> = mutableListOf()
     private val lengths: MutableList<SizeType> = mutableListOf()
     private val values: MutableList<ValueType> = mutableListOf()
 
     init {
-        val random = Random(0)
-        generateValidKeys(NUM_VALID_KEYS, validKeys, random)
-        generateInvalidKeys(NUM_INVALID_KEYS, validKeys, invalidKeys, random)
-
         /*
   std::size_t key_id = 0;
   for (std::set<std::string>::const_iterator it = valid_keys.begin();
@@ -41,13 +38,18 @@ class DoubleArrayImplTest {
             lengths.add(key.size.toSizeType())
             values.add(keyId)
         }
+        keys.forEachIndexed { index, key ->
+            if (index <= 3 || index >= NUM_VALID_KEYS - 3) {
+                println("index: $index, key: ${String(keys[index].toByteArray())}, length: ${lengths[index]}, value: ${values[index]}")
+            }
+        }
+        assertEquals(0, values[0])
     }
 
     private fun generateValidKeys(
         numKeys: Int,
-        validKeys: MutableSet<UByteArray>,
         random: Random,
-    ) {
+    ): Set<UByteArray> {
         /*
 void generate_valid_keys(std::size_t num_keys,
     std::set<std::string> *valid_keys) {
@@ -60,13 +62,15 @@ void generate_valid_keys(std::size_t num_keys,
     valid_keys->insert(std::string(&key[0], key.size()));
   }
          */
-        while (validKeys.size < numKeys) {
+        val keys = mutableSetOf<String>()
+        while (keys.size < numKeys) {
             val key = UByteArray(1 + (0..7).random())
             for (i in key.indices) {
                 key[i] = ('A'.code + (0..25).random(random)).toUByte()
             }
-            validKeys.add(key)
+            keys.add(key.toByteArray().toString())
         }
+        return keys.map { it.toUByteArray() }.toSet()
     }
 
     /*
@@ -87,20 +91,20 @@ void generate_invalid_keys(std::size_t num_keys,
      */
     private fun generateInvalidKeys(
         numInvalidKeys: Int,
-        validKeys: MutableSet<UByteArray>,
-        invalidKeys: MutableSet<UByteArray>,
+        validKeys: Set<UByteArray>,
         random: Random,
-    ) {
-        while (invalidKeys.size < numInvalidKeys) {
+    ): Set<UByteArray> {
+        val keys = mutableSetOf<String>()
+        while (keys.size < numInvalidKeys) {
             val key = UByteArray(1 + (0..7).random(random))
             for (i in key.indices) {
                 key[i] = ('A'.code + (0..25).random(random)).toUByte()
             }
-            val generatedKey = key.toByteArray().toUByteArray()
-            if (!validKeys.contains(generatedKey)) {
-                invalidKeys.add(key)
+            if (!validKeys.contains(key)) {
+                keys.add(key.toByteArray().toString())
             }
         }
+        return keys.map { it.toUByteArray() }.toSet()
     }
 
     @Test
@@ -110,58 +114,57 @@ void generate_invalid_keys(std::size_t num_keys,
         testDic(dic, keys, lengths, values, invalidKeys)
     }
 
-    /*
-template <typename T>
-void test_dic(const T &dic, const std::vector<const char *> &keys,
-    const std::vector<std::size_t> &lengths,
-    const std::vector<typename T::value_type> &values,
-    const std::set<std::string> &invalid_keys) {
-  typename T::value_type value;
-  typename T::result_pair_type result;
-
-  for (std::size_t i = 0; i < keys.size(); ++i) {
-    dic.exactMatchSearch(keys[i], value);
-    assert(value == values[i]);
-
-    dic.exactMatchSearch(keys[i], result);
-    assert(result.value == values[i]);
-    assert(result.length == lengths[i]);
-
-    dic.exactMatchSearch(keys[i], value, lengths[i]);
-    assert(value == values[i]);
-
-    dic.exactMatchSearch(keys[i], result, lengths[i]);
-    assert(result.value == values[i]);
-    assert(result.length == lengths[i]);
-  }
-
-  for (std::set<std::string>::const_iterator it = invalid_keys.begin();
-      it != invalid_keys.end(); ++it) {
-    dic.exactMatchSearch(it->c_str(), value);
-    assert(value == -1);
-
-    dic.exactMatchSearch(it->c_str(), result);
-    assert(result.value == -1);
-
-    dic.exactMatchSearch(it->c_str(), value, it->length());
-    assert(value == -1);
-
-    dic.exactMatchSearch(it->c_str(), result, it->length());
-    assert(result.value == -1);
-  }
-
-  std::cerr << "ok" << std::endl;
-}
-     */
+    // template <typename T>
+    // void test_dic(const T &dic, const std::vector<const char *> &keys,
+    // const std::vector<std::size_t> &lengths,
+    // const std::vector<typename T::value_type> &values,
+    // const std::set<std::string> &invalid_keys) {
+    // typename T::value_type value;
+    // typename T::result_pair_type result;
+    //
+    // for (std::size_t i = 0; i < keys.size(); ++i) {
+    // dic.exactMatchSearch(keys[i], value);
+    // assert(value == values[i]);
+    //
+    // dic.exactMatchSearch(keys[i], result);
+    // assert(result.value == values[i]);
+    // assert(result.length == lengths[i]);
+    //
+    // dic.exactMatchSearch(keys[i], value, lengths[i]);
+    // assert(value == values[i]);
+    //
+    // dic.exactMatchSearch(keys[i], result, lengths[i]);
+    // assert(result.value == values[i]);
+    // assert(result.length == lengths[i]);
+    // }
+    //
+    // for (std::set<std::string>::const_iterator it = invalid_keys.begin();
+    // it != invalid_keys.end(); ++it) {
+    // dic.exactMatchSearch(it->c_str(), value);
+    // assert(value == -1);
+    //
+    // dic.exactMatchSearch(it->c_str(), result);
+    // assert(result.value == -1);
+    //
+    // dic.exactMatchSearch(it->c_str(), value, it->length());
+    // assert(value == -1);
+    //
+    // dic.exactMatchSearch(it->c_str(), result, it->length());
+    // assert(result.value == -1);
+    // }
+    //
+    // std::cerr << "ok" << std::endl;
+    // }
     private fun testDic(
         dic: DoubleArray,
         keys: MutableList<UByteArray>,
         lengths: MutableList<SizeType>,
         values: MutableList<ValueType>,
-        invalidKeys: MutableSet<UByteArray>,
+        invalidKeys: Set<UByteArray>,
     ) {
         for (i in keys.indices) {
             val result = dic.exactMatchSearch(keys[i])
+            debug("result=$result expected=${values[i]}")
             assert(result.value == values[i])
 
 //            dic.exactMatchSearch(keys[i], result)
@@ -188,11 +191,29 @@ void test_dic(const T &dic, const std::vector<const char *> &keys,
   std::cout << v << std::endl;
          */
         val dic = DoubleArray()
-        dic.build(1.toSizeType(), arrayOf("abc".toUByteArray()), arrayOf(3.toSizeType()), arrayOf(1))
+        dic.build(1.toSizeType(), arrayOf("abc".toUByteArray()), arrayOf(3.toSizeType()), arrayOf(4))
         println("----------")
         val v = dic.exactMatchSearch("abc".toUByteArray())
         println(v)
-        assertEquals(1, v.value)
+        assertEquals(4, v.value)
+    }
+
+    @Test
+    fun testHashCode() {
+        val setByteArray =
+            setOf(
+                "a".toByteArray(),
+                "a".toByteArray(),
+                "b".toByteArray(),
+            )
+        println(setByteArray)
+        val setUByteArray =
+            setOf(
+                "a".toUByteArray(),
+                "a".toUByteArray(),
+                "b".toUByteArray(),
+            )
+        println(setUByteArray)
     }
 
     companion object {

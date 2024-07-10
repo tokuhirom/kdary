@@ -354,7 +354,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         debug("length=$length")
         if (length != 0uL) {
             for (i in 0uL until length) {
-                println("i=$i, length=$length")
+                debug("i=$i, length=$length")
                 // TODO xor 動いてる?
                 debug("nodePos: $nodePos, unit.offset(): ${unit.offset()}")
                 nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
