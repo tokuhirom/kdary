@@ -219,3 +219,6 @@ $5 ==> 3
 ```
 
 `build() with keys, lengths and random values` を実装してみたが例外が発生して落ちる。謎。
+TODO として後回しにする。
+
+testTraverse を先にやって、後で、testCommonPrefixSearch をやることにしよう。

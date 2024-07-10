@@ -491,14 +491,14 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
 //    inline value_type traverse(const key_type *key, std::size_t &node_pos,
 //    std::size_t &key_pos, std::size_t length = 0) const;
     fun traverse(
-        key: Array<KeyType>,
+        key: UByteArray,
         nodePos: SizeType,
         keyPos: SizeType,
         length: SizeType = 0u,
     ): TraverseResult = traverseInternal(key, nodePos, keyPos, length)
 
     private fun traverseInternal(
-        key: Array<KeyType>,
+        key: UByteArray,
         nodePosParam: SizeType,
         keyPosParam: SizeType,
         length: SizeType = 0u,

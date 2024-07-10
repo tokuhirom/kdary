@@ -243,6 +243,62 @@ std::cerr << "ok" << std::endl;
     }
 
     @Test
+    fun testTraverse() {
+/*
+template <typename T>
+void test_traverse(const T &dic,
+    const std::vector<const char *> &keys,
+    const std::vector<std::size_t> &lengths,
+    const std::vector<typename T::value_type> &values,
+    const std::set<std::string> &invalid_keys) {
+  for (std::size_t i = 0; i < keys.size(); ++i) {
+    const char *key = keys[i];
+    std::size_t id = 0;
+    std::size_t key_pos = 0;
+    typename T::value_type result = 0;
+    for (std::size_t j = 0; j < lengths[i]; ++j) {
+      result = dic.traverse(key, id, key_pos, j + 1);
+      assert(result != -2);
+    }
+    assert(result == values[i]);
+  }
+
+  for (std::set<std::string>::const_iterator it = invalid_keys.begin();
+      it != invalid_keys.end(); ++it) {
+    const char *key = it->c_str();
+    std::size_t id = 0;
+    std::size_t key_pos = 0;
+    typename T::value_type result = 0;
+    for (std::size_t i = 0; i < it->length(); ++i) {
+      result = dic.traverse(key, id, key_pos, i + 1);
+      if (result == -2) {
+        break;
+      }
+    }
+    assert(result < 0);
+  }
+
+  std::cerr << "ok" << std::endl;
+}
+ */
+        val dic = DoubleArray()
+        dic.build(keys.size.toSizeType(), keys.toTypedArray(), lengths.toTypedArray(), values.toTypedArray())
+
+        for (i in keys.indices) {
+            val key = keys[i]
+            var id = 0.toSizeType()
+            var keyPos = 0.toSizeType()
+            var result = 0
+            for (j in 0uL until lengths[i]) {
+                val r = dic.traverse(key, id, keyPos, j + 1u)
+                assert(r.status != -2)
+                result = r.status
+            }
+            assert(result == values[i])
+        }
+    }
+
+    @Test
     fun simple() {
         /*
   Darts::DoubleArray da;
