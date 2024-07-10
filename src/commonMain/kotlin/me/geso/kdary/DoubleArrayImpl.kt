@@ -499,7 +499,4 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         val nodePos: SizeType? = null,
         val keyPos: SizeType? = null,
     )
-
-    // TODO: `as T` が多すぎる。 kotlin ならば、もう少しうまくやれるんじゃないか?
-    // 例外を投げた方が良いかもしれない。
 }
