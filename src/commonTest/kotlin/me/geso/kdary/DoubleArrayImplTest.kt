@@ -169,6 +169,16 @@ void generate_invalid_keys(std::size_t num_keys,
         testDic(dic, keys, lengths, newValues, invalidKeys)
     }
 
+    @Test
+    fun `save() and open()`() {
+        val dic = DoubleArray()
+        dic.build(keys.size.toSizeType(), keys.toTypedArray(), lengths.toTypedArray(), values.toTypedArray())
+        assert(dic.save("test-darts.dic", 0uL) == 0)
+
+        val dicCopy = DoubleArray()
+        assert(dicCopy.open("test-darts.dic", 0uL) == 0)
+    }
+
     /*
 template <typename T>
 void test_dic(const T &dic, const std::vector<const char *> &keys,
