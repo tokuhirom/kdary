@@ -351,14 +351,16 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         var unit = array?.get(nodePosParam.toInt()) ?: return ResultPairType(-1, 0u)
         var nodePos = nodePosParam
         val length = key.size.toSizeType()
+        debug("length=$length")
         if (length != 0uL) {
             for (i in 0uL until length) {
+                println("i=$i, length=$length")
                 // TODO xor 動いてる?
-                debug("nodePos: $nodePos, unit.offset(): ${unit.offset()}, key[length]: ${key[length.toInt()]}")
+                debug("nodePos: $nodePos, unit.offset(): ${unit.offset()}")
                 nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
                 debug("xor result=$nodePos")
                 unit = array?.get(nodePos.toInt()) ?: return ResultPairType(-1, 0u)
-                debug("unit.label=${unit.label()}, key[length]=${key[length.toInt()]}")
+                debug("unit.label=${unit.label()}")
                 if (unit.label() != key[i.toInt()].toUInt()) {
                     return ResultPairType(-1, 0u)
                 }

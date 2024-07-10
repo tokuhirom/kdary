@@ -188,9 +188,9 @@ void test_dic(const T &dic, const std::vector<const char *> &keys,
   std::cout << v << std::endl;
          */
         val dic = DoubleArray()
-        dic.build(1.toSizeType(), arrayOf("abc".toUByteArray() + 0.toUByte()), arrayOf(3.toSizeType()), arrayOf(1))
+        dic.build(1.toSizeType(), arrayOf("abc".toUByteArray()), arrayOf(3.toSizeType()), arrayOf(1))
         println("----------")
-        val v = dic.exactMatchSearch("abc".toUByteArray() + 0.toUByte(), 3u)
+        val v = dic.exactMatchSearch("abc".toUByteArray())
         println(v)
         assertEquals(1, v.value)
     }
