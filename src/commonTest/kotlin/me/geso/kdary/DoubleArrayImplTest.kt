@@ -23,9 +23,10 @@ class DoubleArrayImplTest {
     private val random = Random(seed = 0)
     private val validKeys = generateValidKeys(NUM_VALID_KEYS, random)
     private val invalidKeys = generateInvalidKeys(NUM_INVALID_KEYS, validKeys, random)
-    private val keys: MutableList<UByteArray> = mutableListOf()
-    private val lengths: MutableList<SizeType> = mutableListOf()
-    private val values: MutableList<ValueType> = mutableListOf()
+    private val testData = buildData()
+    private val keys: List<UByteArray> = testData.keys
+    private val lengths: List<SizeType> = testData.lengths
+    private val values: List<ValueType> = testData.values
 
     init {
         /*
@@ -37,6 +38,13 @@ class DoubleArrayImplTest {
     values[key_id] = static_cast<typename T::value_type>(key_id);
   }
          */
+    }
+
+    private fun buildData(): TestData {
+        val keys: MutableList<UByteArray> = mutableListOf()
+        val lengths: MutableList<SizeType> = mutableListOf()
+        val values: MutableList<ValueType> = mutableListOf()
+
         for ((keyId, key) in validKeys.sortedBy { String(it.toByteArray()) }.withIndex()) {
             keys.add(key)
             lengths.add(key.size.toSizeType())
@@ -54,7 +62,14 @@ class DoubleArrayImplTest {
         val invalidKeyStrings = invalidKeys.map { String(it.toByteArray()) }.toSet()
         val intersection = validKeyStrings.intersect(invalidKeyStrings)
         assertEquals(0, intersection.size)
+        return TestData(keys, lengths, values)
     }
+
+    data class TestData(
+        val keys: List<UByteArray>,
+        val lengths: List<SizeType>,
+        val values: List<ValueType>,
+    )
 
     private fun generateValidKeys(
         numKeys: Int,
@@ -199,8 +214,8 @@ std::cerr << "ok" << std::endl;
 */
     private fun testDic(
         dic: DoubleArray,
-        keys: MutableList<UByteArray>,
-        lengths: MutableList<SizeType>,
+        keys: List<UByteArray>,
+        lengths: List<SizeType>,
         values: List<ValueType>,
         invalidKeys: Set<UByteArray>,
     ) {
