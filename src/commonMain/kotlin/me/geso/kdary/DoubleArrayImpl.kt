@@ -214,6 +214,7 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
                 return -1
             }
 
+            // TODO remove offset.
             source.skip(offset.toLong())
 
             val units = Array(256) { DoubleArrayUnit() }
@@ -248,11 +249,8 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
 
             if (numUnits > 256u) {
                 // 残りのユニットを読み込む
-                for (i in 256 until numUnits.toInt()) {
-                    buf[i] =
-                        DoubleArrayUnit().apply {
-                            // 必要に応じて各フィールドを読み込む
-                        }
+                for (i in 256uL until numUnits) {
+                    buf[i.toInt()] = DoubleArrayUnit(readUIntLe(source))
                 }
             }
 
@@ -282,7 +280,7 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
         val file = File(fileName)
         file.sink().buffer().use { sink ->
             sink.write(ByteArray(offset.toInt())) // オフセット分の空バイトを書き込み
-            array?.forEach { unit ->
+            array!!.forEach { unit ->
                 writeUIntLe(sink, unit.unit)
             }
         }

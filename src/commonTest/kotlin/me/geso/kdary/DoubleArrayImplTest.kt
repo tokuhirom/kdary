@@ -177,6 +177,12 @@ void generate_invalid_keys(std::size_t num_keys,
 
         val dicCopy = DoubleArray()
         assert(dicCopy.open("test-darts.dic", 0uL) == 0)
+        assertEquals(dic.array()?.size, dicCopy.array()?.size)
+        println(dic.array()?.size)
+        dic.array()?.forEachIndexed { index, doubleArrayUnit ->
+            assertEquals(dicCopy.array()?.get(index), doubleArrayUnit, "index=$index")
+        }
+        testDic(dicCopy, keys, lengths, values, invalidKeys)
     }
 
     /*
