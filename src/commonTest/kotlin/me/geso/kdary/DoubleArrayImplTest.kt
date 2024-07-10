@@ -48,6 +48,12 @@ class DoubleArrayImplTest {
             }
         }
         assertEquals(0, values[0])
+
+        // validKeys と invalidKeys の重複を確認する。
+        val validKeyStrings = validKeys.map { String(it.toByteArray()) }.toSet()
+        val invalidKeyStrings = invalidKeys.map { String(it.toByteArray()) }.toSet()
+        val intersection = validKeyStrings.intersect(invalidKeyStrings)
+        assertEquals(0, intersection.size)
     }
 
     private fun generateValidKeys(
@@ -72,7 +78,7 @@ void generate_valid_keys(std::size_t num_keys,
             for (i in key.indices) {
                 key[i] = ('A'.code + (0..25).random(random)).toUByte()
             }
-            keys.add(key.toByteArray().toString())
+            keys.add(String(key.toByteArray()))
         }
         return keys.map { it.toUByteArray() }.toSet()
     }
@@ -99,13 +105,14 @@ void generate_invalid_keys(std::size_t num_keys,
         random: Random,
     ): Set<UByteArray> {
         val keys = mutableSetOf<String>()
+        val validKeyStrings = validKeys.map { String(it.toByteArray()) }.toSet()
         while (keys.size < numInvalidKeys) {
             val key = UByteArray(1 + (0..7).random(random))
             for (i in key.indices) {
                 key[i] = ('A'.code + (0..25).random(random)).toUByte()
             }
-            if (!validKeys.contains(key)) {
-                keys.add(key.toByteArray().toString())
+            if (!validKeyStrings.contains(String(key.toByteArray()))) {
+                keys.add(String(key.toByteArray()))
             }
         }
         return keys.map { it.toUByteArray() }.toSet()
@@ -168,19 +175,14 @@ void generate_invalid_keys(std::size_t num_keys,
     ) {
         for (i in keys.indices) {
             val result = dic.exactMatchSearch(keys[i])
-            debug("result=$result expected=${values[i]}")
+//            debug("result=$result expected=${values[i]}")
             assert(result.value == values[i])
+        }
 
-//            dic.exactMatchSearch(keys[i], result)
-//            assert(result.value == values[i])
-//            assert(result.length == lengths[i])
-//
-//            dic.exactMatchSearch(keys[i], value, lengths[i])
-//            assert(value == values[i])
-//
-//            dic.exactMatchSearch(keys[i], result, lengths[i])
-//            assert(result.value == values[i])
-//            assert(result.length == lengths[i])
+        invalidKeys.forEach { invalidKey ->
+            val result = dic.exactMatchSearch(invalidKey)
+//            debug("result=$result invalidKey=$invalidKey")
+            assert(result.value == -1)
         }
     }
 
