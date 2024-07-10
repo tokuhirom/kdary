@@ -2,6 +2,7 @@
 
 package me.geso.kdary
 
+import okio.IOException
 import okio.buffer
 import okio.sink
 import okio.source
@@ -176,46 +177,26 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
         return 0
     }
 
-    // open() reads an array of units from the specified file. And if it goes
-    // well, the old array will be freed and replaced with the new array read
-    // from the file. `offset' specifies the number of bytes to be skipped before
-    // reading an array. `size' specifies the number of bytes to be read from the
-    // file. If the `size' is 0, the whole file will be read.
-    // open() returns 0 iff the operation succeeds. Otherwise, it returns a
-    // non-zero value or throws a <Darts::Exception>. The exception is thrown
-    // when and only when a memory allocation fails.
-//    int open(const char *file_name, const char *mode = "rb",
-//    std::size_t offset = 0, std::size_t size = 0);
-    fun open(
-        fileName: String,
-        // mode オプションは okio においては不要。
-//        mode: String = "rb",
-        offset: SizeType = 0u,
-        size: SizeType = 0u,
-    ): Int {
-        // open() は指定されたファイルからユニットの配列を読み込みます。問題がなければ、古い配列は解放され、
-        // ファイルから読み取られた新しい配列に置き換えられます。`offset` は配列を読み取る前にスキップするバイト数を指定します。
-        // `size` はファイルから読み取るバイト数を指定します。`size` が0の場合、ファイル全体が読み取られます。
-
+    /**
+     * Read an array of units from the specified file.
+     *
+     * @param fileName The file name to read.
+     * @throws IOException If the file is not found or invalid.
+     */
+    fun open(fileName: String) {
         val file = File(fileName)
         if (!file.exists()) {
-            return -1
+            throw IOException("File not found: $fileName")
         }
 
         file.source().buffer().use { source ->
-            var actualSize = size
-            if (actualSize == 0uL) {
-                actualSize = file.length().toULong() - offset
-            }
+            val actualSize = file.length().toULong()
 
             val unitSize = unitSize()
             val numUnits = actualSize / unitSize
             if (numUnits < 256uL || numUnits % 256u != 0uL) {
-                return -1
+                throw IOException("numUnits must be 256 or multiple of 256: $numUnits")
             }
-
-            // TODO remove offset.
-            source.skip(offset.toLong())
 
             val units = Array(256) { DoubleArrayUnit() }
             for (i in units.indices) {
@@ -227,12 +208,12 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
                 units[0].offset() == 0u ||
                 units[0].offset() >= 512u
             ) {
-                return -1
+                throw IOException("Invalid file format")
             }
 
             for (i in 1 until 256) {
                 if (units[i].label() <= 0xFF.toUInt() && units[i].offset() >= numUnits.toUInt()) {
-                    return -1
+                    throw IOException("Invalid file format(bad unit)")
                 }
             }
 
@@ -242,6 +223,7 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
                 buf[i] = units[i]
             }
 
+            // TODO: optimize here.
             if (numUnits > 256u) {
                 // 残りのユニットを読み込む
                 for (i in 256uL until numUnits) {
@@ -253,8 +235,6 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
             this.array = buf
             this.buf = buf
         }
-
-        return 0
     }
 
     // save() writes the array of units into the specified file. `offset'
