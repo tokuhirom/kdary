@@ -2,6 +2,10 @@
 
 package me.geso.kdary
 
+private fun debug(message: String) {
+//    println("[D] $message")
+}
+
 class DawgBuilder {
     internal val nodes = AutoPool<DawgNode>()
     internal val units = AutoPool<DawgUnit>()

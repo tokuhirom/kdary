@@ -7,6 +7,10 @@ import okio.sink
 import okio.source
 import java.io.File
 
+private fun debug(message: String) {
+//    println("[D] $message")
+}
+
 private fun readUIntLe(source: okio.BufferedSource): UInt {
     val byte1 = source.readByte().toUInt() and 0xFFU
     val byte2 = source.readByte().toUInt() and 0xFFU

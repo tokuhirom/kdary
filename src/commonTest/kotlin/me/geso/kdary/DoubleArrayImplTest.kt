@@ -15,6 +15,10 @@ import kotlin.test.assertEquals
 // std::set<std::string> invalid_keys;
 // generate_invalid_keys(NUM_INVALID_KEYS, valid_keys, &invalid_keys);
 
+private fun debug(message: String) {
+    println("[D] $message")
+}
+
 class DoubleArrayImplTest {
     private val random = Random(seed = 0)
     private val validKeys = generateValidKeys(NUM_VALID_KEYS, random)

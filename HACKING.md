@@ -184,3 +184,36 @@ java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1
 ```
 
 というような例外が発生してしまう。
+
+## 2024-07-10
+
+Set に ByteArray を入れたときに、ユニークなオブジェクトと見なされない問題にはまる。
+
+```kotlin
+val setByteArray =
+    setOf(
+        "a".toByteArray(),
+        "a".toByteArray(),
+        "b".toByteArray(),
+    )
+println(setByteArray)
+```
+
+このような場合、3要素になってしまう。Java がそうなのでそうなんだけど、、Java を意識してないと死ぬ。
+
+```
+jshell> var s = new HashSet<byte[]>();
+s ==> []
+
+jshell> s.add(new byte[] {99});
+$2 ==> true
+
+jshell> s.add(new byte[] {99});
+$3 ==> true
+
+jshell> s.add(new byte[] {93});
+$4 ==> true
+
+jshell> s.size()
+$5 ==> 3
+```
