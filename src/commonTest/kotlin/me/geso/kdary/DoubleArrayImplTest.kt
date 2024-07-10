@@ -125,52 +125,83 @@ void generate_invalid_keys(std::size_t num_keys,
         testDic(dic, keys, lengths, values, invalidKeys)
     }
 
-    // template <typename T>
-    // void test_dic(const T &dic, const std::vector<const char *> &keys,
-    // const std::vector<std::size_t> &lengths,
-    // const std::vector<typename T::value_type> &values,
-    // const std::set<std::string> &invalid_keys) {
-    // typename T::value_type value;
-    // typename T::result_pair_type result;
-    //
-    // for (std::size_t i = 0; i < keys.size(); ++i) {
-    // dic.exactMatchSearch(keys[i], value);
-    // assert(value == values[i]);
-    //
-    // dic.exactMatchSearch(keys[i], result);
-    // assert(result.value == values[i]);
-    // assert(result.length == lengths[i]);
-    //
-    // dic.exactMatchSearch(keys[i], value, lengths[i]);
-    // assert(value == values[i]);
-    //
-    // dic.exactMatchSearch(keys[i], result, lengths[i]);
-    // assert(result.value == values[i]);
-    // assert(result.length == lengths[i]);
-    // }
-    //
-    // for (std::set<std::string>::const_iterator it = invalid_keys.begin();
-    // it != invalid_keys.end(); ++it) {
-    // dic.exactMatchSearch(it->c_str(), value);
-    // assert(value == -1);
-    //
-    // dic.exactMatchSearch(it->c_str(), result);
-    // assert(result.value == -1);
-    //
-    // dic.exactMatchSearch(it->c_str(), value, it->length());
-    // assert(value == -1);
-    //
-    // dic.exactMatchSearch(it->c_str(), result, it->length());
-    // assert(result.value == -1);
-    // }
-    //
-    // std::cerr << "ok" << std::endl;
-    // }
+    @Test
+    fun `build() with keys, lengths`() {
+        val dic = DoubleArray()
+        dic.build(keys.size.toSizeType(), keys.toTypedArray(), lengths.toTypedArray())
+        testDic(dic, keys, lengths, values, invalidKeys)
+    }
+
+    @Test
+    fun `build() with keys, lengths, values`() {
+        val dic = DoubleArray()
+        dic.build(keys.size.toSizeType(), keys.toTypedArray(), lengths.toTypedArray(), values.toTypedArray())
+        testDic(dic, keys, lengths, values, invalidKeys)
+    }
+
+    // FAILING...
+    @Test
+    fun `build() with keys, lengths and random values`() {
+        /*
+  for (std::size_t i = 0; i < values.size(); ++i) {
+    values[i] = std::rand() % 10;
+  }
+         */
+        val newValues = values.map { (0..9).random(random) }
+
+        val dic = DoubleArray()
+        dic.build(keys.size.toSizeType(), keys.toTypedArray(), lengths.toTypedArray(), newValues.toTypedArray())
+        testDic(dic, keys, lengths, newValues, invalidKeys)
+    }
+
+    /*
+template <typename T>
+void test_dic(const T &dic, const std::vector<const char *> &keys,
+const std::vector<std::size_t> &lengths,
+const std::vector<typename T::value_type> &values,
+const std::set<std::string> &invalid_keys) {
+typename T::value_type value;
+typename T::result_pair_type result;
+
+for (std::size_t i = 0; i < keys.size(); ++i) {
+dic.exactMatchSearch(keys[i], value);
+assert(value == values[i]);
+
+dic.exactMatchSearch(keys[i], result);
+assert(result.value == values[i]);
+assert(result.length == lengths[i]);
+
+dic.exactMatchSearch(keys[i], value, lengths[i]);
+assert(value == values[i]);
+
+dic.exactMatchSearch(keys[i], result, lengths[i]);
+assert(result.value == values[i]);
+assert(result.length == lengths[i]);
+}
+
+for (std::set<std::string>::const_iterator it = invalid_keys.begin();
+it != invalid_keys.end(); ++it) {
+dic.exactMatchSearch(it->c_str(), value);
+assert(value == -1);
+
+dic.exactMatchSearch(it->c_str(), result);
+assert(result.value == -1);
+
+dic.exactMatchSearch(it->c_str(), value, it->length());
+assert(value == -1);
+
+dic.exactMatchSearch(it->c_str(), result, it->length());
+assert(result.value == -1);
+}
+
+std::cerr << "ok" << std::endl;
+}
+*/
     private fun testDic(
         dic: DoubleArray,
         keys: MutableList<UByteArray>,
         lengths: MutableList<SizeType>,
-        values: MutableList<ValueType>,
+        values: List<ValueType>,
         invalidKeys: Set<UByteArray>,
     ) {
         for (i in keys.indices) {

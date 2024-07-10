@@ -217,3 +217,5 @@ $4 ==> true
 jshell> s.size()
 $5 ==> 3
 ```
+
+`build() with keys, lengths and random values` を実装してみたが例外が発生して落ちる。謎。
