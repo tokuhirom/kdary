@@ -204,24 +204,6 @@ void generate_invalid_keys(std::size_t num_keys,
         assertEquals(4, v.value)
     }
 
-    @Test
-    fun testHashCode() {
-        val setByteArray =
-            setOf(
-                "a".toByteArray(),
-                "a".toByteArray(),
-                "b".toByteArray(),
-            )
-        println(setByteArray)
-        val setUByteArray =
-            setOf(
-                "a".toUByteArray(),
-                "a".toUByteArray(),
-                "b".toUByteArray(),
-            )
-        println(setUByteArray)
-    }
-
     companion object {
         const val NUM_VALID_KEYS = 1 shl 16
         const val NUM_INVALID_KEYS = 1 shl 17
