@@ -222,3 +222,6 @@ $5 ==> 3
 TODO として後回しにする。
 
 testTraverse を先にやって、後で、testCommonPrefixSearch をやることにしよう。
+
+`UByteArray` は長さを持ってるので、`exactMatchSearch` で length パラメータを持つ必要がないので消す。
+`length` が 0 を指定していると null 終端文字列として扱うのが darts-clone の仕様だけどこの部分は使わないようにする。

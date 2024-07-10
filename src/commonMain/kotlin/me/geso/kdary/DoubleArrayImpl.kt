@@ -306,15 +306,16 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
 //    std::size_t length = 0, std::size_t node_pos = 0) const {
 //        result = exactMatchSearch<U>(key, length, node_pos);
 //    }
+    // darts-clone と違って、length パラメータを消す。
+    // length パラメータは、key の長さを指定するもので、0 の場合は key が null 終端文字列として扱われる。
+    // しかし、kotlin では ByteArray が長さを持つので、length が必要ない。
     fun exactMatchSearch(
         key: UByteArray,
-//        length: SizeType = key.size.toSizeType(),
         nodePos: SizeType = 0u,
     ): ResultPairType<Int> = exactMatchSearchInternal(key, nodePos)
 
     private fun exactMatchSearchInternal(
         key: UByteArray,
-//        length: SizeType = 0u,
         nodePosParam: SizeType = 0u,
     ): ResultPairType<Int> {
         /*
@@ -356,39 +357,17 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         var nodePos = nodePosParam
         val length = key.size.toSizeType()
         debug("length=$length")
-        if (length != 0uL) {
-            for (i in 0uL until length) {
-                debug("i=$i, length=$length")
-                // TODO xor 動いてる?
-                debug("nodePos: $nodePos, unit.offset(): ${unit.offset()}")
-                nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
-                debug("xor result=$nodePos")
-                unit = array?.get(nodePos.toInt()) ?: return ResultPairType(-1, 0u)
-                debug("unit.label=${unit.label()}")
-                if (unit.label() != key[i.toInt()].toUInt()) {
-                    return ResultPairType(-1, 0u)
-                }
+        for (i in 0uL until length) {
+            debug("i=$i, length=$length")
+            // TODO xor 動いてる?
+            debug("nodePos: $nodePos, unit.offset(): ${unit.offset()}")
+            nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
+            debug("xor result=$nodePos")
+            unit = array?.get(nodePos.toInt()) ?: return ResultPairType(-1, 0u)
+            debug("unit.label=${unit.label()}")
+            if (unit.label() != key[i.toInt()].toUInt()) {
+                return ResultPairType(-1, 0u)
             }
-        } else {
-            // kotlin 前提なら、UByteArray に size がつくので、こっちのブランチはたぶん不要。
-            error("Should not reach here")
-            /*
-            var length = 0uL
-            while (key[length.toInt()] != 0.toUByte()) {
-                // TODO xor 動いてる?
-                debug("nodePos: $nodePos, unit.offset(): ${unit.offset()}, key[length]: ${key[length.toInt()]}")
-                nodePos = nodePos xor ((unit.offset() xor key[length.toInt()].toUInt()).toULong())
-                debug("xor result=$nodePos")
-                unit = array?.get(nodePos.toInt()) ?: return ResultPairType(-1, 0u)
-                // printf("unit.label=%c", unit.label());
-                debug("unit.label=${unit.label()}, key[length]=${key[length.toInt()]}")
-                if (unit.label() != key[length.toInt()].toUInt()) {
-                    debug("label not match: ${unit.label()} != ${key[length.toInt()]}")
-                    return ResultPairType(-1, 0u)
-                }
-                length++
-            }
-             */
         }
 
         debug("Checking leaf: ${unit.hasLeaf()}")
