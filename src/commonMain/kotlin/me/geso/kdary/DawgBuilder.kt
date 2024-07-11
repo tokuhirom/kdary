@@ -144,7 +144,6 @@ class DawgBuilder {
     private fun flush(id: IdType) {
         debug("BEGIN flush($id)")
         while (nodeStack.top() != id) {
-            debug("nodes[3].unit=${nodes[3].unit()}")
             val nodeId = nodeStack.top()
             nodeStack.pop()
 

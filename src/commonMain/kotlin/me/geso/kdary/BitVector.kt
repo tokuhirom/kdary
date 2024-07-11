@@ -2,8 +2,8 @@ package me.geso.kdary
 
 // Succinct bit vector.
 class BitVector {
-    private val units: AutoPool<IdType> = AutoPool()
-    private var ranks: AutoArray<IdType> = AutoArray()
+    internal val units: AutoPool<IdType> = AutoPool()
+    internal var ranks: AutoArray<IdType> = AutoArray()
     private var numOnes: SizeType = 0u
     private var size: SizeType = 0u
 
@@ -12,10 +12,11 @@ class BitVector {
 
     // 指定したインデックスまでの 1 の数を返す
     fun rank(id: SizeType): IdType {
-        val unitId = (id / UNIT_SIZE).toInt()
-        val offset = (id % UNIT_SIZE).toInt()
-        val mask = (1u shl offset) - 1u
-        return ranks[unitId] + popCount(units[unitId] and mask)
+        val unitId = id / UNIT_SIZE
+        val offset: SizeType = UNIT_SIZE - (id % UNIT_SIZE) - 1u
+        val mask: UInt = 0U.inv() shr offset.toInt()
+        return ranks[unitId.toInt()] +
+            popCount(units[unitId.toInt()] and mask)
     }
 
     // 指定したインデックスのビットを設定する
@@ -41,6 +42,22 @@ class BitVector {
     fun size(): SizeType = size
 
 //    fun toList(): List<Boolean> = (0u until size).map { get(it) }
+
+    fun dump() {
+        println("BitVector::")
+        print("  bits:")
+        for (i in 0uL until size()) {
+            print(this[i.toUInt()])
+            print(" ")
+        }
+        println()
+        print("  rank:")
+        for (i in 0uL until this.size()) {
+            print(this.rank(i))
+            print(" ")
+        }
+        println()
+    }
 
     // 新しいビットを追加する
     fun append() {
@@ -80,6 +97,7 @@ class BitVector {
         private const val UNIT_SIZE = 32u
 
         internal fun popCount(unit: IdType): IdType {
+//            Integer.bitCount(unit.toInt()) でも良いかも。
             var u = unit
             u = ((u and 0xAAAAAAAAu) shr 1) + (u and 0x55555555u)
             u = ((u and 0xCCCCCCCCu) shr 2) + (u and 0x33333333u)

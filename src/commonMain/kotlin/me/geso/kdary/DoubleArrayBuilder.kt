@@ -2,6 +2,10 @@
 
 package me.geso.kdary
 
+private fun debug(s: String) {
+    println("[D] $s")
+}
+
 /**
  * DAWG -> double-array converter.
  */

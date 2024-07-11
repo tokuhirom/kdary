@@ -31,6 +31,30 @@ class BitVectorTest {
     }
 
     @Test
+    fun testRankEx() {
+        val bitVector = BitVector()
+        for (i in 0u until 4u) {
+            bitVector.append()
+        }
+        bitVector.set(0u, false)
+        bitVector.set(1u, true)
+        bitVector.set(2u, false)
+        bitVector.set(3u, false)
+        bitVector.build()
+
+        bitVector.dump()
+
+        assertEquals(
+            listOf(false, true, false, false),
+            (0 until 4).map { bitVector[it.toUInt()] },
+        )
+        assertEquals(
+            listOf(0u, 1u, 1u, 1u),
+            (0 until 4).map { bitVector.rank(it.toSizeType()) },
+        )
+    }
+
+    @Test
     fun testNumOnesAndSize() {
         val bitVector = BitVector()
         for (i in 0u until 10u) {
