@@ -3,9 +3,9 @@
 package me.geso.kdary
 
 class Keyset<T>(
+    // TODO numKeys は不要?
     private val numKeys: SizeType,
     private val keys: Array<UByteArray>,
-    private val lengths: Array<SizeType>?,
     private val values: Array<T>?,
 ) {
     init {
@@ -19,21 +19,9 @@ class Keyset<T>(
     fun keys(
         keyId: SizeType,
         charId: SizeType,
-    ): UCharType {
-        if (hasLengths() && charId >= lengths!![keyId.toInt()]) {
-            return 0.toUByte()
-        }
-        return keys[keyId.toInt()].getOrNull(charId.toInt()) ?: 0.toUByte()
-    }
+    ): UCharType = keys[keyId.toInt()].getOrNull(charId.toInt()) ?: 0.toUByte()
 
-    fun hasLengths(): Boolean = lengths != null
-
-    fun lengths(id: SizeType): SizeType {
-        if (hasLengths()) {
-            return lengths!![id.toInt()]
-        }
-        return keys[id.toInt()].size.toSizeType()
-    }
+    fun lengths(id: SizeType): SizeType = keys[id.toInt()].size.toSizeType()
 
     fun hasValues(): Boolean = values != null
 

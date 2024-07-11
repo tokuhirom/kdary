@@ -25,7 +25,6 @@ class DoubleArrayImplTest {
     private val invalidKeys = generateInvalidKeys(NUM_INVALID_KEYS, validKeys, random)
     private val testData = buildData()
     private val keys: List<UByteArray> = testData.keys
-    private val lengths: List<SizeType> = testData.lengths
     private val values: List<ValueType> = testData.values
 
     init {
@@ -42,17 +41,15 @@ class DoubleArrayImplTest {
 
     private fun buildData(): TestData {
         val keys: MutableList<UByteArray> = mutableListOf()
-        val lengths: MutableList<SizeType> = mutableListOf()
         val values: MutableList<ValueType> = mutableListOf()
 
         for ((keyId, key) in validKeys.sortedBy { String(it.toByteArray()) }.withIndex()) {
             keys.add(key)
-            lengths.add(key.size.toSizeType())
             values.add(keyId)
         }
         keys.forEachIndexed { index, key ->
             if (index <= 3 || index >= NUM_VALID_KEYS - 3) {
-                println("index: $index, key: ${String(keys[index].toByteArray())}, length: ${lengths[index]}, value: ${values[index]}")
+                println("index: $index, key: ${String(keys[index].toByteArray())}, value: ${values[index]}")
             }
         }
         assertEquals(0, values[0])
@@ -62,12 +59,11 @@ class DoubleArrayImplTest {
         val invalidKeyStrings = invalidKeys.map { String(it.toByteArray()) }.toSet()
         val intersection = validKeyStrings.intersect(invalidKeyStrings)
         assertEquals(0, intersection.size)
-        return TestData(keys, lengths, values)
+        return TestData(keys, values)
     }
 
     data class TestData(
         val keys: List<UByteArray>,
-        val lengths: List<SizeType>,
         val values: List<ValueType>,
     )
 
@@ -136,19 +132,19 @@ void generate_invalid_keys(std::size_t num_keys,
     @Test
     fun `build() with keys`() {
         val dic = DoubleArray.build<Any>(keys.toTypedArray())
-        testDic(dic, keys, lengths, values, invalidKeys)
+        testDic(dic, keys, values, invalidKeys)
     }
 
     @Test
     fun `build() with keys, lengths`() {
-        val dic = DoubleArray.build<Any>(keys.toTypedArray(), lengths.toTypedArray())
-        testDic(dic, keys, lengths, values, invalidKeys)
+        val dic = DoubleArray.build<Any>(keys.toTypedArray())
+        testDic(dic, keys, values, invalidKeys)
     }
 
     @Test
     fun `build() with keys, lengths, values`() {
-        val dic = DoubleArray.build(keys.toTypedArray(), lengths.toTypedArray(), values.toTypedArray())
-        testDic(dic, keys, lengths, values, invalidKeys)
+        val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
+        testDic(dic, keys, values, invalidKeys)
     }
 
     // FAILING...
@@ -161,13 +157,13 @@ void generate_invalid_keys(std::size_t num_keys,
          */
         val newValues = values.map { (0..9).random(random) }
 
-        val dic = DoubleArray.build(keys.toTypedArray(), lengths.toTypedArray(), newValues.toTypedArray())
-        testDic(dic, keys, lengths, newValues, invalidKeys)
+        val dic = DoubleArray.build(keys.toTypedArray(), newValues.toTypedArray())
+        testDic(dic, keys, newValues, invalidKeys)
     }
 
     @Test
     fun `save() and open()`() {
-        val dic = DoubleArray.build(keys.toTypedArray(), lengths.toTypedArray(), values.toTypedArray())
+        val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
         dic.save("test-darts.dic")
 
         val dicCopy = DoubleArray.open("test-darts.dic")
@@ -177,7 +173,7 @@ void generate_invalid_keys(std::size_t num_keys,
         dic.array()?.forEachIndexed { index, doubleArrayUnit ->
             assertEquals(dicCopy.array()?.get(index), doubleArrayUnit, "index=$index")
         }
-        testDic(dicCopy, keys, lengths, values, invalidKeys)
+        testDic(dicCopy, keys, values, invalidKeys)
     }
 
     /*
@@ -226,7 +222,6 @@ std::cerr << "ok" << std::endl;
     private fun testDic(
         dic: DoubleArray,
         keys: List<UByteArray>,
-        lengths: List<SizeType>,
         values: List<ValueType>,
         invalidKeys: Set<UByteArray>,
     ) {
@@ -282,14 +277,14 @@ void test_traverse(const T &dic,
   std::cerr << "ok" << std::endl;
 }
  */
-        val dic = DoubleArray.build(keys.toTypedArray(), lengths.toTypedArray(), values.toTypedArray())
+        val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
 
         for (i in keys.indices) {
             val key = keys[i]
             var id = 0.toSizeType()
             var keyPos = 0.toSizeType()
             var result = 0
-            for (j in 0uL until lengths[i]) {
+            for (j in 0uL until keys[i].size.toSizeType()) {
                 val r = dic.traverse(key.toByteArray(), id, keyPos, j + 1u)
                 assert(r.status != -2)
                 result = r.status
@@ -308,7 +303,7 @@ void test_traverse(const T &dic,
   int v = da.exactMatchSearch<int>("abc");
   std::cout << v << std::endl;
          */
-        val dic = DoubleArray.build(arrayOf("abc".toUByteArray()), arrayOf(3.toSizeType()), arrayOf(4))
+        val dic = DoubleArray.build(arrayOf("abc".toUByteArray()), arrayOf(4))
         println("----------")
         val v = dic.exactMatchSearch("abc".toByteArray())
         println(v)

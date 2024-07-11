@@ -282,9 +282,7 @@ void DoubleArrayBuilder::build_from_keyset(const Keyset<T> &keyset,
         for (i: SizeType in begin until end) {
             val label: UCharType = keyset.keys(i, depth)
             if (label == 0.toUByte()) {
-                if (keyset.hasLengths() && depth < keyset.lengths(i)) {
-                    throw IllegalArgumentException("failed to build double-array: invalid null character")
-                } else if (keyset.values(i) < 0) {
+                if (keyset.values(i) < 0) {
                     throw IllegalArgumentException("failed to build double-array: negative value")
                 }
 

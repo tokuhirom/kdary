@@ -16,7 +16,6 @@ class DawgBuilderTest {
             Keyset(
                 1u,
                 keys = arrayOf("abc").map { it.toUByteArray() }.toTypedArray(),
-                lengths = arrayOf(3u),
                 values = arrayOf(1),
             )
 

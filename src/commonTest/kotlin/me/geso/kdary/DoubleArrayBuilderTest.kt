@@ -12,7 +12,6 @@ class DoubleArrayBuilderTest {
             Keyset(
                 1u,
                 keys = arrayOf("abc").map { it.toUByteArray() }.toTypedArray(),
-                lengths = arrayOf(3u),
                 values = arrayOf(1),
             )
 
@@ -32,7 +31,6 @@ class DoubleArrayBuilderTest {
             Keyset(
                 3u,
                 keys = arrayOf("apple", "banana", "cherry").map { it.toUByteArray() }.toTypedArray(),
-                lengths = arrayOf(5u, 6u, 6u),
                 values = arrayOf(1, 2, 3),
             )
 

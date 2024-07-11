@@ -68,6 +68,7 @@ class DawgBuilder {
         // 結局、units, labels, isIntersections, numStates が残る。
     }
 
+    // TODO: ここの length は不要。
     fun insert(
         key: UByteArray,
         length: SizeType,
