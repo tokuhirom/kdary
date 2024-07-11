@@ -82,7 +82,7 @@ class DoubleArrayImpl<T : Number>(
 
         val file = File(fileName)
         file.sink().buffer().use { sink ->
-            array!!.forEach { unit ->
+            array.forEach { unit ->
                 writeUIntLe(sink, unit.unit)
             }
         }
@@ -151,7 +151,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
   return result;
 }
          */
-        var unit = array?.get(nodePosParam.toInt()) ?: return ResultPairType(-1, 0u)
+        var unit = array[nodePosParam.toInt()]
         var nodePos = nodePosParam
         val length = key.size.toSizeType()
         debug("length=$length")
@@ -161,7 +161,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
             debug("nodePos: $nodePos, unit.offset(): ${unit.offset()}")
             nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
             debug("xor result=$nodePos")
-            unit = array?.get(nodePos.toInt()) ?: return ResultPairType(-1, 0u)
+            unit = array[nodePos.toInt()] ?: return ResultPairType(-1, 0u)
             debug("unit.label=${unit.label()}")
             if (unit.label() != key[i.toInt()].toUInt()) {
                 return ResultPairType(-1, 0u)
@@ -172,7 +172,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         if (!unit.hasLeaf()) {
             return ResultPairType(-1, 0u)
         }
-        unit = array?.get(nodePos.toInt() xor unit.offset().toInt()) ?: return ResultPairType(-1, 0u)
+        unit = array[nodePos.toInt() xor unit.offset().toInt()] ?: return ResultPairType(-1, 0u)
         return ResultPairType(unit.value(), length)
     }
 
@@ -208,14 +208,14 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         var nodePos: SizeType = nodePosParam
         var length: SizeType = lengthParam
 
-        var unit: DoubleArrayUnit = array?.get(nodePos.toInt()) ?: return numResults
+        var unit: DoubleArrayUnit = array[nodePos.toInt()]
         nodePos = nodePos xor unit.offset().toSizeType()
 
         if (lengthParam != 0uL) {
             for (i in 0uL until length) {
                 // TODO ここのビット操作がめっちゃ怪しい
                 nodePos = nodePos xor key[i.toInt()].toUByte().toInt().toSizeType()
-                unit = array?.get(nodePos.toInt()) ?: return numResults
+                unit = array[nodePos.toInt()]
                 if (unit.label() != (key[i.toInt()].toUInt() and 0xFFU)) {
                     return numResults
                 }
@@ -223,7 +223,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
                 nodePos = nodePos xor unit.offset().toSizeType()
                 if (unit.hasLeaf()) {
                     if (numResults < maxNumResults) {
-                        val v = array?.get(nodePos.toInt())?.value() ?: throw IllegalStateException()
+                        val v = array[nodePos.toInt()].value()
                         results[numResults.toInt()].set(v, (i + 1u))
                     }
                     numResults++
@@ -233,7 +233,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
             while (key[length.toInt()] != 0.toByte()) {
                 // xor が怪しい
                 nodePos = nodePos xor key[length.toInt()].toUByte().toInt().toSizeType()
-                unit = array?.get(nodePos.toInt()) ?: return numResults
+                unit = array[nodePos.toInt()]
                 if (unit.label() != key[length.toInt()].toUByte().toIdType()) {
                     return numResults
                 }
@@ -241,7 +241,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
                 nodePos = nodePos xor unit.offset().toSizeType()
                 if (unit.hasLeaf()) {
                     if (numResults < maxNumResults) {
-                        val v = array?.get(nodePos.toInt())?.value() ?: throw IllegalStateException()
+                        val v = array[nodePos.toInt()].value()
                         results[numResults.toInt()].set(v, (length + 1u))
                     }
                     numResults++
@@ -282,7 +282,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
     ): TraverseResult {
         var id: IdType = nodePosParam.toIdType()
 
-        var unit = array?.get(id.toInt()) ?: return TraverseResult(-2, nodePosParam, keyPosParam)
+        var unit = array[id.toInt()]
 
         // 変更するために、var にアサインする
         var nodePos = nodePosParam
@@ -291,7 +291,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         if (length != 0uL) {
             while (keyPos < length) {
                 id = id xor (unit.offset() xor key[keyPos.toInt()].toUInt())
-                unit = array?.get(id.toInt()) ?: return TraverseResult(-2, nodePos, keyPos)
+                unit = array[id.toInt()]
                 if (unit.label() != key[keyPos.toInt()].toUInt()) {
                     return TraverseResult(-2, nodePos, keyPos)
                 }
@@ -302,7 +302,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         } else {
             while (key[keyPos.toInt()].toInt() != 0) {
                 id = id xor (unit.offset() xor key[keyPos.toInt()].toUInt())
-                unit = array?.get(id.toInt()) ?: return TraverseResult(-2, nodePos, keyPos)
+                unit = array[id.toInt()]
                 if (unit.label() != key[keyPos.toInt()].toUInt()) {
                     return TraverseResult(-2, nodePos, keyPos)
                 }
@@ -314,7 +314,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         return if (!unit.hasLeaf()) {
             TraverseResult(-1, nodePos, keyPos)
         } else {
-            unit = array?.get((id xor unit.offset()).toInt()) ?: return TraverseResult(-2, nodePos, keyPos)
+            unit = array[(id xor unit.offset()).toInt()]
             TraverseResult(unit.value(), nodePos, keyPos)
         }
     }
