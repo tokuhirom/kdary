@@ -38,11 +38,12 @@ private typealias KeyType = Byte
 // C++ 実装での value_type, result_type は T になります。
 // key_type は Byte です。
 class DoubleArrayImpl<T : Number>(
-    private var size: SizeType = 0u,
     //   typedef Details::DoubleArrayUnit unit_type;
     // const unit_type *array_;
-    private var array: Array<DoubleArrayUnit>? = null,
+    private var array: Array<DoubleArrayUnit>,
 ) {
+    private var size: SizeType = array.size.toSizeType()
+
     // <ResultPairType> は一致するキーの長さに加えて値を取得するためにアプリケーションが使用できるようにします。
     data class ResultPairType<T>(
         var value: T,
@@ -61,12 +62,6 @@ class DoubleArrayImpl<T : Number>(
 
     // array() はユニットの配列を返します
     internal fun array(): Array<DoubleArrayUnit>? = array
-
-    // clear メソッドは C++ だとメモリーの解放を行うが、Kotlin だと GC がやってくれるからあまり意味はないかも。
-    fun clear() {
-        size = 0u
-        array = null
-    }
 
     // size() returns the number of units. It can be 0 if set_array() is used.
     fun size(): SizeType = size
@@ -392,11 +387,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
             // C++ ではポインタの参照を渡しているが、kotlin では返り値とするのが自然。
             val buf = builder.copy()
 
-            val doubleArray =
-                DoubleArray(
-                    size = buf.size.toSizeType(),
-                    array = buf,
-                )
+            val doubleArray = DoubleArray(buf)
 
             val numKeys = keys.size.toSizeType()
             progressFunc?.invoke(numKeys + 1u, numKeys + 1u)
@@ -458,7 +449,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
                     }
                 }
 
-                DoubleArrayImpl(numUnits, buf)
+                DoubleArrayImpl(buf)
             }
         }
 
