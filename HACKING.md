@@ -225,3 +225,8 @@ testTraverse を先にやって、後で、testCommonPrefixSearch をやるこ�
 
 `UByteArray` は長さを持ってるので、`exactMatchSearch` で length パラメータを持つ必要がないので消す。
 `length` が 0 を指定していると null 終端文字列として扱うのが darts-clone の仕様だけどこの部分は使わないようにする。
+
+## 2024-07-11
+
+UByteArray を外部インターフェースに露出させないのが良さそう。
+UByteArray は Experiental なので。

@@ -283,9 +283,9 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
     // length パラメータは、key の長さを指定するもので、0 の場合は key が null 終端文字列として扱われる。
     // しかし、kotlin では ByteArray が長さを持つので、length が必要ない。
     fun exactMatchSearch(
-        key: UByteArray,
+        key: ByteArray,
         nodePos: SizeType = 0u,
-    ): ResultPairType<Int> = exactMatchSearchInternal(key, nodePos)
+    ): ResultPairType<Int> = exactMatchSearchInternal(key.toUByteArray(), nodePos)
 
     private fun exactMatchSearchInternal(
         key: UByteArray,
@@ -443,11 +443,11 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
 //    inline value_type traverse(const key_type *key, std::size_t &node_pos,
 //    std::size_t &key_pos, std::size_t length = 0) const;
     fun traverse(
-        key: UByteArray,
+        key: ByteArray,
         nodePos: SizeType,
         keyPos: SizeType,
         length: SizeType = 0u,
-    ): TraverseResult = traverseInternal(key, nodePos, keyPos, length)
+    ): TraverseResult = traverseInternal(key.toUByteArray(), nodePos, keyPos, length)
 
     private fun traverseInternal(
         key: UByteArray,

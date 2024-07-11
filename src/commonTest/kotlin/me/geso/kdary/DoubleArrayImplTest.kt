@@ -237,13 +237,13 @@ std::cerr << "ok" << std::endl;
         invalidKeys: Set<UByteArray>,
     ) {
         for (i in keys.indices) {
-            val result = dic.exactMatchSearch(keys[i])
+            val result = dic.exactMatchSearch(keys[i].toByteArray())
 //            debug("result=$result expected=${values[i]}")
             assert(result.value == values[i])
         }
 
         invalidKeys.forEach { invalidKey ->
-            val result = dic.exactMatchSearch(invalidKey)
+            val result = dic.exactMatchSearch(invalidKey.toByteArray())
 //            debug("result=$result invalidKey=$invalidKey")
             assert(result.value == -1)
         }
@@ -297,7 +297,7 @@ void test_traverse(const T &dic,
             var keyPos = 0.toSizeType()
             var result = 0
             for (j in 0uL until lengths[i]) {
-                val r = dic.traverse(key, id, keyPos, j + 1u)
+                val r = dic.traverse(key.toByteArray(), id, keyPos, j + 1u)
                 assert(r.status != -2)
                 result = r.status
             }
@@ -318,7 +318,7 @@ void test_traverse(const T &dic,
         val dic = DoubleArray()
         dic.build(1.toSizeType(), arrayOf("abc".toUByteArray()), arrayOf(3.toSizeType()), arrayOf(4))
         println("----------")
-        val v = dic.exactMatchSearch("abc".toUByteArray())
+        val v = dic.exactMatchSearch("abc".toByteArray())
         println(v)
         assertEquals(4, v.value)
     }
