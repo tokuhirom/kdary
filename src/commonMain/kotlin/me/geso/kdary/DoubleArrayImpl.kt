@@ -189,65 +189,41 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
 //    std::size_t max_num_results, std::size_t length = 0,
 //    std::size_t node_pos = 0) const;
     fun commonPrefixSearch(
-        key: Array<KeyType>,
+        key: ByteArray,
         results: Array<ResultPairType<ValueType>>,
         maxNumResults: SizeType,
-        length: SizeType = 0u,
         nodePos: SizeType = 0u,
-    ): SizeType = commonPrefixSearchInternal(key, results, maxNumResults, length, nodePos)
+    ): SizeType = commonPrefixSearchInternal(key.toUByteArray(), results, maxNumResults, nodePos)
 
     private fun commonPrefixSearchInternal(
-        key: Array<KeyType>,
+        key: UByteArray,
         results: Array<ResultPairType<ValueType>>,
         maxNumResults: SizeType,
-        lengthParam: SizeType = 0u,
         nodePosParam: SizeType = 0u,
     ): SizeType {
         var numResults: SizeType = 0u
 
         var nodePos: SizeType = nodePosParam
-        var length: SizeType = lengthParam
+        var length: SizeType = key.size.toSizeType()
 
         var unit: DoubleArrayUnit = array[nodePos.toInt()]
         nodePos = nodePos xor unit.offset().toSizeType()
 
-        if (lengthParam != 0uL) {
-            for (i in 0uL until length) {
-                // TODO ここのビット操作がめっちゃ怪しい
-                nodePos = nodePos xor key[i.toInt()].toUByte().toInt().toSizeType()
-                unit = array[nodePos.toInt()]
-                if (unit.label() != (key[i.toInt()].toUInt() and 0xFFU)) {
-                    return numResults
-                }
-
-                nodePos = nodePos xor unit.offset().toSizeType()
-                if (unit.hasLeaf()) {
-                    if (numResults < maxNumResults) {
-                        val v = array[nodePos.toInt()].value()
-                        results[numResults.toInt()].set(v, (i + 1u))
-                    }
-                    numResults++
-                }
+        for (i in 0uL until length) {
+            // TODO ここのビット操作がめっちゃ怪しい
+            nodePos = nodePos xor key[i.toInt()].toUByte().toInt().toSizeType()
+            unit = array[nodePos.toInt()]
+            if (unit.label() != (key[i.toInt()].toUInt() and 0xFFU)) {
+                return numResults
             }
-        } else {
-            while (key[length.toInt()] != 0.toByte()) {
-                // xor が怪しい
-                nodePos = nodePos xor key[length.toInt()].toUByte().toInt().toSizeType()
-                unit = array[nodePos.toInt()]
-                if (unit.label() != key[length.toInt()].toUByte().toIdType()) {
-                    return numResults
-                }
 
-                nodePos = nodePos xor unit.offset().toSizeType()
-                if (unit.hasLeaf()) {
-                    if (numResults < maxNumResults) {
-                        val v = array[nodePos.toInt()].value()
-                        results[numResults.toInt()].set(v, (length + 1u))
-                    }
-                    numResults++
+            nodePos = nodePos xor unit.offset().toSizeType()
+            if (unit.hasLeaf()) {
+                if (numResults < maxNumResults) {
+                    val v = array[nodePos.toInt()].value()
+                    results[numResults.toInt()].set(v, (i + 1u))
                 }
-
-                length++
+                numResults++
             }
         }
 

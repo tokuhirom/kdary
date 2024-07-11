@@ -239,3 +239,6 @@ DoubleArray.build 自体、Companion object に移した方が良いので移し
 Keyset に渡す lengths もいらないので削除。
 
 BitVector の rank メソッドがバグってるのがそもそもの問題だということがわかったので修正。
+
+commonPrefixSearch どうなる?
+length パラメータは、ByteArray から長さとれるので不要。
