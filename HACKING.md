@@ -230,3 +230,5 @@ testTraverse を先にやって、後で、testCommonPrefixSearch をやるこ�
 
 UByteArray を外部インターフェースに露出させないのが良さそう。
 UByteArray は Experiental なので。
+
+DoubleArray.build() の numKeys は List<UByteArray> の size から取ればいいので削除。

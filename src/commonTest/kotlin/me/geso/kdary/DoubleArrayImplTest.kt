@@ -136,21 +136,21 @@ void generate_invalid_keys(std::size_t num_keys,
     @Test
     fun `build() with keys`() {
         val dic = DoubleArray()
-        dic.build(keys.size.toSizeType(), keys.toTypedArray())
+        dic.build(keys.toTypedArray())
         testDic(dic, keys, lengths, values, invalidKeys)
     }
 
     @Test
     fun `build() with keys, lengths`() {
         val dic = DoubleArray()
-        dic.build(keys.size.toSizeType(), keys.toTypedArray(), lengths.toTypedArray())
+        dic.build(keys.toTypedArray(), lengths.toTypedArray())
         testDic(dic, keys, lengths, values, invalidKeys)
     }
 
     @Test
     fun `build() with keys, lengths, values`() {
         val dic = DoubleArray()
-        dic.build(keys.size.toSizeType(), keys.toTypedArray(), lengths.toTypedArray(), values.toTypedArray())
+        dic.build(keys.toTypedArray(), lengths.toTypedArray(), values.toTypedArray())
         testDic(dic, keys, lengths, values, invalidKeys)
     }
 
@@ -165,14 +165,14 @@ void generate_invalid_keys(std::size_t num_keys,
         val newValues = values.map { (0..9).random(random) }
 
         val dic = DoubleArray()
-        dic.build(keys.size.toSizeType(), keys.toTypedArray(), lengths.toTypedArray(), newValues.toTypedArray())
+        dic.build(keys.toTypedArray(), lengths.toTypedArray(), newValues.toTypedArray())
         testDic(dic, keys, lengths, newValues, invalidKeys)
     }
 
     @Test
     fun `save() and open()`() {
         val dic = DoubleArray()
-        dic.build(keys.size.toSizeType(), keys.toTypedArray(), lengths.toTypedArray(), values.toTypedArray())
+        dic.build(keys.toTypedArray(), lengths.toTypedArray(), values.toTypedArray())
         assert(dic.save("test-darts.dic", 0uL) == 0)
 
         val dicCopy = DoubleArray()
@@ -289,7 +289,7 @@ void test_traverse(const T &dic,
 }
  */
         val dic = DoubleArray()
-        dic.build(keys.size.toSizeType(), keys.toTypedArray(), lengths.toTypedArray(), values.toTypedArray())
+        dic.build(keys.toTypedArray(), lengths.toTypedArray(), values.toTypedArray())
 
         for (i in keys.indices) {
             val key = keys[i]
@@ -316,7 +316,7 @@ void test_traverse(const T &dic,
   std::cout << v << std::endl;
          */
         val dic = DoubleArray()
-        dic.build(1.toSizeType(), arrayOf("abc".toUByteArray()), arrayOf(3.toSizeType()), arrayOf(4))
+        dic.build(arrayOf("abc".toUByteArray()), arrayOf(3.toSizeType()), arrayOf(4))
         println("----------")
         val v = dic.exactMatchSearch("abc".toByteArray())
         println(v)

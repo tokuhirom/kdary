@@ -121,7 +121,6 @@ class DoubleArrayImpl<T : Number> {
 //    const std::size_t *lengths = NULL, const value_type *values = NULL,
 //    Details::progress_func_type progress_func = NULL);
     fun build(
-        numKeys: SizeType,
         // XXX keys は sorted であること。
         keys: Array<UByteArray>,
         lengths: Array<SizeType>? = null,
@@ -155,6 +154,7 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
   return 0;
 }
          */
+        val numKeys = keys.size.toSizeType()
         val keyset = Keyset(numKeys, keys, lengths, values)
 
         val builder = DoubleArrayBuilder(progressFunc)
