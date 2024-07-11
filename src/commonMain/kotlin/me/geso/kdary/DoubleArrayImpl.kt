@@ -44,9 +44,6 @@ class DoubleArrayImpl<T : Number> {
     // const unit_type *array_;
     private var array: Array<DoubleArrayUnit>? = null
 
-    // unit_type *buf_;
-    private var buf: Array<DoubleArrayUnit>? = null
-
     // <ResultPairType> は一致するキーの長さに加えて値を取得するためにアプリケーションが使用できるようにします。
     data class ResultPairType<T>(
         var value: T,
@@ -85,7 +82,6 @@ class DoubleArrayImpl<T : Number> {
     fun clear() {
         size = 0u
         array = null
-        buf = null
     }
 
     // unit_size() returns the size of each unit. The size must be 4 bytes.
@@ -170,7 +166,6 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
 
         this.size = buf.size.toSizeType()
         this.array = buf
-        this.buf = buf
 
         progressFunc?.invoke(numKeys + 1u, numKeys + 1u)
 
@@ -233,7 +228,6 @@ int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
 
             this.size = numUnits
             this.array = buf
-            this.buf = buf
         }
     }
 
