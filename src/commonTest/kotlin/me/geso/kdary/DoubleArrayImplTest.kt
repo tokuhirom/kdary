@@ -170,8 +170,7 @@ void generate_invalid_keys(std::size_t num_keys,
         val dic = DoubleArray.build(keys.toTypedArray(), lengths.toTypedArray(), values.toTypedArray())
         assert(dic.save("test-darts.dic", 0uL) == 0)
 
-        val dicCopy = DoubleArray()
-        dicCopy.open("test-darts.dic")
+        val dicCopy = DoubleArray.open("test-darts.dic")
 
         assertEquals(dic.array()?.size, dicCopy.array()?.size)
         println(dic.array()?.size)

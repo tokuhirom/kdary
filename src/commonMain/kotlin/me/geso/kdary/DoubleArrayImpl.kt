@@ -68,9 +68,6 @@ class DoubleArrayImpl<T : Number>(
         array = null
     }
 
-    // unit_size() returns the size of each unit. The size must be 4 bytes.
-    fun unitSize(): SizeType = 4u
-
     // size() returns the number of units. It can be 0 if set_array() is used.
     fun size(): SizeType = size
 
@@ -79,65 +76,6 @@ class DoubleArrayImpl<T : Number>(
 
     // empty() returns true if the array is empty.
     fun nonzeroSize(): SizeType = size()
-
-    /**
-     * Read an array of units from the specified file.
-     *
-     * @param fileName The file name to read.
-     * @throws IOException If the file is not found or invalid.
-     */
-    fun open(fileName: String) {
-        val file = File(fileName)
-        if (!file.exists()) {
-            throw IOException("File not found: $fileName")
-        }
-
-        file.source().buffer().use { source ->
-            val actualSize = file.length().toULong()
-
-            val unitSize = unitSize()
-            val numUnits = actualSize / unitSize
-            if (numUnits < 256uL || numUnits % 256u != 0uL) {
-                throw IOException("numUnits must be 256 or multiple of 256: $numUnits")
-            }
-
-            val units = Array(256) { DoubleArrayUnit() }
-            for (i in units.indices) {
-                units[i] = DoubleArrayUnit(readUIntLe(source))
-            }
-
-            if (units[0].label().toInt().toChar() != '\u0000' ||
-                units[0].hasLeaf() ||
-                units[0].offset() == 0u ||
-                units[0].offset() >= 512u
-            ) {
-                throw IOException("Invalid file format")
-            }
-
-            for (i in 1 until 256) {
-                if (units[i].label() <= 0xFF.toUInt() && units[i].offset() >= numUnits.toUInt()) {
-                    throw IOException("Invalid file format(bad unit)")
-                }
-            }
-
-            val buf: Array<DoubleArrayUnit> = Array(numUnits.toInt()) { DoubleArrayUnit() }
-
-            for (i in units.indices) {
-                buf[i] = units[i]
-            }
-
-            // TODO: optimize here.
-            if (numUnits > 256u) {
-                // 残りのユニットを読み込む
-                for (i in 256uL until numUnits) {
-                    buf[i.toInt()] = DoubleArrayUnit(readUIntLe(source))
-                }
-            }
-
-            this.size = numUnits
-            this.array = buf
-        }
-    }
 
     // save() writes the array of units into the specified file. `offset'
     // specifies the number of bytes to be skipped before writing the array.
@@ -479,5 +417,66 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
 
             return doubleArray
         }
+
+        /**
+         * Read an array of units from the specified file.
+         *
+         * @param fileName The file name to read.
+         * @throws IOException If the file is not found or invalid.
+         */
+        fun open(fileName: String): DoubleArray {
+            val file = File(fileName)
+            if (!file.exists()) {
+                throw IOException("File not found: $fileName")
+            }
+
+            return file.source().buffer().use { source ->
+                val actualSize = file.length().toULong()
+
+                val unitSize = unitSize()
+                val numUnits = actualSize / unitSize
+                if (numUnits < 256uL || numUnits % 256u != 0uL) {
+                    throw IOException("numUnits must be 256 or multiple of 256: $numUnits")
+                }
+
+                val units = Array(256) { DoubleArrayUnit() }
+                for (i in units.indices) {
+                    units[i] = DoubleArrayUnit(readUIntLe(source))
+                }
+
+                if (units[0].label().toInt().toChar() != '\u0000' ||
+                    units[0].hasLeaf() ||
+                    units[0].offset() == 0u ||
+                    units[0].offset() >= 512u
+                ) {
+                    throw IOException("Invalid file format")
+                }
+
+                for (i in 1 until 256) {
+                    if (units[i].label() <= 0xFF.toUInt() && units[i].offset() >= numUnits.toUInt()) {
+                        throw IOException("Invalid file format(bad unit)")
+                    }
+                }
+
+                val buf: Array<DoubleArrayUnit> = Array(numUnits.toInt()) { DoubleArrayUnit() }
+
+                for (i in units.indices) {
+                    buf[i] = units[i]
+                }
+
+                // TODO: optimize here.
+                if (numUnits > 256u) {
+                    // 残りのユニットを読み込む
+                    for (i in 256uL until numUnits) {
+                        buf[i.toInt()] = DoubleArrayUnit(readUIntLe(source))
+                    }
+                }
+
+                DoubleArrayImpl(numUnits, buf)
+            }
+        }
+
+        // unit_size() returns the size of each unit. The size must be 4 bytes.
+        private fun unitSize(): SizeType = 4u
     }
 }
