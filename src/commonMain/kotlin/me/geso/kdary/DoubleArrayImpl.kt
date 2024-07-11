@@ -77,30 +77,20 @@ class DoubleArrayImpl<T : Number>(
     // empty() returns true if the array is empty.
     fun nonzeroSize(): SizeType = size()
 
-    // save() writes the array of units into the specified file. `offset'
-    // specifies the number of bytes to be skipped before writing the array.
-    // open() returns 0 iff the operation succeeds. Otherwise, it returns a
-    // non-zero value.
-//    int save(const char *file_name, const char *mode = "wb",
-//    std::size_t offset = 0) const;
-    fun save(
-        fileName: String,
-//        mode: String = "wb",
-        offset: SizeType,
-    ): Int {
-        if (size == 0uL) {
-            return -1
+    /**
+     * Save the double array into the specified file.
+     */
+    fun save(fileName: String) {
+        check(size != 0uL) {
+            "You can't save empty array"
         }
 
         val file = File(fileName)
         file.sink().buffer().use { sink ->
-            sink.write(ByteArray(offset.toInt())) // オフセット分の空バイトを書き込み
             array!!.forEach { unit ->
                 writeUIntLe(sink, unit.unit)
             }
         }
-
-        return 0
     }
 
     // The 1st exactMatchSearch() tests whether the given key exists or not, and
