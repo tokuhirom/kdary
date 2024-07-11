@@ -14,7 +14,6 @@ class DawgBuilderTest {
     fun testSimple() {
         val keyset =
             Keyset(
-                1u,
                 keys = arrayOf("abc").map { it.toUByteArray() }.toTypedArray(),
                 values = arrayOf(1),
             )

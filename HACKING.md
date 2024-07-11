@@ -235,3 +235,5 @@ DoubleArray.build() の numKeys は List<UByteArray> の size から取ればい
 
 DoubleArray.build 自体、Companion object に移した方が良いので移した。
 これにより、DoubleArray は immutable なオブジェクトとなった。
+
+Keyset に渡す lengths もいらないので削除。

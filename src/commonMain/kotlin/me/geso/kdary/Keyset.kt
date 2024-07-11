@@ -3,16 +3,10 @@
 package me.geso.kdary
 
 class Keyset<T>(
-    // TODO numKeys は不要?
-    private val numKeys: SizeType,
     private val keys: Array<UByteArray>,
     private val values: Array<T>?,
 ) {
-    init {
-        assert(numKeys == keys.size.toSizeType())
-    }
-
-    fun numKeys(): SizeType = numKeys
+    fun numKeys(): SizeType = keys.size.toSizeType()
 
     fun keys(id: SizeType): UByteArray = keys[id.toInt()]
 

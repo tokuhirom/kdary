@@ -10,7 +10,7 @@ class KeysetTest {
     fun testKeyset() {
         val keys = arrayOf("apple", "banana", "cherry").map { it.toUByteArray() }.toTypedArray()
         val values = arrayOf(1, 2, 3)
-        val keyset = Keyset(3u, keys, values)
+        val keyset = Keyset(keys, values)
 
         assertEquals(3u, keyset.numKeys())
         assertEquals("apple", String(keyset.keys(0u).toByteArray()))
@@ -21,7 +21,7 @@ class KeysetTest {
 
         assertEquals(0.toUByte(), keyset.keys(0u, 10u)) // Out of bounds
         run {
-            val noValuesKeyset = Keyset<Int>(3u, keys, null)
+            val noValuesKeyset = Keyset<Int>(keys, null)
             assertEquals(10, noValuesKeyset.values(10u))
         }
     }

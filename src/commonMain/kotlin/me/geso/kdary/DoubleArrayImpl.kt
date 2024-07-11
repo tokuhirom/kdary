@@ -385,7 +385,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
     }
              */
             val numKeys = keys.size.toSizeType()
-            val keyset = Keyset(numKeys, keys, values)
+            val keyset = Keyset(keys, values)
 
             val builder = DoubleArrayBuilder(progressFunc)
             builder.build(keyset)
