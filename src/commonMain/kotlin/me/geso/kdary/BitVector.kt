@@ -2,8 +2,8 @@ package me.geso.kdary
 
 // Succinct bit vector.
 class BitVector {
-    internal val units: AutoPool<IdType> = AutoPool()
-    internal var ranks: AutoArray<IdType> = AutoArray()
+    private val units: AutoPool<IdType> = AutoPool()
+    private var ranks: AutoArray<IdType> = AutoArray()
     private var numOnes: SizeType = 0u
     private var size: SizeType = 0u
 

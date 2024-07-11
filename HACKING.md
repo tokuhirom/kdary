@@ -237,3 +237,5 @@ DoubleArray.build 自体、Companion object に移した方が良いので移し
 これにより、DoubleArray は immutable なオブジェクトとなった。
 
 Keyset に渡す lengths もいらないので削除。
+
+BitVector の rank メソッドがバグってるのがそもそもの問題だということがわかったので修正。
