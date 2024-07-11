@@ -147,7 +147,6 @@ void generate_invalid_keys(std::size_t num_keys,
         testDic(dic, keys, values, invalidKeys)
     }
 
-    // FAILING...
     @Test
     fun `build() with keys, lengths and random values`() {
         /*
@@ -290,6 +289,20 @@ void test_traverse(const T &dic,
                 result = r.status
             }
             assert(result == values[i])
+        }
+
+        for (invalidKey in invalidKeys) {
+            var id = 0.toSizeType()
+            var keyPos = 0.toSizeType()
+            var result = 0
+            for (i in 0uL until invalidKey.size.toSizeType()) {
+                val r = dic.traverse(invalidKey.toByteArray(), id, keyPos, i + 1u)
+                result = r.status
+                if (result == -2) {
+                    break
+                }
+            }
+            assert(result < 0)
         }
     }
 
