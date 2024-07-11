@@ -232,3 +232,6 @@ UByteArray を外部インターフェースに露出させないのが良さそ
 UByteArray は Experiental なので。
 
 DoubleArray.build() の numKeys は List<UByteArray> の size から取ればいいので削除。
+
+DoubleArray.build 自体、Companion object に移した方が良いので移した。
+これにより、DoubleArray は immutable なオブジェクトとなった。

@@ -37,13 +37,12 @@ private typealias KeyType = Byte
 
 // C++ 実装での value_type, result_type は T になります。
 // key_type は Byte です。
-class DoubleArrayImpl<T : Number> {
-    private var size: SizeType = 0u
-
+class DoubleArrayImpl<T : Number>(
+    private var size: SizeType = 0u,
     //   typedef Details::DoubleArrayUnit unit_type;
     // const unit_type *array_;
-    private var array: Array<DoubleArrayUnit>? = null
-
+    private var array: Array<DoubleArrayUnit>? = null,
+) {
     // <ResultPairType> は一致するキーの長さに加えて値を取得するためにアプリケーションが使用できるようにします。
     data class ResultPairType<T>(
         var value: T,
@@ -60,23 +59,8 @@ class DoubleArrayImpl<T : Number> {
         }
     }
 
-    // setArray() はクリア() を呼び出して古い配列に割り当てられたメモリを解放し、その後新しい配列を設定します。
-    // この関数はメモリマップド配列を設定するのに便利です。
-    // setArray() で設定された配列はクリア() や <DoubleArrayImpl> のデストラクタでは解放されません。
-    // setArray() は新しい配列のサイズも設定できますが、そのサイズは検索メソッドでは使用されません。
-    // そのため、2番目の引数が0または省略された場合でも問題ありません。
-    // その場合、size() と totalSize() は0を返します。
-    fun setArray(
-        ptr: Array<DoubleArrayUnit>?,
-        size: SizeType = 0u,
-    ) {
-        clear()
-        array = ptr
-        this.size = size
-    }
-
     // array() はユニットの配列を返します
-    fun array(): Array<DoubleArrayUnit>? = array
+    internal fun array(): Array<DoubleArrayUnit>? = array
 
     // clear メソッドは C++ だとメモリーの解放を行うが、Kotlin だと GC がやってくれるからあまり意味はないかも。
     fun clear() {
@@ -95,82 +79,6 @@ class DoubleArrayImpl<T : Number> {
 
     // empty() returns true if the array is empty.
     fun nonzeroSize(): SizeType = size()
-
-    // build() constructs a dictionary from given key-value pairs. If `lengths'
-    // is NULL, `keys' is handled as an array of zero-terminated strings. If
-    // `values' is NULL, the index in `keys' is associated with each key, i.e.
-    // the ith key has (i - 1) as its value.
-    // Note that the key-value pairs must be arranged in key order and the values
-    // must not be negative. Also, if there are duplicate keys, only the first
-    // pair will be stored in the resultant dictionary.
-    // `progress_func' is a pointer to a callback function. If it is not NULL,
-    // it will be called in build() so that the caller can check the progress of
-    // dictionary construction. For details, please see the definition of
-    // <Darts::Details::progress_func_type>.
-    // The return value of build() is 0, and it indicates the success of the
-    // operation. Otherwise, build() throws a <Darts::Exception>, which is a
-    // derived class of <std::exception>.
-    // build() uses another construction algorithm if `values' is not NULL. In
-    // this case, Darts-clone uses a Directed Acyclic Word Graph (DAWG) instead
-    // of a trie because a DAWG is likely to be more compact than a trie.
-//    int build(std::size_t num_keys, const key_type * const *keys,
-//    const std::size_t *lengths = NULL, const value_type *values = NULL,
-//    Details::progress_func_type progress_func = NULL);
-    fun build(
-        // XXX keys は sorted であること。
-        keys: Array<UByteArray>,
-        lengths: Array<SizeType>? = null,
-        values: Array<T>? = null,
-        progressFunc: ProgressFuncType? = null,
-    ): Int {
-        /*
-template <typename A, typename B, typename T, typename C>
-int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
-    const key_type * const *keys, const std::size_t *lengths,
-    const value_type *values, Details::progress_func_type progress_func) {
-  Details::Keyset<value_type> keyset(num_keys, keys, lengths, values);
-
-  Details::DoubleArrayBuilder builder(progress_func);
-  builder.build(keyset);
-
-  std::size_t size = 0;
-  unit_type *buf = NULL;
-  builder.copy(&size, &buf);
-
-  clear();
-
-  size_ = size;
-  array_ = buf;
-  buf_ = buf;
-
-  if (progress_func != NULL) {
-    progress_func(num_keys + 1, num_keys + 1);
-  }
-
-  return 0;
-}
-         */
-        val numKeys = keys.size.toSizeType()
-        val keyset = Keyset(numKeys, keys, lengths, values)
-
-        val builder = DoubleArrayBuilder(progressFunc)
-        builder.build(keyset)
-
-//        std::size_t size = 0;
-//        unit_type *buf = NULL;
-//        builder.copy(&size, &buf);
-        // C++ ではポインタの参照を渡しているが、kotlin では返り値とするのが自然。
-        val buf = builder.copy()
-
-        clear()
-
-        this.size = buf.size.toSizeType()
-        this.array = buf
-
-        progressFunc?.invoke(numKeys + 1u, numKeys + 1u)
-
-        return 0
-    }
 
     /**
      * Read an array of units from the specified file.
@@ -493,4 +401,83 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         val nodePos: SizeType? = null,
         val keyPos: SizeType? = null,
     )
+
+    companion object {
+        // build() constructs a dictionary from given key-value pairs. If `lengths'
+        // is NULL, `keys' is handled as an array of zero-terminated strings. If
+        // `values' is NULL, the index in `keys' is associated with each key, i.e.
+        // the ith key has (i - 1) as its value.
+        // Note that the key-value pairs must be arranged in key order and the values
+        // must not be negative. Also, if there are duplicate keys, only the first
+        // pair will be stored in the resultant dictionary.
+        // `progress_func' is a pointer to a callback function. If it is not NULL,
+        // it will be called in build() so that the caller can check the progress of
+        // dictionary construction. For details, please see the definition of
+        // <Darts::Details::progress_func_type>.
+        // The return value of build() is 0, and it indicates the success of the
+        // operation. Otherwise, build() throws a <Darts::Exception>, which is a
+        // derived class of <std::exception>.
+        // build() uses another construction algorithm if `values' is not NULL. In
+        // this case, Darts-clone uses a Directed Acyclic Word Graph (DAWG) instead
+        // of a trie because a DAWG is likely to be more compact than a trie.
+//    int build(std::size_t num_keys, const key_type * const *keys,
+//    const std::size_t *lengths = NULL, const value_type *values = NULL,
+//    Details::progress_func_type progress_func = NULL);
+        fun <T> build(
+            // XXX keys は sorted であること。
+            keys: Array<UByteArray>,
+            lengths: Array<SizeType>? = null,
+            values: Array<T>? = null,
+            progressFunc: ProgressFuncType? = null,
+        ): DoubleArray {
+            /*
+    template <typename A, typename B, typename T, typename C>
+    int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
+        const key_type * const *keys, const std::size_t *lengths,
+        const value_type *values, Details::progress_func_type progress_func) {
+      Details::Keyset<value_type> keyset(num_keys, keys, lengths, values);
+
+      Details::DoubleArrayBuilder builder(progress_func);
+      builder.build(keyset);
+
+      std::size_t size = 0;
+      unit_type *buf = NULL;
+      builder.copy(&size, &buf);
+
+      clear();
+
+      size_ = size;
+      array_ = buf;
+      buf_ = buf;
+
+      if (progress_func != NULL) {
+        progress_func(num_keys + 1, num_keys + 1);
+      }
+
+      return 0;
+    }
+             */
+            val numKeys = keys.size.toSizeType()
+            val keyset = Keyset(numKeys, keys, lengths, values)
+
+            val builder = DoubleArrayBuilder(progressFunc)
+            builder.build(keyset)
+
+//        std::size_t size = 0;
+//        unit_type *buf = NULL;
+//        builder.copy(&size, &buf);
+            // C++ ではポインタの参照を渡しているが、kotlin では返り値とするのが自然。
+            val buf = builder.copy()
+
+            val doubleArray =
+                DoubleArray(
+                    size = buf.size.toSizeType(),
+                    array = buf,
+                )
+
+            progressFunc?.invoke(numKeys + 1u, numKeys + 1u)
+
+            return doubleArray
+        }
+    }
 }
