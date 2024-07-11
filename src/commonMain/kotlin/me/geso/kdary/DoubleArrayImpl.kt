@@ -384,15 +384,11 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
       return 0;
     }
              */
-            val numKeys = keys.size.toSizeType()
             val keyset = Keyset(keys, values)
 
             val builder = DoubleArrayBuilder(progressFunc)
             builder.build(keyset)
 
-//        std::size_t size = 0;
-//        unit_type *buf = NULL;
-//        builder.copy(&size, &buf);
             // C++ ではポインタの参照を渡しているが、kotlin では返り値とするのが自然。
             val buf = builder.copy()
 
@@ -402,6 +398,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
                     array = buf,
                 )
 
+            val numKeys = keys.size.toSizeType()
             progressFunc?.invoke(numKeys + 1u, numKeys + 1u)
 
             return doubleArray
