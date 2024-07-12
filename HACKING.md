@@ -242,3 +242,7 @@ BitVector の rank メソッドがバグってるのがそもそもの問題だ�
 
 commonPrefixSearch どうなる?
 length パラメータは、ByteArray から長さとれるので不要。
+
+## 2024-07-12
+
+commonPrefixSearch が直ったのでよさそう。
