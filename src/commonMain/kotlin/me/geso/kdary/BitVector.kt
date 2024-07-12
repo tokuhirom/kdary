@@ -38,13 +38,6 @@ internal data class BitVector(
      */
     fun numOnes(): SizeType = numOnes
 
-    /**
-     * Returns the total number of bits.
-     *
-     * @return the total number of bits.
-     */
-    fun size(): SizeType = size
-
     companion object {
         /**
          * Number of bits per unit.

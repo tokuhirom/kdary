@@ -61,7 +61,6 @@ class BitVectorTest {
         }
         val bitVector = bitVectorBuilder.build()
         assertEquals(5u, bitVector.numOnes())
-        assertEquals(10u, bitVector.size())
     }
 
     @Test
@@ -72,7 +71,6 @@ class BitVectorTest {
             bitVectorBuilder.set(i.toSizeType(), i % 2u == 0u)
         }
         val bitVector = bitVectorBuilder.build()
-        assertEquals(10u, bitVector.size())
         assertEquals(5u, bitVector.numOnes())
     }
 
