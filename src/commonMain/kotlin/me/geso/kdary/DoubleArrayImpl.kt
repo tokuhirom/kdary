@@ -161,42 +161,30 @@ class DoubleArrayImpl<T : Number>(
         nodePos: SizeType,
         keyPos: SizeType,
         length: SizeType = 0u,
-    ): TraverseResult = traverseInternal(key.toUByteArray(), nodePos, keyPos, length)
+    ): TraverseResult = traverseInternal(key.toUByteArray(), nodePos, keyPos)
 
     private fun traverseInternal(
         key: UByteArray,
         nodePosParam: SizeType,
         keyPosParam: SizeType,
-        length: SizeType = 0u,
     ): TraverseResult {
         var id: IdType = nodePosParam.toIdType()
+        val length = key.size.toSizeType()
 
         var unit = array[id.toInt()]
 
         var nodePos = nodePosParam
         var keyPos = keyPosParam
 
-        if (length != 0uL) {
-            while (keyPos < length) {
-                id = id xor (unit.offset() xor key[keyPos.toInt()].toUInt())
-                unit = array[id.toInt()]
-                if (unit.label() != key[keyPos.toInt()].toUInt()) {
-                    return TraverseResult(-2, nodePos, keyPos)
-                }
-                nodePos = id.toSizeType()
+        while (keyPos < length) {
+            id = id xor (unit.offset() xor key[keyPos.toInt()].toUInt())
+            unit = array[id.toInt()]
+            if (unit.label() != key[keyPos.toInt()].toUInt()) {
+                return TraverseResult(-2, nodePos, keyPos)
+            }
+            nodePos = id.toSizeType()
 
-                keyPos++
-            }
-        } else {
-            while (key[keyPos.toInt()].toInt() != 0) {
-                id = id xor (unit.offset() xor key[keyPos.toInt()].toUInt())
-                unit = array[id.toInt()]
-                if (unit.label() != key[keyPos.toInt()].toUInt()) {
-                    return TraverseResult(-2, nodePos, keyPos)
-                }
-                nodePos = id.toSizeType()
-                keyPos++
-            }
+            keyPos++
         }
 
         return if (!unit.hasLeaf()) {
