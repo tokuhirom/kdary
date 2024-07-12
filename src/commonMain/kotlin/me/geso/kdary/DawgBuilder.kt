@@ -30,7 +30,7 @@ internal class DawgBuilder {
 
     fun numIntersections(): Int = isIntersections.numOnes().toInt()
 
-    fun size(): SizeType = units.size()
+    fun size(): SizeType = units.size.toSizeType()
 
     fun init() {
         table.resize(INITIAL_TABLE_SIZE.toSizeType(), 0u)
@@ -136,7 +136,7 @@ internal class DawgBuilder {
             val nodeId = nodeStack.top()
             nodeStack.pop()
 
-            if (numStates >= table.size() - (table.size() shr 2)) {
+            if (numStates >= table.size.toSizeType() - (table.size.toSizeType() shr 2)) {
                 expandTable()
             }
 
@@ -181,11 +181,11 @@ internal class DawgBuilder {
     }
 
     private fun expandTable() {
-        val tableSize = table.size() shl 1
+        val tableSize = table.size.toSizeType() shl 1
         table.clear()
         table.resize(tableSize, 0u)
 
-        for (i in 1uL until units.size()) {
+        for (i in 1uL until units.size.toSizeType()) {
             val id = i.toUInt()
             if (labels[id.toInt()] == 0.toUByte() || units[id.toInt()].isState()) {
                 val (hashId, _) = findUnit(id)
@@ -195,19 +195,19 @@ internal class DawgBuilder {
     }
 
     private fun findUnit(id: IdType): Pair<UInt, UInt> {
-        var hashId = hashUnit(id) % table.size().toUInt()
+        var hashId = hashUnit(id) % table.size.toSizeType().toUInt()
         while (true) {
             val unitId = table[hashId.toInt()]
             if (unitId == 0u) {
                 break
             }
-            hashId = (hashId + 1u) % table.size().toUInt()
+            hashId = (hashId + 1u) % table.size.toSizeType().toUInt()
         }
         return hashId to 0u
     }
 
     private fun findNode(nodeId: IdType): Pair<UInt, IdType> {
-        var hashId = hashNode(nodeId) % table.size().toUInt()
+        var hashId = hashNode(nodeId) % table.size.toSizeType().toUInt()
         while (true) {
             val unitId = table[hashId.toInt()]
             if (unitId == 0u) {
@@ -218,7 +218,7 @@ internal class DawgBuilder {
                 return hashId to unitId
             }
 
-            hashId = (hashId + 1u) % table.size().toUInt()
+            hashId = (hashId + 1u) % table.size.toSizeType().toUInt()
         }
         return hashId to 0u
     }
@@ -284,8 +284,8 @@ internal class DawgBuilder {
     private fun appendNode(): IdType {
         val id: IdType
         if (recycleBin.empty()) {
-            id = nodes.size().toUInt()
-            nodes.append(DawgNode())
+            id = nodes.size.toSizeType().toUInt()
+            nodes.add(DawgNode())
         } else {
             id = recycleBin.top()
             nodes[id.toInt()] = DawgNode()
@@ -296,8 +296,8 @@ internal class DawgBuilder {
 
     private fun appendUnit(): IdType {
         isIntersections.append()
-        units.append(DawgUnit())
-        labels.append(0.toUByte())
+        units.add(DawgUnit())
+        labels.add(0.toUByte())
         return (isIntersections.size() - 1uL).toIdType()
     }
 

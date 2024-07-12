@@ -10,14 +10,14 @@ internal class AutoStack<T> {
 
     fun empty(): Boolean = pool.isEmpty()
 
-    fun size(): SizeType = pool.size()
+    fun size(): SizeType = pool.size.toSizeType()
 
     fun push(value: T) {
-        pool.pushBack(value)
+        pool.add(value)
     }
 
     fun pop() {
-        pool.popBack()
+        pool.removeLast()
     }
 
     fun clear() {

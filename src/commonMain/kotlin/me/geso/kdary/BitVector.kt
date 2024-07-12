@@ -71,7 +71,7 @@ internal class BitVector {
      */
     fun append() {
         if ((size % UNIT_SIZE) == 0uL) {
-            units.append(0u)
+            units.add(0u)
         }
         size++
     }
@@ -82,13 +82,13 @@ internal class BitVector {
     fun build() {
         // Initialize ranks array with the size of units array
         ranks.reset(
-            Array(units.size().toInt()) {
+            Array(units.size.toSizeType().toInt()) {
                 0u
             },
         )
         numOnes = 0u
         // Populate ranks array and count the number of 1's
-        for (i in 0 until units.size().toInt()) {
+        for (i in 0 until units.size.toSizeType().toInt()) {
             ranks[i] = numOnes.toIdType()
             numOnes += popCount(units[i])
         }

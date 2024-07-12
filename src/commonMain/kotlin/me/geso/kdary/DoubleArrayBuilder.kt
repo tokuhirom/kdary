@@ -35,7 +35,7 @@ internal class DoubleArrayBuilder(
     }
 
     fun copy(): Array<DoubleArrayUnit> =
-        (0uL until units.size())
+        (0uL until units.size.toSizeType())
             .map {
                 DoubleArrayUnit(units[it.toInt()].unit())
             }.toTypedArray()
@@ -48,7 +48,7 @@ internal class DoubleArrayBuilder(
         extrasHead = 0u
     }
 
-    private fun numBlocks(): SizeType = units.size() / BLOCK_SIZE.toSizeType()
+    private fun numBlocks(): SizeType = units.size.toSizeType() / BLOCK_SIZE.toSizeType()
 
     private fun extras(id: IdType): DoubleArrayBuilderExtraUnit = extras[id.toInt() % NUM_EXTRAS]
 
@@ -135,7 +135,7 @@ internal class DoubleArrayBuilder(
 
         var dawgChildId: IdType = dawg.child(dawgId)
         while (dawgChildId != 0u) {
-            labels.append(dawg.label(dawgChildId))
+            labels.add(dawg.label(dawgChildId))
             dawgChildId = dawg.sibling(dawgChildId)
         }
 
@@ -143,7 +143,7 @@ internal class DoubleArrayBuilder(
         units[dicId.toInt()].setOffset(dicId xor offset)
 
         dawgChildId = dawg.child(dawgId)
-        for (i: SizeType in 0uL until labels.size()) {
+        for (i: SizeType in 0uL until labels.size.toSizeType()) {
             val dicChildId: IdType = offset xor labels[i.toInt()].toIdType()
             reserveId(dicChildId)
 
@@ -240,19 +240,19 @@ internal class DoubleArrayBuilder(
             }
 
             if (labels.isEmpty()) {
-                labels.append(label)
-            } else if (label != labels[(labels.size() - 1uL).toInt()]) {
-                if (label < labels[(labels.size() - 1uL).toInt()]) {
+                labels.add(label)
+            } else if (label != labels[(labels.size.toSizeType() - 1uL).toInt()]) {
+                if (label < labels[(labels.size.toSizeType() - 1uL).toInt()]) {
                     throw IllegalArgumentException("failed to build double-array: wrong key order")
                 }
-                labels.append(label)
+                labels.add(label)
             }
         }
 
         val offset: IdType = findValidOffset(dicId)
         units[dicId.toInt()].setOffset(dicId xor offset)
 
-        for (i: SizeType in 0uL until labels.size()) {
+        for (i: SizeType in 0uL until labels.size.toSizeType()) {
             val dicChildId: IdType = offset xor labels[i.toInt()].toIdType()
             reserveId(dicChildId)
             if (labels[i.toInt()] == 0.toUByte()) {
@@ -268,8 +268,8 @@ internal class DoubleArrayBuilder(
     }
 
     private fun findValidOffset(id: IdType): IdType {
-        if (extrasHead >= units.size().toIdType()) {
-            return units.size().toIdType() or (id and LOWER_MASK.toIdType())
+        if (extrasHead >= units.size.toSizeType().toIdType()) {
+            return units.size.toSizeType().toIdType() or (id and LOWER_MASK.toIdType())
         }
 
         var unfixedId = extrasHead
@@ -281,7 +281,7 @@ internal class DoubleArrayBuilder(
             unfixedId = extras(unfixedId).next()
         } while (unfixedId != extrasHead)
 
-        return units.size().toUInt() or (id and LOWER_MASK.toUInt())
+        return units.size.toSizeType().toUInt() or (id and LOWER_MASK.toUInt())
     }
 
     private fun isValidOffset(
@@ -297,7 +297,7 @@ internal class DoubleArrayBuilder(
             return false
         }
 
-        for (i: SizeType in 1uL until labels.size()) {
+        for (i: SizeType in 1uL until labels.size.toSizeType()) {
             if (extras(offset xor labels[i.toInt()].toIdType()).isFixed()) {
                 return false
             }
@@ -307,14 +307,14 @@ internal class DoubleArrayBuilder(
     }
 
     private fun reserveId(id: IdType) {
-        if (id >= units.size().toUInt()) {
+        if (id >= units.size.toSizeType().toUInt()) {
             expandUnits()
         }
 
         if (id == extrasHead) {
             extrasHead = extras(id).next()
             if (extrasHead == id) {
-                extrasHead = units.size().toUInt()
+                extrasHead = units.size.toSizeType().toUInt()
             }
         }
         extras(extras(id).prev()).setNext(extras(id).next())
@@ -323,7 +323,7 @@ internal class DoubleArrayBuilder(
     }
 
     private fun expandUnits() {
-        val srcNumUnits: IdType = units.size().toIdType()
+        val srcNumUnits: IdType = units.size.toSizeType().toIdType()
         val srcNumBlocks: IdType = numBlocks().toIdType()
 
         val destNumUnits: IdType = srcNumUnits + BLOCK_SIZE.toIdType()

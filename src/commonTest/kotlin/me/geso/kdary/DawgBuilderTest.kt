@@ -24,7 +24,7 @@ class DawgBuilderTest {
             builder.insert(keyset.keys(i), keyset.values(i))
         }
 
-        for (i: SizeType in 0uL until builder.nodes.size()) {
+        for (i: SizeType in 0uL until builder.nodes.size.toSizeType()) {
             println(
                 "i: $i, unit=${builder.nodes[i.toInt()].unit()}",
             )
@@ -42,7 +42,7 @@ class DawgBuilderTest {
             )
         }
         println(builder.units)
-        println(builder.units.size())
+        println(builder.units.size.toSizeType())
         println(builder.labels)
         println(builder.isIntersections)
         assertEquals(0, builder.numIntersections())
