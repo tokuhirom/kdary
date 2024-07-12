@@ -16,7 +16,6 @@ private fun readUIntLe(source: okio.BufferedSource): UInt {
     return (byte1 or (byte2 shl 8) or (byte3 shl 16) or (byte4 shl 24))
 }
 
-// ユニットのデータをリトルエンディアンで書き込む関数
 private fun writeUIntLe(
     sink: okio.BufferedSink,
     value: UInt,
@@ -27,46 +26,28 @@ private fun writeUIntLe(
     sink.writeByte(((value shr 24) and 0xFFU).toInt())
 }
 
-// KeyType は  drts-clone では Char だが、Kotlin の Char は 16bit なので Byte にしている。
-// Byte は signed 8bit。
-private typealias KeyType = Byte
-
-// C++ 実装での value_type, result_type は T になります。
-// key_type は Byte です。
 class DoubleArrayImpl<T : Number>(
-    //   typedef Details::DoubleArrayUnit unit_type;
-    // const unit_type *array_;
     private var array: Array<DoubleArrayUnit>,
 ) {
     private var size: SizeType = array.size.toSizeType()
 
-    // <ResultPairType> は一致するキーの長さに加えて値を取得するためにアプリケーションが使用できるようにします。
+    // TODO sealed class とかにした方がいいかも
     data class ResultPairType<T>(
         var value: T,
         var length: SizeType,
-    ) {
-        // set_result 相当
-        fun set(
-            value: T,
-            length: SizeType,
-        ) {
-            @Suppress("UNCHECKED_CAST")
-            this.value = value
-            this.length = length
-        }
-    }
+    )
 
-    // array() はユニットの配列を返します
-    internal fun array(): Array<DoubleArrayUnit>? = array
+    internal fun array(): Array<DoubleArrayUnit> = array
 
-    // size() returns the number of units. It can be 0 if set_array() is used.
+    /**
+     * size() returns the number of units.
+     */
     fun size(): SizeType = size
 
-    // total_size() returns the total size of the array in bytes.
+    /**
+     * total_size() returns the total size of the array in bytes.
+     */
     fun totalSize(): SizeType = unitSize() * size()
-
-    // empty() returns true if the array is empty.
-    fun nonzeroSize(): SizeType = size()
 
     /**
      * Save the double array into the specified file.
@@ -84,25 +65,11 @@ class DoubleArrayImpl<T : Number>(
         }
     }
 
-    // The 1st exactMatchSearch() tests whether the given key exists or not, and
-    // if it exists, its value and length are set to `result'. Otherwise, the
-    // value and the length of `result' are set to -1 and 0 respectively.
-    // Note that if `length' is 0, `key' is handled as a zero-terminated string.
-    // `node_pos' specifies the start position of matching. This argument enables
-    // the combination of exactMatchSearch() and traverse(). For example, if you
-    // want to test "xyzA", "xyzBC", and "xyzDE", you can use traverse() to get
-    // the node position corresponding to "xyz" and then you can use
-    // exactMatchSearch() to test "A", "BC", and "DE" from that position.
-    // Note that the length of `result' indicates the length from the `node_pos'.
-    // In the above example, the lengths are { 1, 2, 2 }, not { 4, 5, 5 }.
-//    template <class U>
-//    void exactMatchSearch(const key_type *key, U &result,
-//    std::size_t length = 0, std::size_t node_pos = 0) const {
-//        result = exactMatchSearch<U>(key, length, node_pos);
-//    }
-    // darts-clone と違って、length パラメータを消す。
-    // length パラメータは、key の長さを指定するもので、0 の場合は key が null 終端文字列として扱われる。
-    // しかし、kotlin では ByteArray が長さを持つので、length が必要ない。
+    /**
+     * exactMatchSearch() tests whether the given key exists or not, and
+     * if it exists, its value and length are set to `result'.
+     * Otherwise, the value and the length of `result' are set to -1 and 0 respectively.
+     */
     fun exactMatchSearch(
         key: ByteArray,
         nodePos: SizeType = 0u,
@@ -112,81 +79,33 @@ class DoubleArrayImpl<T : Number>(
         key: UByteArray,
         nodePosParam: SizeType = 0u,
     ): ResultPairType<Int> {
-        /*
-template <typename A, typename B, typename T, typename C>
-template <typename U>
-inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
-    std::size_t length, std::size_t node_pos) const {
-  U result;
-  set_result(&result, static_cast<value_type>(-1), 0);
-
-  unit_type unit = array_[node_pos];
-  if (length != 0) {
-    for (std::size_t i = 0; i < length; ++i) {
-      node_pos ^= unit.offset() ^ static_cast<uchar_type>(key[i]);
-      unit = array_[node_pos];
-      if (unit.label() != static_cast<uchar_type>(key[i])) {
-        return result;
-      }
-    }
-  } else {
-    for ( ; key[length] != '\0'; ++length) {
-      node_pos ^= unit.offset() ^ static_cast<uchar_type>(key[length]);
-      unit = array_[node_pos];
-      if (unit.label() != static_cast<uchar_type>(key[length])) {
-        return result;
-      }
-    }
-  }
-
-  if (!unit.has_leaf()) {
-    return result;
-  }
-  unit = array_[node_pos ^ unit.offset()];
-  set_result(&result, static_cast<value_type>(unit.value()), length);
-  return result;
-}
-         */
         var unit = array[nodePosParam.toInt()]
         var nodePos = nodePosParam
         val length = key.size.toSizeType()
-        //    println("[D] $message")
         for (i in 0uL until length) {
-            //    println("[D] $message")
-// TODO xor 動いてる?
-            //    println("[D] $message")
-            "nodePos: $nodePos, unit.offset(): ${unit.offset()}"
             nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
-            //    println("[D] $message")
-            unit = array[nodePos.toInt()] ?: return ResultPairType(-1, 0u)
-            //    println("[D] $message")
-            "unit.label=${unit.label()}"
+            unit = array[nodePos.toInt()]
             if (unit.label() != key[i.toInt()].toUInt()) {
                 return ResultPairType(-1, 0u)
             }
         }
 
-        //    println("[D] $message")
-        "Checking leaf: ${unit.hasLeaf()}"
         if (!unit.hasLeaf()) {
             return ResultPairType(-1, 0u)
         }
-        unit = array[nodePos.toInt() xor unit.offset().toInt()] ?: return ResultPairType(-1, 0u)
+        unit = array[nodePos.toInt() xor unit.offset().toInt()]
         return ResultPairType(unit.value(), length)
     }
 
-    // commonPrefixSearch() searches for keys which match a prefix of the given
-    // string. If `length' is 0, `key' is handled as a zero-terminated string.
-    // The values and the lengths of at most `max_num_results' matched keys are
-    // stored in `results'. commonPrefixSearch() returns the number of matched
-    // keys. Note that the return value can be larger than `max_num_results' if
-    // there are more than `max_num_results' matches. If you want to get all the
-    // results, allocate more spaces and call commonPrefixSearch() again.
-    // `node_pos' works as well as in exactMatchSearch().
-//    template <class U>
-//    inline std::size_t commonPrefixSearch(const key_type *key, U *results,
-//    std::size_t max_num_results, std::size_t length = 0,
-//    std::size_t node_pos = 0) const;
+    /**
+     * commonPrefixSearch() searches for keys which match a prefix of the given
+     * string. If `length' is 0, `key' is handled as a zero-terminated string.
+     * The values and the lengths of at most `maxNumResults' matched keys are
+     * stored in `results'. commonPrefixSearch() returns the number of matched
+     * keys. Note that the return value can be larger than `maxNumResults' if
+     * there are more than `maxNumResults' matches. If you want to get all the
+     * results, allocate more spaces and call commonPrefixSearch() again.
+     */
     fun commonPrefixSearch(
         key: ByteArray,
         maxNumResults: SizeType? = null,
@@ -207,7 +126,6 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         val results = mutableListOf<ResultPairType<ValueType>>()
 
         for (i in 0uL until length) {
-            // TODO ここのビット操作がめっちゃ怪しい
             nodePos = nodePos xor key[i.toInt()].toInt().toSizeType()
             unit = array[nodePos.toInt()]
             if (unit.label() != (key[i.toInt()].toUInt() and 0xFFU)) {
@@ -237,8 +155,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
     // associated with the final accept state. That is, traverse() returns the
     // value associated with the given key if it exists. Note that traverse()
     // updates `node_pos' and `key_pos' after each transition.
-//    inline value_type traverse(const key_type *key, std::size_t &node_pos,
-//    std::size_t &key_pos, std::size_t length = 0) const;
+    // TODO use javadoc
     fun traverse(
         key: ByteArray,
         nodePos: SizeType,
@@ -256,7 +173,6 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
 
         var unit = array[id.toInt()]
 
-        // 変更するために、var にアサインする
         var nodePos = nodePosParam
         var keyPos = keyPosParam
 
@@ -298,6 +214,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
     )
 
     companion object {
+        // TODO use javadoc
         // build() constructs a dictionary from given key-value pairs. If `lengths'
         // is NULL, `keys' is handled as an array of zero-terminated strings. If
         // `values' is NULL, the index in `keys' is associated with each key, i.e.
@@ -315,48 +232,17 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         // build() uses another construction algorithm if `values' is not NULL. In
         // this case, Darts-clone uses a Directed Acyclic Word Graph (DAWG) instead
         // of a trie because a DAWG is likely to be more compact than a trie.
-//    int build(std::size_t num_keys, const key_type * const *keys,
-//    const std::size_t *lengths = NULL, const value_type *values = NULL,
-//    Details::progress_func_type progress_func = NULL);
         fun <T> build(
             // XXX keys は sorted であること。
             keys: Array<ByteArray>,
             values: Array<T>? = null,
             progressFunc: ProgressFuncType? = null,
         ): DoubleArray {
-            /*
-    template <typename A, typename B, typename T, typename C>
-    int DoubleArrayImpl<A, B, T, C>::build(std::size_t num_keys,
-        const key_type * const *keys, const std::size_t *lengths,
-        const value_type *values, Details::progress_func_type progress_func) {
-      Details::Keyset<value_type> keyset(num_keys, keys, lengths, values);
-
-      Details::DoubleArrayBuilder builder(progress_func);
-      builder.build(keyset);
-
-      std::size_t size = 0;
-      unit_type *buf = NULL;
-      builder.copy(&size, &buf);
-
-      clear();
-
-      size_ = size;
-      array_ = buf;
-      buf_ = buf;
-
-      if (progress_func != NULL) {
-        progress_func(num_keys + 1, num_keys + 1);
-      }
-
-      return 0;
-    }
-             */
             val keyset = Keyset(keys.map { it.toUByteArray() }.toTypedArray(), values)
 
             val builder = DoubleArrayBuilder(progressFunc)
             builder.build(keyset)
 
-            // C++ ではポインタの参照を渡しているが、kotlin では返り値とするのが自然。
             val buf = builder.copy()
 
             val doubleArray = DoubleArray(buf)

@@ -398,6 +398,12 @@ void test_common_prefix_search(const T &dic,
         }
     }
 
+    @Test
+    fun testTotalSize() {
+        val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
+        assert(800000u < dic.totalSize())
+    }
+
     companion object {
         const val NUM_VALID_KEYS = 1 shl 16
         const val NUM_INVALID_KEYS = 1 shl 17
