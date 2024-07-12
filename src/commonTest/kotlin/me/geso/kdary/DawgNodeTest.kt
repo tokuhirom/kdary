@@ -2,38 +2,35 @@ package me.geso.kdary
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class DawgNodeTest {
     @Test
     fun testDawgNode() {
         val node = DawgNode()
 
-        node.setChild(1u)
-        assertEquals(1u, node.child())
+        node.child = 1u
+        assertEquals(1u, node.child)
 
-        node.setSibling(2u)
-        assertEquals(2u, node.sibling())
+        node.sibling = 2u
+        assertEquals(2u, node.sibling)
 
-        node.setValue(3)
-        assertEquals(3, node.value())
+        node.child = 3.toIdType()
+        assertEquals(3, node.child.toValueType())
 
-        node.setLabel('a'.code.toByte().toUByte())
-        assertEquals('a'.code.toByte().toUByte(), node.label())
+        node.label = 'a'.code.toByte().toUByte()
+        assertEquals('a'.code.toByte().toUByte(), node.label)
 
-        node.setIsState(true)
-        assertTrue(node.isState())
+        node.isState = true
 
-        node.setHasSibling(true)
-        assertTrue(node.hasSibling())
+        node.hasSibling = true
 
         assertEquals(15u, node.unit()) // (3 << 2) | 2 | 1 = 12 | 2 | 1 = 15
 
-        node.setLabel(0u)
+        node.label = 0u
         assertEquals(7u, node.unit()) // (3 << 1) | 1 = 6 | 1 = 7
 
-        node.setIsState(false)
-        node.setHasSibling(false)
+        node.isState = false
+        node.hasSibling = false
         assertEquals(6u, node.unit()) // (3 << 1) | 0 = 6
     }
 }
