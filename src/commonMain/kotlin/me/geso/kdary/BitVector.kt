@@ -49,9 +49,6 @@ internal class BitVector {
         }
     }
 
-    val empty: Boolean
-        get() = units.isEmpty()
-
     /**
      * Returns the total number of 1's.
      *

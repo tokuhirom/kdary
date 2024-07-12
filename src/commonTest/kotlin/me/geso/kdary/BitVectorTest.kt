@@ -65,14 +65,6 @@ class BitVectorTest {
     }
 
     @Test
-    fun testIsEmpty() {
-        val bitVector = BitVector()
-        assertTrue(bitVector.empty)
-        bitVector.append()
-        assertFalse(bitVector.empty)
-    }
-
-    @Test
     fun testClear() {
         val bitVector = BitVector()
         for (i in 0u until 10u) {
@@ -84,7 +76,6 @@ class BitVectorTest {
         assertEquals(5u, bitVector.numOnes())
 
         bitVector.clear()
-        assertTrue(bitVector.empty)
         // clear しても size, numOnes は変わらない。これは darts-clone の実装がそうなっている。
 //        assertEquals(5u, bitVector.numOnes())
 //        assertEquals(10u, bitVector.size())
