@@ -4,8 +4,8 @@ package me.geso.kdary
  * Succinct bit vector.
  */
 internal data class BitVector(
-    private val units: MutableList<IdType> = mutableListOf(),
-    private val ranks: AutoArray<IdType> = AutoArray(),
+    private val units: List<IdType>,
+    private val ranks: Array<IdType>,
     private val numOnes: SizeType = 0u,
     private val size: SizeType = 0u,
 ) {

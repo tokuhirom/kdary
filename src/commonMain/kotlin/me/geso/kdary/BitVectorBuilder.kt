@@ -55,23 +55,16 @@ internal class BitVectorBuilder {
      */
     fun build(): BitVector {
         // Initialize ranks array with the size of units array
-        var ranks: AutoArray<IdType> = AutoArray()
-        ranks.reset(
+        val ranks =
             Array(units.size.toSizeType().toInt()) {
                 0u
-            },
-        )
+            }
         var numOnes: SizeType = 0u
         // Populate ranks array and count the number of 1's
         for (i in 0 until units.size.toSizeType().toInt()) {
             ranks[i] = numOnes.toIdType()
             numOnes += BitVector.popCount(units[i])
         }
-        return BitVector(
-            units,
-            ranks,
-            numOnes,
-            size,
-        )
+        return BitVector(units, ranks, numOnes, size)
     }
 }
