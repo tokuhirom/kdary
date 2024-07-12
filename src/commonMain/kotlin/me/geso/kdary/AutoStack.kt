@@ -4,11 +4,11 @@ package me.geso.kdary
  * Memory management of stack.
  */
 internal class AutoStack<T> {
-    private val pool = AutoPool<T>()
+    private val pool = mutableListOf<T>()
 
     fun top(): T = pool[(size() - 1u).toInt()]
 
-    fun empty(): Boolean = pool.empty()
+    fun empty(): Boolean = pool.isEmpty()
 
     fun size(): SizeType = pool.size()
 

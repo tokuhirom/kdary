@@ -8,12 +8,12 @@ import kotlin.test.assertTrue
 class AutoPoolTest {
     @Test
     fun testAutoPool() {
-        val autoPool = AutoPool<Int>()
-        assertTrue(autoPool.empty())
+        val autoPool = mutableListOf<Int>()
+        assertTrue(autoPool.isEmpty())
         autoPool.pushBack(3)
         autoPool.pushBack(6)
         assertEquals(2u, autoPool.size())
-        assertFalse(autoPool.empty())
+        assertFalse(autoPool.isEmpty())
         assertEquals(3, autoPool[0])
         assertEquals(6, autoPool[1])
         autoPool.popBack()

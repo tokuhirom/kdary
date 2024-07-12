@@ -4,7 +4,7 @@ package me.geso.kdary
  * Succinct bit vector.
  */
 internal class BitVector {
-    private val units: AutoPool<IdType> = AutoPool()
+    private val units: MutableList<IdType> = mutableListOf()
     private var ranks: AutoArray<IdType> = AutoArray()
     private var numOnes: SizeType = 0u
     private var size: SizeType = 0u
@@ -50,7 +50,7 @@ internal class BitVector {
     }
 
     val empty: Boolean
-        get() = units.empty()
+        get() = units.isEmpty()
 
     /**
      * Returns the total number of 1's.

@@ -1,63 +1,33 @@
 package me.geso.kdary
 
-/**
- * Memory management of resizable array.
- */
-internal class AutoPool<T> {
-    // TODO: use MutableList directly.
-    // This implementation is based on MutableList.
-    private var buf: MutableList<T> = mutableListOf()
+fun <T> MutableList<T>.size(): SizeType = this.size.toSizeType()
 
-    operator fun get(id: Int): T = buf[id]
+fun <T> MutableList<T>.pushBack(value: T) = this.append(value)
 
-    operator fun set(
-        id: Int,
-        value: T,
-    ) {
-        buf[id] = value
+fun <T> MutableList<T>.popBack() = this.removeLast()
+
+fun <T> MutableList<T>.append(value: T) = this.add(value)
+
+fun <T> MutableList<T>.resize(
+    tableSize: SizeType,
+    value: T,
+) {
+    while (this.size > tableSize.toInt()) {
+        this.removeLast()
     }
-
-    fun empty(): Boolean = buf.isEmpty()
-
-    fun size(): SizeType = buf.size.toSizeType()
-
-    fun clear() {
-        buf.clear()
+    while (this.size < tableSize.toInt()) {
+        this.add(value)
     }
+}
 
-    fun pushBack(value: T) {
-        append(value)
+fun <T> MutableList<T>.resizeWithBlock(
+    tableSize: SizeType,
+    builder: () -> T,
+) {
+    while (this.size > tableSize.toInt()) {
+        this.removeLast()
     }
-
-    fun popBack() {
-        buf.removeLast()
-    }
-
-    fun append(value: T) {
-        buf.add(value)
-    }
-
-    fun resize(
-        tableSize: SizeType,
-        value: T,
-    ) {
-        while (buf.size > tableSize.toInt()) {
-            buf.removeLast()
-        }
-        while (buf.size < tableSize.toInt()) {
-            buf.add(value)
-        }
-    }
-
-    fun resize(
-        tableSize: SizeType,
-        builder: () -> T,
-    ) {
-        while (buf.size > tableSize.toInt()) {
-            buf.removeLast()
-        }
-        while (buf.size < tableSize.toInt()) {
-            buf.add(builder())
-        }
+    while (this.size < tableSize.toInt()) {
+        this.add(builder())
     }
 }

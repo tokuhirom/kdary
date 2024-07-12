@@ -8,9 +8,9 @@ package me.geso.kdary
 internal class DoubleArrayBuilder(
     private val progressFunc: ProgressFuncType? = null,
 ) {
-    private val units = AutoPool<DoubleArrayBuilderUnit>()
+    private val units = mutableListOf<DoubleArrayBuilderUnit>()
     private val extras = AutoArray<DoubleArrayBuilderExtraUnit>()
-    private val labels = AutoPool<UByte>()
+    private val labels = mutableListOf<UByte>()
     private val table = AutoArray<IdType>()
     private var extrasHead: IdType = 0u
 
@@ -239,7 +239,7 @@ internal class DoubleArrayBuilder(
                 progressFunc?.invoke(i + 1uL, keyset.numKeys() + 1uL)
             }
 
-            if (labels.empty()) {
+            if (labels.isEmpty()) {
                 labels.append(label)
             } else if (label != labels[(labels.size() - 1uL).toInt()]) {
                 if (label < labels[(labels.size() - 1uL).toInt()]) {
@@ -333,7 +333,7 @@ internal class DoubleArrayBuilder(
             fixBlock(srcNumBlocks - NUM_EXTRA_BLOCKS.toIdType())
         }
 
-        units.resize(destNumUnits.toSizeType()) {
+        units.resizeWithBlock(destNumUnits.toSizeType()) {
             DoubleArrayBuilderUnit()
         }
 

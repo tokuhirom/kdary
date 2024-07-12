@@ -3,11 +3,11 @@
 package me.geso.kdary
 
 internal class DawgBuilder {
-    internal val nodes = AutoPool<DawgNode>()
-    internal val units = AutoPool<DawgUnit>()
-    internal val labels = AutoPool<UByte>()
+    internal val nodes = mutableListOf<DawgNode>()
+    internal val units = mutableListOf<DawgUnit>()
+    internal val labels = mutableListOf<UByte>()
     internal val isIntersections = BitVector()
-    private val table = AutoPool<IdType>()
+    private val table = mutableListOf<IdType>()
     private val nodeStack = AutoStack<IdType>()
     private val recycleBin = AutoStack<IdType>()
     private var numStates: SizeType = 0u
