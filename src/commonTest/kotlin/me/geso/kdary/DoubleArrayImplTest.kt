@@ -58,11 +58,11 @@ void generate_valid_keys(std::size_t num_keys,
          */
         val keys = mutableSetOf<String>()
         while (keys.size < numKeys) {
-            val key = UByteArray(1 + (0..7).random())
+            val key = ByteArray(1 + (0..7).random())
             for (i in key.indices) {
-                key[i] = ('A'.code + (0..25).random(random)).toUByte()
+                key[i] = ('A'.code + (0..25).random(random)).toByte()
             }
-            keys.add(String(key.toByteArray()))
+            keys.add(String(key))
         }
         return keys.map { it.toByteArray() }.toSet()
     }
@@ -91,12 +91,12 @@ void generate_invalid_keys(std::size_t num_keys,
         val keys = mutableSetOf<String>()
         val validKeyStrings = validKeys.map { String(it) }.toSet()
         while (keys.size < numInvalidKeys) {
-            val key = UByteArray(1 + (0..7).random(random))
+            val key = ByteArray(1 + (0..7).random(random))
             for (i in key.indices) {
-                key[i] = ('A'.code + (0..25).random(random)).toUByte()
+                key[i] = ('A'.code + (0..25).random(random)).toByte()
             }
-            if (!validKeyStrings.contains(String(key.toByteArray()))) {
-                keys.add(String(key.toByteArray()))
+            if (!validKeyStrings.contains(String(key))) {
+                keys.add(String(key))
             }
         }
         return keys.map { it.toByteArray() }.toSet()
