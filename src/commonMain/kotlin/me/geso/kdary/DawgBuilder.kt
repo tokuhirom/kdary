@@ -8,8 +8,8 @@ internal class DawgBuilder {
     internal val labels = mutableListOf<UByte>()
     private val isIntersections = BitVector()
     private val table = mutableListOf<IdType>()
-    private val nodeStack = AutoStack<IdType>()
-    private val recycleBin = AutoStack<IdType>()
+    private val nodeStack = mutableListOf<IdType>()
+    private val recycleBin = mutableListOf<IdType>()
     private var numStates: SizeType = 0u
 
     fun init() {
@@ -21,7 +21,7 @@ internal class DawgBuilder {
         numStates = 1u
 
         nodes[0].label = 0xFF.toUByte()
-        nodeStack.push(0u)
+        nodeStack.add(0u)
     }
 
     fun finish(): Dawg {
@@ -91,7 +91,7 @@ internal class DawgBuilder {
             nodes[childId.toInt()].sibling = nodes[id.toInt()].child
             nodes[childId.toInt()].label = keyLabel
             nodes[id.toInt()].child = childId
-            nodeStack.push(childId)
+            nodeStack.add(childId)
 
             id = childId
             keyPos++
@@ -100,9 +100,9 @@ internal class DawgBuilder {
     }
 
     private fun flush(id: IdType) {
-        while (nodeStack.top() != id) {
-            val nodeId = nodeStack.top()
-            nodeStack.pop()
+        while (nodeStack[nodeStack.size - 1] != id) {
+            val nodeId = nodeStack[nodeStack.size - 1]
+            nodeStack.removeLast()
 
             if (numStates >= table.size.toSizeType() - (table.size.toSizeType() shr 2)) {
                 expandTable()
@@ -142,10 +142,10 @@ internal class DawgBuilder {
                 i = next
             }
 
-            "nodeStack.top=${nodeStack.top()}, matchId=$matchId"
-            nodes[nodeStack.top().toInt()].child = matchId
+            "nodeStack.top=${nodeStack[nodeStack.size - 1]}, matchId=$matchId"
+            nodes[nodeStack[nodeStack.size - 1].toInt()].child = matchId
         }
-        nodeStack.pop()
+        nodeStack.removeLast()
     }
 
     private fun expandTable() {
@@ -251,13 +251,13 @@ internal class DawgBuilder {
 
     private fun appendNode(): IdType {
         val id: IdType
-        if (recycleBin.empty()) {
+        if (recycleBin.isEmpty()) {
             id = nodes.size.toSizeType().toUInt()
             nodes.add(DawgNode())
         } else {
-            id = recycleBin.top()
+            id = recycleBin[recycleBin.size - 1]
             nodes[id.toInt()] = DawgNode()
-            recycleBin.pop()
+            recycleBin.removeLast()
         }
         return id
     }
@@ -270,7 +270,7 @@ internal class DawgBuilder {
     }
 
     private fun freeNode(id: IdType) {
-        recycleBin.push(id)
+        recycleBin.add(id)
     }
 
     companion object {
