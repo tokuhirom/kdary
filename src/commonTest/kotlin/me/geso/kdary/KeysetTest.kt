@@ -15,7 +15,6 @@ class KeysetTest {
         assertEquals(3u, keyset.numKeys())
         assertEquals("apple", String(keyset.keys(0u).toByteArray()))
         assertEquals('b'.code.toUByte(), keyset.keys(1u, 0u))
-        assertEquals(6u, keyset.lengths(2u))
         assertTrue(keyset.hasValues())
         assertEquals(2, keyset.values(1u))
 
