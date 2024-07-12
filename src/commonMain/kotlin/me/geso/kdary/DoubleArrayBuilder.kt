@@ -23,16 +23,17 @@ internal class DoubleArrayBuilder(
         const val LOWER_MASK = 0xFF
     }
 
-    fun <T> build(keyset: Keyset<T>) {
+    fun <T> build(keyset: Keyset<T>): Array<DoubleArrayUnit> {
         if (keyset.hasValues()) {
             val dawg = buildDawg(keyset)
             buildFromDawg(dawg)
         } else {
             buildFromKeyset(keyset)
         }
+        return copy()
     }
 
-    fun copy(): Array<DoubleArrayUnit> =
+    private fun copy(): Array<DoubleArrayUnit> =
         (0uL until units.size.toSizeType())
             .map {
                 DoubleArrayUnit(units[it.toInt()].unit())

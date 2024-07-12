@@ -249,9 +249,7 @@ class DoubleArrayImpl<T : Number> {
             val keyset = Keyset(keys.map { it.toUByteArray() }.toTypedArray(), values)
 
             val builder = DoubleArrayBuilder(progressFunc)
-            builder.build(keyset)
-
-            val buf = builder.copy()
+            val buf = builder.build(keyset)
 
             val doubleArray = DoubleArray(buf)
 

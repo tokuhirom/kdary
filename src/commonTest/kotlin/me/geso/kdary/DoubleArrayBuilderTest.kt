@@ -15,8 +15,7 @@ class DoubleArrayBuilderTest {
             )
 
         val builder = DoubleArrayBuilder()
-        builder.build(keyset)
-        val buf: Array<DoubleArrayUnit> = builder.copy()
+        val buf = builder.build(keyset)
         buf.forEachIndexed { index, doubleArrayUnit ->
             println("index: $index, unit: $doubleArrayUnit")
         }
@@ -33,8 +32,7 @@ class DoubleArrayBuilderTest {
             )
 
         val builder = DoubleArrayBuilder()
-        builder.build(keyset)
-        val buf: Array<DoubleArrayUnit> = builder.copy()
+        val buf = builder.build(keyset)
         println(buf.toList())
     }
 }
