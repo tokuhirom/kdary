@@ -34,29 +34,11 @@ class DoubleArrayBuilder(
         }
     }
 
-    fun copy(): Array<DoubleArrayUnit> {
-        /*
-        inline void DoubleArrayBuilder::copy(std::size_t *size_ptr,
-            DoubleArrayUnit **buf_ptr) const {
-          if (size_ptr != NULL) {
-         *size_ptr = units_.size();
-          }
-          if (buf_ptr != NULL) {
-         *buf_ptr = new DoubleArrayUnit[units_.size()];
-            unit_type *units = reinterpret_cast<unit_type *>(*buf_ptr);
-            for (std::size_t i = 0; i < units_.size(); ++i) {
-              units[i] = units_[i];
-            }
-          }
-        }
-         */
-
-        // kotlin の配列はサイズを持っているので、、size_ptr は不要。
-        return (0uL until units.size())
+    fun copy(): Array<DoubleArrayUnit> =
+        (0uL until units.size())
             .map {
                 DoubleArrayUnit(units[it.toInt()].unit())
             }.toTypedArray()
-    }
 
     fun clear() {
         units.clear()
@@ -192,7 +174,6 @@ class DoubleArrayBuilder(
         units[0].setLabel(0u)
 
         if (keyset.numKeys() > 0u) {
-            // TODO 型をチェック
             buildFromKeyset(keyset, 0u, keyset.numKeys(), 0u, 0u)
         }
 
@@ -202,36 +183,6 @@ class DoubleArrayBuilder(
         labels.clear()
     }
 
-    /*
-    template <typename T>
-void DoubleArrayBuilder::build_from_keyset(const Keyset<T> &keyset,
-    std::size_t begin, std::size_t end, std::size_t depth, id_type dic_id) {
-  id_type offset = arrange_from_keyset(keyset, begin, end, depth, dic_id);
-
-  while (begin < end) {
-    if (keyset.keys(begin, depth) != '\0') {
-      break;
-    }
-    ++begin;
-  }
-  if (begin == end) {
-    return;
-  }
-
-  std::size_t last_begin = begin;
-  uchar_type last_label = keyset.keys(begin, depth);
-  while (++begin < end) {
-    uchar_type label = keyset.keys(begin, depth);
-    if (label != last_label) {
-      build_from_keyset(keyset, last_begin, begin,
-          depth + 1, offset ^ last_label);
-      last_begin = begin;
-      last_label = keyset.keys(begin, depth);
-    }
-  }
-  build_from_keyset(keyset, last_begin, end, depth + 1, offset ^ last_label);
-}
-     */
     private fun <T> buildFromKeyset(
         keyset: Keyset<T>,
         begin: SizeType,
@@ -257,13 +208,11 @@ void DoubleArrayBuilder::build_from_keyset(const Keyset<T> &keyset,
         while (++i < end) {
             val label: UByte = keyset.keys(i, depth)
             if (label != lastLabel) {
-                // TODO ここの XOR での型変換は少し不安
                 buildFromKeyset(keyset, lastBegin, i, depth + 1uL, offset xor lastLabel.toIdType())
                 lastBegin = i
                 lastLabel = keyset.keys(i, depth)
             }
         }
-        // TODO ここの XOR での型変換は少し不安
         buildFromKeyset(keyset, lastBegin, end, depth + 1uL, offset xor lastLabel.toIdType())
     }
 
@@ -304,7 +253,6 @@ void DoubleArrayBuilder::build_from_keyset(const Keyset<T> &keyset,
         units[dicId.toInt()].setOffset(dicId xor offset)
 
         for (i: SizeType in 0uL until labels.size()) {
-            // TODO: この xor あってる?
             val dicChildId: IdType = offset xor labels[i.toInt()].toIdType()
             reserveId(dicChildId)
             if (labels[i.toInt()] == 0.toUByte()) {
