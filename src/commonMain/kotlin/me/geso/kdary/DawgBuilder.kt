@@ -14,7 +14,10 @@ internal class DawgBuilder {
 
     init {
         table.resize(INITIAL_TABLE_SIZE.toSizeType(), 0u)
-        appendNode()
+        check(recycleBin.isEmpty())
+
+        nodes.add(DawgNode())
+
         appendUnit()
         numStates = 1u
         nodes[0].label = 0xFF.toUByte()
