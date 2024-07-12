@@ -41,24 +41,6 @@ class BitVector {
     // 全ビット数を返すメソッド
     fun size(): SizeType = size
 
-//    fun toList(): List<Boolean> = (0u until size).map { get(it) }
-
-    fun dump() {
-        println("BitVector::")
-        print("  bits:")
-        for (i in 0uL until size()) {
-            print(this[i.toUInt()])
-            print(" ")
-        }
-        println()
-        print("  rank:")
-        for (i in 0uL until this.size()) {
-            print(this.rank(i))
-            print(" ")
-        }
-        println()
-    }
-
     // 新しいビットを追加する
     fun append() {
         if ((size % UNIT_SIZE) == 0uL) {
@@ -97,7 +79,6 @@ class BitVector {
         private const val UNIT_SIZE = 32u
 
         internal fun popCount(unit: IdType): IdType {
-//            Integer.bitCount(unit.toInt()) でも良いかも。
             var u = unit
             u = ((u and 0xAAAAAAAAu) shr 1) + (u and 0x55555555u)
             u = ((u and 0xCCCCCCCCu) shr 2) + (u and 0x33333333u)
