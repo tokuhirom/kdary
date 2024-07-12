@@ -3,12 +3,12 @@ package me.geso.kdary
 /**
  * Succinct bit vector.
  */
-internal class BitVector {
-    private val units: MutableList<IdType> = mutableListOf()
-    private var ranks: AutoArray<IdType> = AutoArray()
-    private var numOnes: SizeType = 0u
-    private var size: SizeType = 0u
-
+internal data class BitVector(
+    private val units: MutableList<IdType> = mutableListOf(),
+    private val ranks: AutoArray<IdType> = AutoArray(),
+    private val numOnes: SizeType = 0u,
+    private val size: SizeType = 0u,
+) {
     /**
      * Returns the bit value at the specified index.
      *
@@ -32,24 +32,6 @@ internal class BitVector {
     }
 
     /**
-     * Sets the bit at the specified index.
-     *
-     * @param id the index of the bit to set.
-     * @param bit the value to set the bit to (true for 1, false for 0).
-     */
-    fun set(
-        id: SizeType,
-        bit: Boolean,
-    ) {
-        val unitId = (id / UNIT_SIZE).toInt()
-        if (bit) {
-            units[unitId] = units[unitId] or (1u shl (id % UNIT_SIZE).toInt())
-        } else {
-            units[unitId] = units[unitId] and (1u shl (id % UNIT_SIZE).toInt()).inv()
-        }
-    }
-
-    /**
      * Returns the total number of 1's.
      *
      * @return the total number of 1's.
@@ -63,47 +45,11 @@ internal class BitVector {
      */
     fun size(): SizeType = size
 
-    /**
-     * Adds a new bit to the vector.
-     */
-    fun append() {
-        if ((size % UNIT_SIZE) == 0uL) {
-            units.add(0u)
-        }
-        size++
-    }
-
-    /**
-     * Builds the rank array.
-     */
-    fun build() {
-        // Initialize ranks array with the size of units array
-        ranks.reset(
-            Array(units.size.toSizeType().toInt()) {
-                0u
-            },
-        )
-        numOnes = 0u
-        // Populate ranks array and count the number of 1's
-        for (i in 0 until units.size.toSizeType().toInt()) {
-            ranks[i] = numOnes.toIdType()
-            numOnes += popCount(units[i])
-        }
-    }
-
-    /**
-     * Clears all data.
-     */
-    fun clear() {
-        units.clear()
-        ranks.clear()
-    }
-
     companion object {
         /**
          * Number of bits per unit.
          */
-        private const val UNIT_SIZE = 32u
+        internal const val UNIT_SIZE = 32u
 
         /**
          * Returns the population count (number of 1's) in the given unit.

@@ -8,7 +8,7 @@ import kotlin.test.assertTrue
 class BitVectorTest {
     @Test
     fun testSetAndGet() {
-        val bitVector = BitVector()
+        val bitVector = BitVectorBuilder()
         bitVector.append()
         bitVector.set(0u, true)
         assertTrue(bitVector[0u])
@@ -18,12 +18,12 @@ class BitVectorTest {
 
     @Test
     fun testRank() {
-        val bitVector = BitVector()
+        val bitVectorBuilder = BitVectorBuilder()
         for (i in 0u until 10u) {
-            bitVector.append()
-            bitVector.set(i.toSizeType(), i % 2u == 0u)
+            bitVectorBuilder.append()
+            bitVectorBuilder.set(i.toSizeType(), i % 2u == 0u)
         }
-        bitVector.build()
+        val bitVector = bitVectorBuilder.build()
 //        assertEquals(listOf(true, false, true, false, true, false, true, false, true, false), bitVector.toList())
         assertEquals(1u, bitVector.rank(1u))
         assertEquals(2u, bitVector.rank(3u))
@@ -32,15 +32,15 @@ class BitVectorTest {
 
     @Test
     fun testRankEx() {
-        val bitVector = BitVector()
+        val bitVectorBuilder = BitVectorBuilder()
         for (i in 0u until 4u) {
-            bitVector.append()
+            bitVectorBuilder.append()
         }
-        bitVector.set(0u, false)
-        bitVector.set(1u, true)
-        bitVector.set(2u, false)
-        bitVector.set(3u, false)
-        bitVector.build()
+        bitVectorBuilder.set(0u, false)
+        bitVectorBuilder.set(1u, true)
+        bitVectorBuilder.set(2u, false)
+        bitVectorBuilder.set(3u, false)
+        val bitVector = bitVectorBuilder.build()
 
         assertEquals(
             listOf(false, true, false, false),
@@ -54,31 +54,26 @@ class BitVectorTest {
 
     @Test
     fun testNumOnesAndSize() {
-        val bitVector = BitVector()
+        val bitVectorBuilder = BitVectorBuilder()
         for (i in 0u until 10u) {
-            bitVector.append()
-            bitVector.set(i.toSizeType(), i % 2u == 0u)
+            bitVectorBuilder.append()
+            bitVectorBuilder.set(i.toSizeType(), i % 2u == 0u)
         }
-        bitVector.build()
+        val bitVector = bitVectorBuilder.build()
         assertEquals(5u, bitVector.numOnes())
         assertEquals(10u, bitVector.size())
     }
 
     @Test
     fun testClear() {
-        val bitVector = BitVector()
+        val bitVectorBuilder = BitVectorBuilder()
         for (i in 0u until 10u) {
-            bitVector.append()
-            bitVector.set(i.toSizeType(), i % 2u == 0u)
+            bitVectorBuilder.append()
+            bitVectorBuilder.set(i.toSizeType(), i % 2u == 0u)
         }
-        bitVector.build()
+        val bitVector = bitVectorBuilder.build()
         assertEquals(10u, bitVector.size())
         assertEquals(5u, bitVector.numOnes())
-
-        bitVector.clear()
-        // clear しても size, numOnes は変わらない。これは darts-clone の実装がそうなっている。
-//        assertEquals(5u, bitVector.numOnes())
-//        assertEquals(10u, bitVector.size())
     }
 
     @Test

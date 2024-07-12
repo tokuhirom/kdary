@@ -6,7 +6,7 @@ internal class DawgBuilder {
     internal val nodes = mutableListOf<DawgNode>()
     internal val units = mutableListOf<DawgUnit>()
     internal val labels = mutableListOf<UByte>()
-    private val isIntersections = BitVector()
+    private val isIntersectionsBuilder = BitVectorBuilder()
     private val table = mutableListOf<IdType>()
     private val nodeStack = mutableListOf<IdType>()
     private val recycleBin = mutableListOf<IdType>()
@@ -35,7 +35,7 @@ internal class DawgBuilder {
         nodeStack.clear()
         recycleBin.clear()
 
-        isIntersections.build()
+        val isIntersections = isIntersectionsBuilder.build()
 
         return Dawg(units, labels, isIntersections, numStates)
     }
@@ -117,7 +117,7 @@ internal class DawgBuilder {
 
             var (hashId, matchId) = findNode(nodeId)
             if (matchId != 0u) {
-                isIntersections.set(matchId.toSizeType(), true)
+                isIntersectionsBuilder.set(matchId.toSizeType(), true)
             } else {
                 var unitId: IdType = 0u
                 for (j in 0 until numSiblings.toInt()) {
@@ -262,10 +262,10 @@ internal class DawgBuilder {
     }
 
     private fun appendUnit(): IdType {
-        isIntersections.append()
+        isIntersectionsBuilder.append()
         units.add(DawgUnit())
         labels.add(0.toUByte())
-        return (isIntersections.size() - 1uL).toIdType()
+        return (isIntersectionsBuilder.size() - 1uL).toIdType()
     }
 
     private fun freeNode(id: IdType) {
