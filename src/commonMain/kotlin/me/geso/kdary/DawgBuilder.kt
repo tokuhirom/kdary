@@ -2,7 +2,7 @@
 
 package me.geso.kdary
 
-class DawgBuilder {
+internal class DawgBuilder {
     internal val nodes = AutoPool<DawgNode>()
     internal val units = AutoPool<DawgUnit>()
     internal val labels = AutoPool<UByte>()

@@ -1,7 +1,7 @@
 package me.geso.kdary
 
 // Memory management of array.
-class AutoArray<T>(
+internal class AutoArray<T>(
     array: Array<T>? = null,
 ) {
     private var arrayProp: Array<T>? = array

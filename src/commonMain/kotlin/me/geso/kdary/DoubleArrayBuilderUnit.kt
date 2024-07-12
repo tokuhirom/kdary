@@ -3,7 +3,7 @@ package me.geso.kdary
 /**
  * Unit of double-array builder.
  */
-class DoubleArrayBuilderUnit(
+internal class DoubleArrayBuilderUnit(
     private var unit: IdType = 0u,
 ) {
     fun unit(): IdType = unit

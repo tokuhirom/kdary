@@ -38,10 +38,12 @@ private fun writeUIntLe(
     sink.writeByte(((value shr 24) and 0xFFU).toInt())
 }
 
-class DoubleArrayImpl<T : Number>(
-    private var array: Array<DoubleArrayUnit>,
-) {
-    private var size: SizeType = array.size.toSizeType()
+class DoubleArrayImpl<T : Number> {
+    private val array: Array<DoubleArrayUnit>
+
+    private constructor(array: Array<DoubleArrayUnit>) {
+        this.array = array
+    }
 
     // TODO: Consider using a sealed class
     data class ResultPairType<T>(
@@ -56,7 +58,7 @@ class DoubleArrayImpl<T : Number>(
      *
      * @return The number of units.
      */
-    fun size(): SizeType = size
+    fun size(): SizeType = array.size.toSizeType()
 
     /**
      * Returns the total size of the array in bytes.
@@ -72,7 +74,7 @@ class DoubleArrayImpl<T : Number>(
      * @throws IllegalStateException If the array is empty.
      */
     fun save(fileName: String) {
-        check(size != 0uL) {
+        check(array.size.toSizeType() != 0uL) {
             "You can't save empty array"
         }
 

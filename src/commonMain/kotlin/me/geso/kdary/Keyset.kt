@@ -2,7 +2,7 @@
 
 package me.geso.kdary
 
-class Keyset<T>(
+internal class Keyset<T>(
     private val keys: Array<UByteArray>,
     private val values: Array<T>?,
 ) {

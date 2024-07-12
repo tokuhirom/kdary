@@ -3,7 +3,7 @@ package me.geso.kdary
 /**
  * Node of Directed Acyclic Word Graph (DAWG).
  */
-class DawgNode {
+internal class DawgNode {
     private var child: IdType = 0u
     private var sibling: IdType = 0u
     private var label: UByte = 0u

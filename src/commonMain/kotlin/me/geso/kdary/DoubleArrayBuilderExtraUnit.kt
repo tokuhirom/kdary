@@ -3,7 +3,7 @@ package me.geso.kdary
 /**
  * Extra unit of double-array builder.
  */
-class DoubleArrayBuilderExtraUnit {
+internal class DoubleArrayBuilderExtraUnit {
     private var prev: IdType = 0u
     private var next: IdType = 0u
     private var isFixed: Boolean = false

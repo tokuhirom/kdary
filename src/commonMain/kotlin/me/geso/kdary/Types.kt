@@ -1,7 +1,7 @@
 package me.geso.kdary
 
 typealias ValueType = Int
-typealias IdType = UInt
+internal typealias IdType = UInt
 
 /**
  * size_t in C++

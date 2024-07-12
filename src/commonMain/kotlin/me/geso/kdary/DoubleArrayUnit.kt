@@ -4,7 +4,7 @@ package me.geso.kdary
  * DoubleArrayUnit is a type for double array units, and is essentially a wrapper for IdType.
  */
 @JvmInline
-value class DoubleArrayUnit(
+internal value class DoubleArrayUnit(
     val unit: IdType = 0u,
 ) {
     /**

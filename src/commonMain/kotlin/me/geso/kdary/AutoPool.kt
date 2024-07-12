@@ -3,7 +3,7 @@ package me.geso.kdary
 /**
  * Memory management of resizable array.
  */
-class AutoPool<T> {
+internal class AutoPool<T> {
     // TODO: use MutableList directly.
     // This implementation is based on MutableList.
     private var buf: MutableList<T> = mutableListOf()

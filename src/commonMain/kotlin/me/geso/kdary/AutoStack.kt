@@ -3,7 +3,7 @@ package me.geso.kdary
 /**
  * Memory management of stack.
  */
-class AutoStack<T> {
+internal class AutoStack<T> {
     private val pool = AutoPool<T>()
 
     fun top(): T = pool[(size() - 1u).toInt()]
