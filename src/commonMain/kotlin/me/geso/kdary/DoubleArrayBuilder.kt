@@ -9,7 +9,7 @@ internal class DoubleArrayBuilder(
     private val progressFunc: ProgressFuncType? = null,
 ) {
     private val units = mutableListOf<DoubleArrayBuilderUnit>()
-    private val extras = AutoArray<DoubleArrayBuilderExtraUnit>()
+    private val extras = Array(NUM_EXTRAS) { DoubleArrayBuilderExtraUnit() }
     private val labels = mutableListOf<UByte>()
     private val table = AutoArray<IdType>()
     private var extrasHead: IdType = 0u
@@ -60,8 +60,6 @@ internal class DoubleArrayBuilder(
 
         table.reset(Array(dawg.numIntersections()) { 0u })
 
-        extras.reset(Array(NUM_EXTRAS) { DoubleArrayBuilderExtraUnit() })
-
         reserveId(0u)
         extras(0u).setIsUsed(true)
         units[0].setOffset(1u)
@@ -73,7 +71,6 @@ internal class DoubleArrayBuilder(
 
         fixAllBlocks()
 
-        extras.clear()
         labels.clear()
         table.clear()
     }
@@ -154,8 +151,6 @@ internal class DoubleArrayBuilder(
             numUnits = numUnits shl 1
         }
 
-        extras.reset(Array(NUM_EXTRAS) { DoubleArrayBuilderExtraUnit() })
-
         reserveId(0u)
         extras(0u).setIsUsed(true)
         units[0].setOffset(1u)
@@ -167,7 +162,6 @@ internal class DoubleArrayBuilder(
 
         fixAllBlocks()
 
-        extras.clear()
         labels.clear()
     }
 
