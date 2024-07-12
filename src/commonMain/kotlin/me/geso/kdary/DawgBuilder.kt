@@ -12,14 +12,11 @@ internal class DawgBuilder {
     private val recycleBin = mutableListOf<IdType>()
     private var numStates: SizeType = 0u
 
-    fun init() {
+    init {
         table.resize(INITIAL_TABLE_SIZE.toSizeType(), 0u)
-
         appendNode()
         appendUnit()
-
         numStates = 1u
-
         nodes[0].label = 0xFF.toUByte()
         nodeStack.add(0u)
     }
