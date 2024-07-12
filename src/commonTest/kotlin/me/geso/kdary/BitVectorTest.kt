@@ -42,8 +42,6 @@ class BitVectorTest {
         bitVector.set(3u, false)
         bitVector.build()
 
-        bitVector.dump()
-
         assertEquals(
             listOf(false, true, false, false),
             (0 until 4).map { bitVector[it.toUInt()] },
