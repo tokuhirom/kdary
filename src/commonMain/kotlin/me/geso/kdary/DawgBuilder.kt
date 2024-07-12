@@ -60,7 +60,7 @@ internal class DawgBuilder {
                 break
             }
 
-            val keyLabel = if (keyPos < length) key[keyPos.toInt()] else 0u
+            val keyLabel = if (keyPos < length) key[keyPos] else 0u
             if (keyPos < length && keyLabel == 0.toUByte()) {
                 throw IllegalArgumentException("failed to insert key: invalid null character")
             }
@@ -142,7 +142,6 @@ internal class DawgBuilder {
                 i = next
             }
 
-            "nodeStack.top=${nodeStack[nodeStack.size - 1]}, matchId=$matchId"
             nodes[nodeStack[nodeStack.size - 1].toInt()].child = matchId
         }
         nodeStack.removeLast()
