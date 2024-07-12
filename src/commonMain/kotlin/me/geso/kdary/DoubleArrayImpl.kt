@@ -320,7 +320,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
 //    Details::progress_func_type progress_func = NULL);
         fun <T> build(
             // XXX keys は sorted であること。
-            keys: Array<UByteArray>,
+            keys: Array<ByteArray>,
             values: Array<T>? = null,
             progressFunc: ProgressFuncType? = null,
         ): DoubleArray {
@@ -351,7 +351,7 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
       return 0;
     }
              */
-            val keyset = Keyset(keys, values)
+            val keyset = Keyset(keys.map { it.toUByteArray() }.toTypedArray(), values)
 
             val builder = DoubleArrayBuilder(progressFunc)
             builder.build(keyset)
