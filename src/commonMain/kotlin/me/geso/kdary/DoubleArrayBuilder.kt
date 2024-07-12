@@ -26,8 +26,8 @@ internal class DoubleArrayBuilder(
     fun <T> build(keyset: Keyset<T>) {
         if (keyset.hasValues()) {
             val dawgBuilder = DawgBuilder()
-            buildDawg(keyset, dawgBuilder)
-            buildFromDawg(dawgBuilder)
+            val dawg = buildDawg(keyset, dawgBuilder)
+            buildFromDawg(dawg)
             dawgBuilder.clear()
         } else {
             buildFromKeyset(keyset)
@@ -55,16 +55,16 @@ internal class DoubleArrayBuilder(
     private fun <T> buildDawg(
         keyset: Keyset<T>,
         dawgBuilder: DawgBuilder,
-    ) {
+    ): Dawg {
         dawgBuilder.init()
         for (i: SizeType in 0uL until keyset.numKeys()) {
             dawgBuilder.insert(keyset.keys(i), keyset.values(i))
             progressFunc?.invoke(i + 1uL, keyset.numKeys() + 1uL)
         }
-        dawgBuilder.finish()
+        return dawgBuilder.finish()
     }
 
-    private fun buildFromDawg(dawg: DawgBuilder) {
+    private fun buildFromDawg(dawg: Dawg) {
         var numUnits: SizeType = 1uL
         while (numUnits < dawg.size()) {
             numUnits = numUnits shl 1
@@ -91,7 +91,7 @@ internal class DoubleArrayBuilder(
     }
 
     private fun buildFromDawg(
-        dawg: DawgBuilder,
+        dawg: Dawg,
         dawgId: IdType,
         dicId: IdType,
     ) {
@@ -127,7 +127,7 @@ internal class DoubleArrayBuilder(
     }
 
     private fun arrangeFromDawg(
-        dawg: DawgBuilder,
+        dawg: Dawg,
         dawgId: IdType,
         dicId: IdType,
     ): UInt {

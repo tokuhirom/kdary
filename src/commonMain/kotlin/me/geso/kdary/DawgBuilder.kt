@@ -12,26 +12,6 @@ internal class DawgBuilder {
     private val recycleBin = AutoStack<IdType>()
     private var numStates: SizeType = 0u
 
-    fun root(): IdType = 0u
-
-    fun child(id: IdType): IdType = units[id.toInt()].child()
-
-    fun sibling(id: IdType): IdType = if (units[id.toInt()].hasSibling()) (id + 1u) else 0u
-
-    fun value(id: IdType): ValueType = units[id.toInt()].value()
-
-    fun isLeaf(id: IdType): Boolean = label(id) == 0.toUByte()
-
-    fun label(id: IdType): UByte = labels[id.toInt()]
-
-    fun isIntersection(id: IdType): Boolean = isIntersections[id]
-
-    fun intersectionId(id: IdType): IdType = isIntersections.rank(id.toSizeType()) - 1u
-
-    fun numIntersections(): Int = isIntersections.numOnes().toInt()
-
-    fun size(): SizeType = units.size.toSizeType()
-
     fun init() {
         table.resize(INITIAL_TABLE_SIZE.toSizeType(), 0u)
 
@@ -44,7 +24,7 @@ internal class DawgBuilder {
         nodeStack.push(0u)
     }
 
-    fun finish() {
+    fun finish(): Dawg {
         flush(0u)
 
         units[0] = DawgUnit(nodes[0].unit())
@@ -57,8 +37,7 @@ internal class DawgBuilder {
 
         isIntersections.build()
 
-        // 結局、units, labels, isIntersections, numStates が残る。
-        // TODO: 必要なものをまとめた data class を返す構造になっている方が自然。
+        return Dawg(units, labels, isIntersections, numStates)
     }
 
     fun insert(
