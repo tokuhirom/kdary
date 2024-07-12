@@ -1,5 +1,3 @@
-// Darts.kt
-
 package me.geso.kdary
 
 typealias ValueType = Int
