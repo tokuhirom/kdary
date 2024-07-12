@@ -6,7 +6,7 @@ package me.geso.kdary
 class DawgNode {
     private var child: IdType = 0u
     private var sibling: IdType = 0u
-    private var label: UCharType = 0u
+    private var label: UByte = 0u
     private var isState: Boolean = false
     private var hasSibling: Boolean = false
 
@@ -22,7 +22,7 @@ class DawgNode {
         this.child = value.toIdType()
     }
 
-    fun setLabel(label: UCharType) {
+    fun setLabel(label: UByte) {
         this.label = label
     }
 
@@ -40,7 +40,7 @@ class DawgNode {
 
     fun value(): ValueType = child.toValueType()
 
-    fun label(): UCharType = label
+    fun label(): UByte = label
 
     fun isState(): Boolean = isState
 

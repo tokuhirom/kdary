@@ -5,7 +5,7 @@ package me.geso.kdary
 class DawgBuilder {
     internal val nodes = AutoPool<DawgNode>()
     internal val units = AutoPool<DawgUnit>()
-    internal val labels = AutoPool<UCharType>()
+    internal val labels = AutoPool<UByte>()
     internal val isIntersections = BitVector()
     private val table = AutoPool<IdType>()
     private val nodeStack = AutoStack<IdType>()
@@ -26,7 +26,7 @@ class DawgBuilder {
 
     fun isLeaf(id: IdType): Boolean = label(id) == 0.toUByte()
 
-    fun label(id: IdType): UCharType = labels[id.toInt()]
+    fun label(id: IdType): UByte = labels[id.toInt()]
 
     fun isIntersection(id: IdType): Boolean = isIntersections[id]
 

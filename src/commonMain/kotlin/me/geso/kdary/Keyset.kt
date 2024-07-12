@@ -13,7 +13,7 @@ class Keyset<T>(
     fun keys(
         keyId: SizeType,
         charId: SizeType,
-    ): UCharType = keys[keyId.toInt()].getOrNull(charId.toInt()) ?: 0.toUByte()
+    ): UByte = keys[keyId.toInt()].getOrNull(charId.toInt()) ?: 0.toUByte()
 
     fun lengths(id: SizeType): SizeType = keys[id.toInt()].size.toSizeType()
 

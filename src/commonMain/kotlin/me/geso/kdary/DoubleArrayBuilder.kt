@@ -10,7 +10,7 @@ class DoubleArrayBuilder(
 ) {
     private val units = AutoPool<DoubleArrayBuilderUnit>()
     private val extras = AutoArray<DoubleArrayBuilderExtraUnit>()
-    private val labels = AutoPool<UCharType>()
+    private val labels = AutoPool<UByte>()
     private val table = AutoArray<IdType>()
     private var extrasHead: IdType = 0u
 
@@ -135,7 +135,7 @@ class DoubleArrayBuilder(
         }
 
         do {
-            val childLabel: UCharType = dawg.label(dawgChildId)
+            val childLabel: UByte = dawg.label(dawgChildId)
             val dicChildId: IdType = offset xor childLabel.toIdType()
             if (childLabel != 0.toUByte()) {
                 buildFromDawg(dawg, dawgChildId, dicChildId)
@@ -253,9 +253,9 @@ void DoubleArrayBuilder::build_from_keyset(const Keyset<T> &keyset,
         }
 
         var lastBegin: SizeType = i
-        var lastLabel: UCharType = keyset.keys(i, depth)
+        var lastLabel: UByte = keyset.keys(i, depth)
         while (++i < end) {
-            val label: UCharType = keyset.keys(i, depth)
+            val label: UByte = keyset.keys(i, depth)
             if (label != lastLabel) {
                 // TODO ここの XOR での型変換は少し不安
                 buildFromKeyset(keyset, lastBegin, i, depth + 1uL, offset xor lastLabel.toIdType())
@@ -278,7 +278,7 @@ void DoubleArrayBuilder::build_from_keyset(const Keyset<T> &keyset,
 
         var vaue: ValueType = -1
         for (i: SizeType in begin until end) {
-            val label: UCharType = keyset.keys(i, depth)
+            val label: UByte = keyset.keys(i, depth)
             if (label == 0.toUByte()) {
                 if (keyset.values(i) < 0) {
                     throw IllegalArgumentException("failed to build double-array: negative value")

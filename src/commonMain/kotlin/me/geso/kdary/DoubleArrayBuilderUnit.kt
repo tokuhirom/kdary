@@ -1,7 +1,5 @@
 package me.geso.kdary
 
-import javax.management.Query.or
-
 /**
  * Unit of double-array builder.
  */
@@ -23,7 +21,7 @@ class DoubleArrayBuilderUnit(
         unit = value.toIdType() or (1u shl 31)
     }
 
-    fun setLabel(label: UCharType) {
+    fun setLabel(label: UByte) {
         unit = (unit and 0xFFFFFF00u) or label.toUInt()
     }
 
