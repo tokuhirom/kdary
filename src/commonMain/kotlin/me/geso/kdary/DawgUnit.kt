@@ -3,11 +3,10 @@ package me.geso.kdary
 /**
  * Fixed unit of Directed Acyclic Word Graph (DAWG).
  */
-internal class DawgUnit(
+@JvmInline
+internal value class DawgUnit(
     private val unit: IdType = 0u,
 ) {
-    constructor(unit: DawgUnit) : this(unit.unit)
-
     fun unit(): IdType = unit
 
     fun child(): IdType = unit shr 2

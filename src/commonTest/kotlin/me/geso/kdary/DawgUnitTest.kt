@@ -21,12 +21,5 @@ class DawgUnitTest {
         assertTrue(unit2.hasSibling())
         assertEquals(7, unit2.value())
         assertTrue(unit2.isState())
-
-        val unit3 = DawgUnit(unit2)
-        assertEquals(15u, unit3.unit())
-        assertEquals(3u, unit3.child())
-        assertTrue(unit3.hasSibling())
-        assertEquals(7, unit3.value())
-        assertTrue(unit3.isState())
     }
 }
