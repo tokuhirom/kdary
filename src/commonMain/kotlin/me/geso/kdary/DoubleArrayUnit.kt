@@ -1,20 +1,39 @@
 package me.geso.kdary
 
-// <DoubleArrayUnit> はダブル配列ユニットの型であり、実際には<IdType>のラッパーです。
+/**
+ * DoubleArrayUnit is a type for double array units, and is essentially a wrapper for IdType.
+ */
 @JvmInline
 value class DoubleArrayUnit(
     val unit: IdType = 0u,
 ) {
-    // hasLeaf() はユニットからすぐに派生したリーフユニットかどうかを返します（trueの場合）またはそうでない場合（false）。
+    /**
+     * Checks if the unit is a leaf unit directly derived from the unit (returns true) or not (returns false).
+     *
+     * @return true if the unit is a leaf unit, false otherwise.
+     */
     fun hasLeaf(): Boolean = ((unit.toInt() shr 8) and 1) == 1
 
-    // value() はユニットに格納されている値を返します。したがって、value() はユニットがリーフユニットである場合にのみ利用可能です。
+    /**
+     * Returns the value stored in the unit. This is only available if the unit is a leaf unit.
+     *
+     * @return The value stored in the unit.
+     */
     fun value(): ValueType = (unit and ((1u shl 31) - 1u)).toValueType()
 
-    // label() はユニットに関連付けられたラベルを返します。リーフユニットは常に無効なラベルを返します。この機能のために、リーフユニットのlabel() はMSBが1の<id_type>を返します。
+    /**
+     * Returns the label associated with the unit. Leaf units always return an invalid label.
+     * For this functionality, the label() of a leaf unit returns an IdType with the MSB set to 1.
+     *
+     * @return The label associated with the unit.
+     */
     fun label(): IdType = unit and ((1u shl 31) or 0xFFu)
 
-    // offset() はユニットから派生したユニットへのオフセットを返します。
+    /**
+     * Returns the offset to the unit derived from the unit.
+     *
+     * @return The offset to the derived unit.
+     */
     fun offset(): IdType {
         val shiftedUnit = (unit shr 10).toInt()
         val shiftedMask = ((unit and (1u shl 9)) shr 6).toInt()
