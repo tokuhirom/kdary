@@ -10,11 +10,6 @@ class DawgUnit(
 
     fun unit(): IdType = unit
 
-    fun setUnit(unit: IdType): DawgUnit {
-        this.unit = unit
-        return this
-    }
-
     fun child(): IdType = unit shr 2
 
     fun hasSibling(): Boolean = (unit and 1u) == 1u

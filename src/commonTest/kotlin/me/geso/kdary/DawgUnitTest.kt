@@ -28,12 +28,5 @@ class DawgUnitTest {
         assertTrue(unit3.hasSibling())
         assertEquals(7, unit3.value())
         assertTrue(unit3.isState())
-
-        unit3.setUnit(6u)
-        assertEquals(6u, unit3.unit())
-        assertEquals(1u, unit3.child())
-        assertFalse(unit3.hasSibling())
-        assertEquals(3, unit3.value())
-        assertTrue(unit3.isState())
     }
 }
