@@ -27,7 +27,7 @@ internal class AutoArray<T>(
         other.arrayProp = temp
     }
 
-    fun reset(array: Array<T>? = null) {
-        AutoArray(array).swap(this)
+    fun reset(array: Array<T>) {
+        this.arrayProp = array
     }
 }
