@@ -61,20 +61,19 @@ class DawgBuilder {
         // TODO: 必要なものをまとめた data class を返す構造になっている方が自然。
     }
 
-    // TODO: ここの length は不要。
     fun insert(
         key: UByteArray,
-        length: SizeType,
         value: ValueType,
     ) {
+        val length = key.size
         if (value < 0) {
             throw IllegalArgumentException("failed to insert key: negative value")
-        } else if (length == 0uL) {
+        } else if (length == 0) {
             throw IllegalArgumentException("failed to insert key: zero-length key")
         }
 
         var id = 0u
-        var keyPos: SizeType = 0uL
+        var keyPos = 0
 
         while (keyPos <= length) {
             val childId = nodes[id.toInt()].child()
@@ -104,7 +103,7 @@ class DawgBuilder {
         }
 
         while (keyPos <= length) {
-            val keyLabel = if (keyPos < length) key[keyPos.toInt()] else 0u
+            val keyLabel = if (keyPos < length) key[keyPos] else 0u
             val childId = appendNode()
 
             if (nodes[id.toInt()].child() == 0u) {

@@ -15,7 +15,7 @@ class Keyset<T>(
         charId: SizeType,
     ): UByte = keys[keyId.toInt()].getOrNull(charId.toInt()) ?: 0.toUByte()
 
-    fun lengths(id: SizeType): SizeType = keys[id.toInt()].size.toSizeType()
+    fun lengths(id: SizeType): SizeType = keys(id).size.toSizeType()
 
     fun hasValues(): Boolean = values != null
 

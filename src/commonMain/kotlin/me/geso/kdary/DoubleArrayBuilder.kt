@@ -76,7 +76,7 @@ class DoubleArrayBuilder(
     ) {
         dawgBuilder.init()
         for (i: SizeType in 0uL until keyset.numKeys()) {
-            dawgBuilder.insert(keyset.keys(i), keyset.lengths(i), keyset.values(i))
+            dawgBuilder.insert(keyset.keys(i), keyset.values(i))
             progressFunc?.invoke(i + 1uL, keyset.numKeys() + 1uL)
         }
         dawgBuilder.finish()
