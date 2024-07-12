@@ -324,8 +324,27 @@ void test_traverse(const T &dic,
     }
 
     @Test
+    fun testCommonPrefixSearchSimple() {
+        val dic =
+            DoubleArray.build(
+                arrayOf(
+                    "京都".toUByteArray(),
+                    "東".toUByteArray(),
+                    "東京都".toUByteArray(),
+                ),
+                arrayOf(5963, 4649, 7676),
+            )
+        println("----------")
+        val result = dic.commonPrefixSearch("東京都庁".toByteArray())
+        println(result)
+        assertEquals(2, result.size)
+        assertEquals(4649, result[0].value)
+        assertEquals(7676, result[1].value)
+    }
+
+    @Test
     fun testCommonPrefixSearch() {
-/*
+        /*
 template <typename T>
 void test_common_prefix_search(const T &dic,
     const std::vector<const char *> &keys,
@@ -356,7 +375,23 @@ void test_common_prefix_search(const T &dic,
     }
   }
 
-  for (std::set<std::string>::const_iterator it = invalid_keys.begin();
+
+  std::cerr << "ok" << std::endl;
+}
+         */
+        val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
+        for (i in keys.indices) {
+            val key: UByteArray = keys[i]
+            val results = dic.commonPrefixSearch(key.toByteArray())
+//            println("key=${String(key.toByteArray())} results=$results")
+            assert(results.size >= 1)
+            assert(results.size < 10)
+            assert(results[results.size - 1].value == values[i])
+            assert(results[results.size - 1].length.toInt() == key.size)
+        }
+
+/*
+      for (std::set<std::string>::const_iterator it = invalid_keys.begin();
       it != invalid_keys.end(); ++it) {
     std::size_t num_results = dic.commonPrefixSearch(
         it->c_str(), results, MAX_NUM_RESULTS);
@@ -377,24 +412,15 @@ void test_common_prefix_search(const T &dic,
       assert(results[j].length == results_with_length[j].length);
     }
   }
-
-  std::cerr << "ok" << std::endl;
 }
  */
-        val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
-        for (i in keys.indices) {
-            val key = keys[i]
-            val results = dic.commonPrefixSearch(key.toByteArray())
-            assert(results.size >= 1)
+        for (invalidKey in invalidKeys) {
+            val results = dic.commonPrefixSearch(invalidKey.toByteArray())
             assert(results.size < 10)
-            assert(results[results.size - 1].value == values[i])
-            assert(results[results.size - 1].length == length)
 
-            val resultsWithLength = dic.commonPrefixSearch(key.toByteArray(), length)
-            assert(results.size == resultsWithLength.size)
-            for (j in results.indices) {
-                assert(results[j].value == resultsWithLength[j].value)
-                assert(results[j].length == resultsWithLength[j].length)
+            if (results.isNotEmpty()) {
+                assert(results[results.size - 1].value != -1)
+                assert(results[results.size - 1].length.toInt() < invalidKey.size)
             }
         }
     }

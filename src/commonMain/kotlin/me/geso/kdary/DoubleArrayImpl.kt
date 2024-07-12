@@ -190,44 +190,41 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
 //    std::size_t node_pos = 0) const;
     fun commonPrefixSearch(
         key: ByteArray,
-        results: Array<ResultPairType<ValueType>>,
-        maxNumResults: SizeType,
+        maxNumResults: SizeType? = null,
         nodePos: SizeType = 0u,
-    ): SizeType = commonPrefixSearchInternal(key.toUByteArray(), results, maxNumResults, nodePos)
+    ): List<ResultPairType<ValueType>> = commonPrefixSearchInternal(key.toUByteArray(), maxNumResults, nodePos)
 
     private fun commonPrefixSearchInternal(
         key: UByteArray,
-        results: Array<ResultPairType<ValueType>>,
-        maxNumResults: SizeType,
+        maxNumResults: SizeType?,
         nodePosParam: SizeType = 0u,
-    ): SizeType {
-        var numResults: SizeType = 0u
-
+    ): List<ResultPairType<ValueType>> {
         var nodePos: SizeType = nodePosParam
         var length: SizeType = key.size.toSizeType()
 
         var unit: DoubleArrayUnit = array[nodePos.toInt()]
         nodePos = nodePos xor unit.offset().toSizeType()
 
+        val results = mutableListOf<ResultPairType<ValueType>>()
+
         for (i in 0uL until length) {
             // TODO ここのビット操作がめっちゃ怪しい
-            nodePos = nodePos xor key[i.toInt()].toUByte().toInt().toSizeType()
+            nodePos = nodePos xor key[i.toInt()].toInt().toSizeType()
             unit = array[nodePos.toInt()]
             if (unit.label() != (key[i.toInt()].toUInt() and 0xFFU)) {
-                return numResults
+                return results
             }
 
             nodePos = nodePos xor unit.offset().toSizeType()
             if (unit.hasLeaf()) {
-                if (numResults < maxNumResults) {
+                if (maxNumResults == null || results.size.toULong() < maxNumResults) {
                     val v = array[nodePos.toInt()].value()
-                    results[numResults.toInt()].set(v, (i + 1u))
+                    results.add(ResultPairType(v, (i + 1u)))
                 }
-                numResults++
             }
         }
 
-        return numResults
+        return results
     }
 
     // In Darts-clone, a dictionary is a deterministic finite-state automaton
