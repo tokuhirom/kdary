@@ -6,19 +6,6 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-// static const std::size_t NUM_VALID_KEYS = 1 << 16;
-// static const std::size_t NUM_INVALID_KEYS = 1 << 17;
-//
-// std::set<std::string> valid_keys;
-// generate_valid_keys(NUM_VALID_KEYS, &valid_keys);
-//
-// std::set<std::string> invalid_keys;
-// generate_invalid_keys(NUM_INVALID_KEYS, valid_keys, &invalid_keys);
-
-private fun debug(message: String) {
-    println("[D] $message")
-}
-
 class DoubleArrayImplTest {
     private val random = Random(seed = 0)
     private val validKeys = generateValidKeys(NUM_VALID_KEYS, random)
@@ -26,18 +13,6 @@ class DoubleArrayImplTest {
     private val testData = buildData()
     private val keys: List<UByteArray> = testData.keys
     private val values: List<ValueType> = testData.values
-
-    init {
-        /*
-  std::size_t key_id = 0;
-  for (std::set<std::string>::const_iterator it = valid_keys.begin();
-      it != valid_keys.end(); ++it, ++key_id) {
-    keys[key_id] = it->c_str();
-    lengths[key_id] = it->length();
-    values[key_id] = static_cast<typename T::value_type>(key_id);
-  }
-         */
-    }
 
     private fun buildData(): TestData {
         val keys: MutableList<UByteArray> = mutableListOf()

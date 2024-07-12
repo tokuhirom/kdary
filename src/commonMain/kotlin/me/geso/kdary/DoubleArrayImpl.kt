@@ -8,10 +8,6 @@ import okio.sink
 import okio.source
 import java.io.File
 
-private fun debug(message: String) {
-//    println("[D] $message")
-}
-
 private fun readUIntLe(source: okio.BufferedSource): UInt {
     val byte1 = source.readByte().toUInt() and 0xFFU
     val byte2 = source.readByte().toUInt() and 0xFFU
@@ -154,21 +150,24 @@ inline U DoubleArrayImpl<A, B, T, C>::exactMatchSearch(const key_type *key,
         var unit = array[nodePosParam.toInt()]
         var nodePos = nodePosParam
         val length = key.size.toSizeType()
-        debug("length=$length")
+        //    println("[D] $message")
         for (i in 0uL until length) {
-            debug("i=$i, length=$length")
-            // TODO xor 動いてる?
-            debug("nodePos: $nodePos, unit.offset(): ${unit.offset()}")
+            //    println("[D] $message")
+// TODO xor 動いてる?
+            //    println("[D] $message")
+            "nodePos: $nodePos, unit.offset(): ${unit.offset()}"
             nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
-            debug("xor result=$nodePos")
+            //    println("[D] $message")
             unit = array[nodePos.toInt()] ?: return ResultPairType(-1, 0u)
-            debug("unit.label=${unit.label()}")
+            //    println("[D] $message")
+            "unit.label=${unit.label()}"
             if (unit.label() != key[i.toInt()].toUInt()) {
                 return ResultPairType(-1, 0u)
             }
         }
 
-        debug("Checking leaf: ${unit.hasLeaf()}")
+        //    println("[D] $message")
+        "Checking leaf: ${unit.hasLeaf()}"
         if (!unit.hasLeaf()) {
             return ResultPairType(-1, 0u)
         }
