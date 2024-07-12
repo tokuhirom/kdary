@@ -28,7 +28,6 @@ internal class DoubleArrayBuilder(
             val dawgBuilder = DawgBuilder()
             val dawg = buildDawg(keyset, dawgBuilder)
             buildFromDawg(dawg)
-            dawgBuilder.clear()
         } else {
             buildFromKeyset(keyset)
         }
@@ -39,14 +38,6 @@ internal class DoubleArrayBuilder(
             .map {
                 DoubleArrayUnit(units[it.toInt()].unit())
             }.toTypedArray()
-
-    fun clear() {
-        units.clear()
-        extras.clear()
-        labels.clear()
-        table.clear()
-        extrasHead = 0u
-    }
 
     private fun numBlocks(): SizeType = units.size.toSizeType() / BLOCK_SIZE.toSizeType()
 

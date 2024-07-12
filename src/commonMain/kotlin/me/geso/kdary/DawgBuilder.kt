@@ -6,7 +6,7 @@ internal class DawgBuilder {
     internal val nodes = mutableListOf<DawgNode>()
     internal val units = mutableListOf<DawgUnit>()
     internal val labels = mutableListOf<UByte>()
-    internal val isIntersections = BitVector()
+    private val isIntersections = BitVector()
     private val table = mutableListOf<IdType>()
     private val nodeStack = AutoStack<IdType>()
     private val recycleBin = AutoStack<IdType>()
@@ -97,17 +97,6 @@ internal class DawgBuilder {
             keyPos++
         }
         nodes[id.toInt()].setValue(value)
-    }
-
-    fun clear() {
-        nodes.clear()
-        units.clear()
-        labels.clear()
-        isIntersections.clear()
-        table.clear()
-        nodeStack.clear()
-        recycleBin.clear()
-        numStates = 0u
     }
 
     private fun flush(id: IdType) {

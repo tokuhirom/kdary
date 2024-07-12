@@ -69,14 +69,6 @@ class DawgBuilderTest {
     }
 
     @Test
-    fun testClear() {
-        val builder = DawgBuilder()
-        builder.init()
-        builder.insert("key".toUByteArray(), 1)
-        builder.clear()
-    }
-
-    @Test
     fun testChild() {
         val builder = DawgBuilder()
         builder.init()
