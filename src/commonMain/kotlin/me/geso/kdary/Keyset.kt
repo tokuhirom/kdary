@@ -8,7 +8,7 @@ internal class Keyset<T>(
 ) {
     fun numKeys(): SizeType = keys.size.toSizeType()
 
-    fun keys(id: SizeType): UByteArray = keys[id.toInt()].toUByteArray()
+    fun keys(id: SizeType): ByteArray = keys[id.toInt()]
 
     fun keys(
         keyId: SizeType,

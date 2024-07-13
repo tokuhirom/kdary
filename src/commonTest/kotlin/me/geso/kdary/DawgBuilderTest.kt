@@ -16,7 +16,7 @@ class DawgBuilderTest {
 
         val builder = DawgBuilder()
         for (i: SizeType in 0uL until keyset.numKeys()) {
-            builder.insert(keyset.keys(i).toByteArray(), keyset.values(i))
+            builder.insert(keyset.keys(i), keyset.values(i))
         }
 
         for (i: SizeType in 0uL until builder.nodes.size.toSizeType()) {
