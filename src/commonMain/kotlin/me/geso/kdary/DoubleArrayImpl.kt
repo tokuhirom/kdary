@@ -134,10 +134,10 @@ class DoubleArrayImpl<T : Number> {
         key: ByteArray,
         maxNumResults: SizeType? = null,
         nodePos: SizeType = 0u,
-    ): List<ResultPairType<ValueType>> = commonPrefixSearchInternal(key.toUByteArray(), maxNumResults, nodePos)
+    ): List<ResultPairType<ValueType>> = commonPrefixSearchInternal(key, maxNumResults, nodePos)
 
     private fun commonPrefixSearchInternal(
-        key: UByteArray,
+        key: ByteArray,
         maxNumResults: SizeType?,
         nodePosParam: SizeType = 0u,
     ): List<ResultPairType<ValueType>> {
@@ -150,9 +150,9 @@ class DoubleArrayImpl<T : Number> {
         val results = mutableListOf<ResultPairType<ValueType>>()
 
         for (i in 0uL until length) {
-            nodePos = nodePos xor key[i.toInt()].toInt().toSizeType()
+            nodePos = nodePos xor key[i.toInt()].toUByte().toSizeType()
             unit = array[nodePos.toInt()]
-            if (unit.label() != (key[i.toInt()].toUInt() and 0xFFU)) {
+            if (unit.label() != (key[i.toInt()].toUByte() and 0xFFU).toIdType()) {
                 return results
             }
 

@@ -12,6 +12,8 @@ internal fun ULong.toIdType(): IdType = this.toUInt()
 
 internal fun Int.toSizeType(): SizeType = this.toULong()
 
+internal fun UByte.toSizeType(): SizeType = this.toULong()
+
 internal fun IdType.toSizeType(): SizeType = this.toULong()
 
 internal fun UInt.toValueType(): ValueType = this.toInt()
