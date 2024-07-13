@@ -97,10 +97,10 @@ class DoubleArrayImpl<T : Number> {
     fun exactMatchSearch(
         key: ByteArray,
         nodePos: SizeType = 0u,
-    ): ResultPairType<Int> = exactMatchSearchInternal(key.toUByteArray(), nodePos)
+    ): ResultPairType<Int> = exactMatchSearchInternal(key, nodePos)
 
     private fun exactMatchSearchInternal(
-        key: UByteArray,
+        key: ByteArray,
         nodePosParam: SizeType = 0u,
     ): ResultPairType<Int> {
         var unit = array[nodePosParam.toInt()]
