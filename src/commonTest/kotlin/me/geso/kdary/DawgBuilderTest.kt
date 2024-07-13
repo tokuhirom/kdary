@@ -5,9 +5,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 @OptIn(ExperimentalUnsignedTypes::class)
-fun String.toUByteArray(): UByteArray = this.toByteArray().toUByteArray()
-
-@OptIn(ExperimentalUnsignedTypes::class)
 class DawgBuilderTest {
     @Test
     fun testSimple() {
