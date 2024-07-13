@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
-@OptIn(ExperimentalUnsignedTypes::class)
 class DawgBuilderTest {
     @Test
     fun testSimple() {

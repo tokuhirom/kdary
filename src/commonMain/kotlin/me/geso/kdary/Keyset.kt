@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUnsignedTypes::class)
-
 package me.geso.kdary
 
 internal class Keyset<T>(

@@ -5,7 +5,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class KeysetTest {
-    @OptIn(ExperimentalUnsignedTypes::class)
     @Test
     fun testKeyset() {
         val keys = arrayOf("apple", "banana", "cherry").map { it.toByteArray() }.toTypedArray()
