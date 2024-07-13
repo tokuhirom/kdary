@@ -297,21 +297,27 @@ class DoubleArrayImpl<T : Number> {
                     }
                 }
 
-                val buf: Array<DoubleArrayUnit> = Array(numUnits.toInt()) { DoubleArrayUnit() }
+                val buf = ByteArray((numUnits - 256u).toInt() * unitSize().toInt())
+                source.readFully(buf)
+
+                val doubleArrayUnits: Array<DoubleArrayUnit> = Array(numUnits.toInt()) { DoubleArrayUnit() }
 
                 for (i in units.indices) {
-                    buf[i] = units[i]
+                    doubleArrayUnits[i] = units[i]
                 }
 
-                // TODO: Optimize here.
-                if (numUnits > 256u) {
-                    // Read the remaining units
-                    for (i in 256uL until numUnits) {
-                        buf[i.toInt()] = DoubleArrayUnit(readUIntLe(source))
-                    }
+                for (i in 0 until (numUnits - 256u).toInt()) {
+                    val offset = i * unitSize().toInt()
+                    val value = (
+                        (buf[offset].toUInt() and 0xFFU) or
+                            ((buf[offset + 1].toUInt() and 0xFFU) shl 8) or
+                            ((buf[offset + 2].toUInt() and 0xFFU) shl 16) or
+                            ((buf[offset + 3].toUInt() and 0xFFU) shl 24)
+                    )
+                    doubleArrayUnits[i + 256] = DoubleArrayUnit(value)
                 }
 
-                DoubleArrayImpl(buf)
+                DoubleArrayImpl(doubleArrayUnits)
             }
         }
 
