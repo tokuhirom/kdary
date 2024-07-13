@@ -186,11 +186,10 @@ class DoubleArrayImpl<T : Number> {
         key: ByteArray,
         nodePos: SizeType,
         keyPos: SizeType,
-        length: SizeType = 0u,
-    ): TraverseResult = traverseInternal(key.toUByteArray(), nodePos, keyPos)
+    ): TraverseResult = traverseInternal(key, nodePos, keyPos)
 
     private fun traverseInternal(
-        key: UByteArray,
+        key: ByteArray,
         nodePosParam: SizeType,
         keyPosParam: SizeType,
     ): TraverseResult {
@@ -203,9 +202,9 @@ class DoubleArrayImpl<T : Number> {
         var keyPos = keyPosParam
 
         while (keyPos < length) {
-            id = id xor (unit.offset() xor key[keyPos.toInt()].toUInt())
+            id = id xor (unit.offset() xor key[keyPos.toInt()].toUByte().toUInt())
             unit = array[id.toInt()]
-            if (unit.label() != key[keyPos.toInt()].toUInt()) {
+            if (unit.label() != key[keyPos.toInt()].toUByte().toIdType()) {
                 return TraverseResult(-2, nodePos, keyPos)
             }
             nodePos = id.toSizeType()

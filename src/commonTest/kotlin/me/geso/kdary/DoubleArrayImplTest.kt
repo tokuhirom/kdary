@@ -257,7 +257,7 @@ void test_traverse(const T &dic,
             var keyPos = 0.toSizeType()
             var result = 0
             for (j in 0uL until keys[i].size.toSizeType()) {
-                val r = dic.traverse(key, id, keyPos, j + 1u)
+                val r = dic.traverse(key, id, keyPos)
                 assert(r.status != -2)
                 result = r.status
             }
@@ -269,7 +269,7 @@ void test_traverse(const T &dic,
             var keyPos = 0.toSizeType()
             var result = 0
             for (i in 0uL until invalidKey.size.toSizeType()) {
-                val r = dic.traverse(invalidKey, id, keyPos, i + 1u)
+                val r = dic.traverse(invalidKey, id, keyPos)
                 result = r.status
                 if (result == -2) {
                     break
