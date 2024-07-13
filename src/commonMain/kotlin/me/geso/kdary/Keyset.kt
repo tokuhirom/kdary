@@ -3,17 +3,17 @@
 package me.geso.kdary
 
 internal class Keyset<T>(
-    private val keys: Array<UByteArray>,
+    private val keys: Array<ByteArray>,
     private val values: Array<T>?,
 ) {
     fun numKeys(): SizeType = keys.size.toSizeType()
 
-    fun keys(id: SizeType): UByteArray = keys[id.toInt()]
+    fun keys(id: SizeType): UByteArray = keys[id.toInt()].toUByteArray()
 
     fun keys(
         keyId: SizeType,
         charId: SizeType,
-    ): UByte = keys[keyId.toInt()].getOrNull(charId.toInt()) ?: 0.toUByte()
+    ): UByte = keys[keyId.toInt()].getOrNull(charId.toInt())?.toUByte() ?: 0.toUByte()
 
     fun hasValues(): Boolean = values != null
 

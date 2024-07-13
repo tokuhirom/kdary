@@ -8,7 +8,7 @@ class KeysetTest {
     @OptIn(ExperimentalUnsignedTypes::class)
     @Test
     fun testKeyset() {
-        val keys = arrayOf("apple", "banana", "cherry").map { it.toUByteArray() }.toTypedArray()
+        val keys = arrayOf("apple", "banana", "cherry").map { it.toByteArray() }.toTypedArray()
         val values = arrayOf(1, 2, 3)
         val keyset = Keyset(keys, values)
 

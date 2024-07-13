@@ -13,7 +13,7 @@ class DawgBuilderTest {
     fun testSimple() {
         val keyset =
             Keyset(
-                keys = arrayOf("abc").map { it.toUByteArray() }.toTypedArray(),
+                keys = arrayOf("abc".toByteArray()),
                 values = arrayOf(1),
             )
 

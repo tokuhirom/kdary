@@ -10,7 +10,7 @@ class DoubleArrayBuilderTest {
     fun simple() {
         val keyset =
             Keyset(
-                keys = arrayOf("abc").map { it.toUByteArray() }.toTypedArray(),
+                keys = arrayOf("abc".toByteArray()),
                 values = arrayOf(1),
             )
 
@@ -27,7 +27,7 @@ class DoubleArrayBuilderTest {
     fun build() {
         val keyset =
             Keyset(
-                keys = arrayOf("apple", "banana", "cherry").map { it.toUByteArray() }.toTypedArray(),
+                keys = arrayOf("apple", "banana", "cherry").map { it.toByteArray() }.toTypedArray(),
                 values = arrayOf(1, 2, 3),
             )
 
