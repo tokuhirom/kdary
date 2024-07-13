@@ -46,7 +46,7 @@ internal class DoubleArrayBuilder(
     private fun <T> buildDawg(keyset: Keyset<T>): Dawg {
         val dawgBuilder = DawgBuilder()
         for (i: SizeType in 0uL until keyset.numKeys()) {
-            dawgBuilder.insert(keyset.keys(i), keyset.values(i))
+            dawgBuilder.insert(keyset.keys(i).toByteArray(), keyset.values(i))
             progressFunc?.invoke(i + 1uL, keyset.numKeys() + 1uL)
         }
         return dawgBuilder.finish()

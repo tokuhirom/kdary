@@ -41,7 +41,7 @@ internal class DawgBuilder {
     }
 
     fun insert(
-        key: UByteArray,
+        key: ByteArray,
         value: ValueType,
     ) {
         val length = key.size
@@ -60,7 +60,7 @@ internal class DawgBuilder {
                 break
             }
 
-            val keyLabel = if (keyPos < length) key[keyPos] else 0u
+            val keyLabel = if (keyPos < length) key[keyPos].toUByte() else 0u
             if (keyPos < length && keyLabel == 0.toUByte()) {
                 throw IllegalArgumentException("failed to insert key: invalid null character")
             }
@@ -82,7 +82,7 @@ internal class DawgBuilder {
         }
 
         while (keyPos <= length) {
-            val keyLabel = if (keyPos < length) key[keyPos] else 0u
+            val keyLabel = if (keyPos < length) key[keyPos].toUByte() else 0u
             val childId = appendNode()
 
             if (nodes[id.toInt()].child == 0u) {
