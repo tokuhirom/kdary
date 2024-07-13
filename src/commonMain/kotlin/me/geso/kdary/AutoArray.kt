@@ -21,12 +21,6 @@ internal class AutoArray<T>(
         arrayProp = null
     }
 
-    fun swap(other: AutoArray<T>) {
-        val temp = arrayProp
-        arrayProp = other.arrayProp
-        other.arrayProp = temp
-    }
-
     fun reset(array: Array<T>) {
         this.arrayProp = array
     }

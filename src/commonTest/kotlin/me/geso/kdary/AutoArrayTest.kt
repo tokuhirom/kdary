@@ -32,15 +32,5 @@ class AutoArrayTest {
         assertEquals(4, autoArray[0])
         assertEquals(5, autoArray[1])
         assertEquals(6, autoArray[2])
-
-        // Test swap
-        val otherArray = AutoArray(arrayOf(7, 8, 9))
-        autoArray.swap(otherArray)
-        assertEquals(7, autoArray[0])
-        assertEquals(8, autoArray[1])
-        assertEquals(9, autoArray[2])
-        assertEquals(4, otherArray[0])
-        assertEquals(5, otherArray[1])
-        assertEquals(6, otherArray[2])
     }
 }
