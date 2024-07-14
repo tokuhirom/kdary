@@ -104,9 +104,9 @@ class DoubleArrayTest {
     @Test
     fun `save() and open()`() {
         val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
-        dic.save("test-darts.dic")
+        saveDoubleArray(dic, "test-darts.dic")
 
-        val dicCopy = DoubleArray.open("test-darts.dic")
+        val dicCopy = loadDoubleArray("test-darts.dic")
 
         assertEquals(dic.array()?.size, dicCopy.array()?.size)
         println(dic.array()?.size)
