@@ -267,7 +267,7 @@ internal class DawgBuilder {
 
     private fun appendUnit(): IdType {
         isIntersectionsBuilder.append()
-        units.add(DawgUnit())
+        units.add(DawgUnit(0u))
         labels.add(0.toUByte())
         return (isIntersectionsBuilder.size() - 1uL).toIdType()
     }

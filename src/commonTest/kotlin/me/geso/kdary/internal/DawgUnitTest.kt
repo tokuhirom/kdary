@@ -8,7 +8,7 @@ import kotlin.test.assertTrue
 class DawgUnitTest {
     @Test
     fun testDawgUnit() {
-        val unit1 = DawgUnit()
+        val unit1 = DawgUnit(0u)
         assertEquals(0u, unit1.unit())
         assertEquals(0u, unit1.child())
         assertFalse(unit1.hasSibling())

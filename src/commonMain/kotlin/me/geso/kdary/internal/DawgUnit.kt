@@ -2,20 +2,21 @@ package me.geso.kdary.internal
 
 import me.geso.kdary.IdType
 import me.geso.kdary.ValueType
+import me.geso.kdary.toValueType
 
 /**
  * Fixed unit of Directed Acyclic Word Graph (DAWG).
  */
-internal expect value class DawgUnit(
-    private val unit: IdType = 0u,
+internal data class DawgUnit(
+    private val unit: IdType,
 ) {
-    fun unit(): IdType
+    fun unit(): IdType = unit
 
-    fun child(): IdType
+    fun child(): IdType = unit shr 2
 
-    fun hasSibling(): Boolean
+    fun hasSibling(): Boolean = (unit and 1u) == 1u
 
-    fun value(): ValueType
+    fun value(): ValueType = (unit shr 1).toValueType()
 
-    fun isState(): Boolean
+    fun isState(): Boolean = (unit and 2u) == 2u
 }
