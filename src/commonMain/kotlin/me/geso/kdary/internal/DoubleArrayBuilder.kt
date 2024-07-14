@@ -1,4 +1,11 @@
-package me.geso.kdary
+package me.geso.kdary.internal
+
+import me.geso.kdary.IdType
+import me.geso.kdary.ProgressFuncType
+import me.geso.kdary.SizeType
+import me.geso.kdary.ValueType
+import me.geso.kdary.toIdType
+import me.geso.kdary.toSizeType
 
 /**
  * DAWG -> double-array converter.

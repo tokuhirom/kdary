@@ -1,4 +1,4 @@
-package me.geso.kdary
+package me.geso.kdary.internal
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -1,5 +1,6 @@
-package me.geso.kdary
+package me.geso.kdary.internal
 
+import me.geso.kdary.toSizeType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

@@ -1,5 +1,7 @@
-package me.geso.kdary
+package me.geso.kdary.internal
 
+import me.geso.kdary.toIdType
+import me.geso.kdary.toValueType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

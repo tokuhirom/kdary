@@ -1,4 +1,8 @@
-package me.geso.kdary
+package me.geso.kdary.internal
+
+import me.geso.kdary.IdType
+import me.geso.kdary.ValueType
+import me.geso.kdary.toValueType
 
 /**
  * Fixed unit of Directed Acyclic Word Graph (DAWG).

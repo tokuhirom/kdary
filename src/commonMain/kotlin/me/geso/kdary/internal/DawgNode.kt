@@ -1,4 +1,6 @@
-package me.geso.kdary
+package me.geso.kdary.internal
+
+import me.geso.kdary.IdType
 
 /**
  * Node of Directed Acyclic Word Graph (DAWG).

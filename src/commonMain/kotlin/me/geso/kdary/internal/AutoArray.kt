@@ -1,4 +1,4 @@
-package me.geso.kdary
+package me.geso.kdary.internal
 
 // Memory management of array.
 internal class AutoArray<T>(

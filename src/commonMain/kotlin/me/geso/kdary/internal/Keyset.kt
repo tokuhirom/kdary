@@ -1,4 +1,8 @@
-package me.geso.kdary
+package me.geso.kdary.internal
+
+import me.geso.kdary.SizeType
+import me.geso.kdary.ValueType
+import me.geso.kdary.toSizeType
 
 internal class Keyset<T>(
     private val keys: Array<ByteArray>,
