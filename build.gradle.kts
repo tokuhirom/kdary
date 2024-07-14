@@ -14,6 +14,14 @@ allprojects {
 }
 
 kotlin {
+    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class).all {
+        compilations.all {
+            kotlinOptions {
+                freeCompilerArgs += listOf("-Xexpect-actual-classes")
+            }
+        }
+    }
+
     jvm()
 
     sourceSets {

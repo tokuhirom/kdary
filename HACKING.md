@@ -246,3 +246,9 @@ length パラメータは、ByteArray から長さとれるので不要。
 ## 2024-07-12
 
 commonPrefixSearch が直ったのでよさそう。
+
+## 2024-07-14
+
+KMP なライブラリとするためには inline value class が JVM 以外では使えないので、
+actual/expect にした。
+DoubleArrayUnit を対象とする。

@@ -2,11 +2,13 @@ package me.geso.kdary.internal
 
 import me.geso.kdary.IdType
 import me.geso.kdary.ValueType
+import me.geso.kdary.toValueType
 
 /**
  * DoubleArrayUnit is a type for double array units, and is essentially a wrapper for IdType.
  */
-internal expect value class DoubleArrayUnit(
+@JvmInline
+internal actual value class DoubleArrayUnit(
     val unit: IdType,
 ) {
     /**
@@ -14,14 +16,14 @@ internal expect value class DoubleArrayUnit(
      *
      * @return true if the unit is a leaf unit, false otherwise.
      */
-    fun hasLeaf(): Boolean
+    actual fun hasLeaf(): Boolean = ((unit.toInt() shr 8) and 1) == 1
 
     /**
      * Returns the value stored in the unit. This is only available if the unit is a leaf unit.
      *
      * @return The value stored in the unit.
      */
-    fun value(): ValueType
+    actual fun value(): ValueType = (unit and ((1u shl 31) - 1u)).toValueType()
 
     /**
      * Returns the label associated with the unit. Leaf units always return an invalid label.
@@ -29,12 +31,16 @@ internal expect value class DoubleArrayUnit(
      *
      * @return The label associated with the unit.
      */
-    fun label(): IdType
+    actual fun label(): IdType = unit and ((1u shl 31) or 0xFFu)
 
     /**
      * Returns the offset to the unit derived from the unit.
      *
      * @return The offset to the derived unit.
      */
-    fun offset(): IdType
+    actual fun offset(): IdType {
+        val shiftedUnit = (unit shr 10).toInt()
+        val shiftedMask = ((unit and (1u shl 9)) shr 6).toInt()
+        return (shiftedUnit shl shiftedMask).toUInt()
+    }
 }

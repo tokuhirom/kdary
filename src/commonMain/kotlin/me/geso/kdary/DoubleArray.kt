@@ -283,7 +283,7 @@ class DoubleArray {
                     throw IOException("numUnits must be 256 or multiple of 256: $numUnits")
                 }
 
-                val units = Array(256) { DoubleArrayUnit() }
+                val units = Array(256) { DoubleArrayUnit(0u) }
                 for (i in units.indices) {
                     units[i] = DoubleArrayUnit(readUIntLe(source))
                 }
@@ -305,7 +305,7 @@ class DoubleArray {
                 val buf = ByteArray((numUnits - 256u).toInt() * unitSize().toInt())
                 source.readFully(buf)
 
-                val doubleArrayUnits: Array<DoubleArrayUnit> = Array(numUnits.toInt()) { DoubleArrayUnit() }
+                val doubleArrayUnits: Array<DoubleArrayUnit> = Array(numUnits.toInt()) { DoubleArrayUnit(0u) }
 
                 for (i in units.indices) {
                     doubleArrayUnits[i] = units[i]
