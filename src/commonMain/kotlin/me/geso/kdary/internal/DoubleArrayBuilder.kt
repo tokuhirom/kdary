@@ -1,7 +1,7 @@
 package me.geso.kdary.internal
 
 import me.geso.kdary.IdType
-import me.geso.kdary.ProgressFuncType
+import me.geso.kdary.ProgressCallback
 import me.geso.kdary.SizeType
 import me.geso.kdary.ValueType
 import me.geso.kdary.toIdType
@@ -11,7 +11,7 @@ import me.geso.kdary.toSizeType
  * DAWG -> double-array converter.
  */
 internal class DoubleArrayBuilder(
-    private val progressFunc: ProgressFuncType? = null,
+    private val progressCallback: ProgressCallback? = null,
 ) {
     private val units = mutableListOf<DoubleArrayBuilderUnit>()
     private val extras = Array(NUM_EXTRAS) { DoubleArrayBuilderExtraUnit() }
@@ -52,7 +52,7 @@ internal class DoubleArrayBuilder(
         val dawgBuilder = DawgBuilder()
         for (i: SizeType in 0uL until keyset.numKeys()) {
             dawgBuilder.insert(keyset.keys(i), keyset.values(i))
-            progressFunc?.invoke(i + 1uL, keyset.numKeys() + 1uL)
+            progressCallback?.invoke(i + 1uL, keyset.numKeys() + 1uL)
         }
         return dawgBuilder.finish()
     }
@@ -223,7 +223,7 @@ internal class DoubleArrayBuilder(
                 if (vaue == -1) {
                     vaue = keyset.values(i)
                 }
-                progressFunc?.invoke(i + 1uL, keyset.numKeys() + 1uL)
+                progressCallback?.invoke(i + 1uL, keyset.numKeys() + 1uL)
             }
 
             if (labels.isEmpty()) {

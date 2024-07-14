@@ -10,6 +10,12 @@ import okio.source
 import java.io.File
 
 /**
+ * A callback function to check the progress of dictionary construction.
+ * The first argument is the number of processed keys, and the second argument is the total number of keys.
+ */
+typealias ProgressCallback = (ULong, ULong) -> Int
+
+/**
  * Reads an unsigned 32-bit integer in little-endian format from the given source.
  *
  * @param source The BufferedSource to read from.
@@ -249,23 +255,23 @@ class DoubleArray {
          *
          * @param keys The keys to build the dictionary from.
          * @param values The values associated with the keys.
-         * @param progressFunc A callback function to check the progress of dictionary construction.
+         * @param progressCallback A callback function to check the progress of dictionary construction.
          * @return A DoubleArray containing the built dictionary.
          */
         fun <T> build(
             keys: Array<ByteArray>,
             values: Array<T>? = null,
-            progressFunc: ProgressFuncType? = null,
+            progressCallback: ProgressCallback? = null,
         ): DoubleArray {
             val keyset = Keyset(keys, values)
 
-            val builder = DoubleArrayBuilder(progressFunc)
+            val builder = DoubleArrayBuilder(progressCallback)
             val buf = builder.build(keyset)
 
             val doubleArray = DoubleArray(buf)
 
             val numKeys = keys.size.toSizeType()
-            progressFunc?.invoke(numKeys + 1u, numKeys + 1u)
+            progressCallback?.invoke(numKeys + 1u, numKeys + 1u)
 
             return doubleArray
         }
