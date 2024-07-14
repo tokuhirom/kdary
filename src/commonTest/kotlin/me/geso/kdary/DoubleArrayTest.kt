@@ -45,18 +45,6 @@ class DoubleArrayTest {
         numKeys: Int,
         random: Random,
     ): Set<ByteArray> {
-        /*
-void generate_valid_keys(std::size_t num_keys,
-    std::set<std::string> *valid_keys) {
-  std::vector<char> key;
-  while (valid_keys->size() < num_keys) {
-    key.resize(1 + (std::rand() % 8));
-    for (std::size_t i = 0; i < key.size(); ++i) {
-      key[i] = 'A' + (std::rand() % 26);
-    }
-    valid_keys->insert(std::string(&key[0], key.size()));
-  }
-         */
         val keys = mutableSetOf<String>()
         while (keys.size < numKeys) {
             val key = ByteArray(1 + (0..7).random())
@@ -68,22 +56,6 @@ void generate_valid_keys(std::size_t num_keys,
         return keys.map { it.toByteArray() }.toSet()
     }
 
-    /*
-void generate_invalid_keys(std::size_t num_keys,
-    const std::set<std::string> &valid_keys,
-    std::set<std::string> *invalid_keys) {
-  std::vector<char> key;
-  while (invalid_keys->size() < num_keys) {
-    key.resize(1 + (std::rand() % 8));
-    for (std::size_t i = 0; i < key.size(); ++i) {
-      key[i] = 'A' + (std::rand() % 26);
-    }
-    std::string generated_key(&key[0], key.size());
-    if (valid_keys.find(generated_key) == valid_keys.end())
-      invalid_keys->insert(std::string(&key[0], key.size()));
-  }
-}
-     */
     private fun generateInvalidKeys(
         numInvalidKeys: Int,
         validKeys: Set<ByteArray>,
@@ -123,11 +95,6 @@ void generate_invalid_keys(std::size_t num_keys,
 
     @Test
     fun `build() with keys, lengths and random values`() {
-        /*
-  for (std::size_t i = 0; i < values.size(); ++i) {
-    values[i] = std::rand() % 10;
-  }
-         */
         val newValues = values.map { (0..9).random(random) }
 
         val dic = DoubleArray.build(keys.toTypedArray(), newValues.toTypedArray())
@@ -149,49 +116,6 @@ void generate_invalid_keys(std::size_t num_keys,
         testDic(dicCopy, keys, values, invalidKeys)
     }
 
-    /*
-template <typename T>
-void test_dic(const T &dic, const std::vector<const char *> &keys,
-const std::vector<std::size_t> &lengths,
-const std::vector<typename T::value_type> &values,
-const std::set<std::string> &invalid_keys) {
-typename T::value_type value;
-typename T::result_pair_type result;
-
-for (std::size_t i = 0; i < keys.size(); ++i) {
-dic.exactMatchSearch(keys[i], value);
-assert(value == values[i]);
-
-dic.exactMatchSearch(keys[i], result);
-assert(result.value == values[i]);
-assert(result.length == lengths[i]);
-
-dic.exactMatchSearch(keys[i], value, lengths[i]);
-assert(value == values[i]);
-
-dic.exactMatchSearch(keys[i], result, lengths[i]);
-assert(result.value == values[i]);
-assert(result.length == lengths[i]);
-}
-
-for (std::set<std::string>::const_iterator it = invalid_keys.begin();
-it != invalid_keys.end(); ++it) {
-dic.exactMatchSearch(it->c_str(), value);
-assert(value == -1);
-
-dic.exactMatchSearch(it->c_str(), result);
-assert(result.value == -1);
-
-dic.exactMatchSearch(it->c_str(), value, it->length());
-assert(value == -1);
-
-dic.exactMatchSearch(it->c_str(), result, it->length());
-assert(result.value == -1);
-}
-
-std::cerr << "ok" << std::endl;
-}
-*/
     private fun testDic(
         dic: DoubleArray,
         keys: List<ByteArray>,
@@ -200,57 +124,18 @@ std::cerr << "ok" << std::endl;
     ) {
         for (i in keys.indices) {
             val result = dic.exactMatchSearch(keys[i])
-//            debug("result=$result expected=${values[i]}")
             assert(result is ExactMatchSearchResult.Found)
             assert(result.value == values[i])
         }
 
         invalidKeys.forEach { invalidKey ->
             val result = dic.exactMatchSearch(invalidKey)
-//            debug("result=$result invalidKey=$invalidKey")
             assert(result is ExactMatchSearchResult.NotFound)
         }
     }
 
     @Test
     fun testTraverse() {
-/*
-template <typename T>
-void test_traverse(const T &dic,
-    const std::vector<const char *> &keys,
-    const std::vector<std::size_t> &lengths,
-    const std::vector<typename T::value_type> &values,
-    const std::set<std::string> &invalid_keys) {
-  for (std::size_t i = 0; i < keys.size(); ++i) {
-    const char *key = keys[i];
-    std::size_t id = 0;
-    std::size_t key_pos = 0;
-    typename T::value_type result = 0;
-    for (std::size_t j = 0; j < lengths[i]; ++j) {
-      result = dic.traverse(key, id, key_pos, j + 1);
-      assert(result != -2);
-    }
-    assert(result == values[i]);
-  }
-
-  for (std::set<std::string>::const_iterator it = invalid_keys.begin();
-      it != invalid_keys.end(); ++it) {
-    const char *key = it->c_str();
-    std::size_t id = 0;
-    std::size_t key_pos = 0;
-    typename T::value_type result = 0;
-    for (std::size_t i = 0; i < it->length(); ++i) {
-      result = dic.traverse(key, id, key_pos, i + 1);
-      if (result == -2) {
-        break;
-      }
-    }
-    assert(result < 0);
-  }
-
-  std::cerr << "ok" << std::endl;
-}
- */
         val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
 
         for (i in keys.indices) {
@@ -283,14 +168,6 @@ void test_traverse(const T &dic,
 
     @Test
     fun simple() {
-        /*
-  Darts::DoubleArray da;
-  da.build(1, (const char *[]){"abc"}, (std::size_t[]) {3}, (int[]) {1});
-  std::cout << "----------" << std::endl;
-
-  int v = da.exactMatchSearch<int>("abc");
-  std::cout << v << std::endl;
-         */
         val dic = DoubleArray.build(arrayOf("abc".toByteArray()), arrayOf(4))
         println("----------")
         val v = dic.exactMatchSearch("abc".toByteArray())
@@ -320,76 +197,16 @@ void test_traverse(const T &dic,
 
     @Test
     fun testCommonPrefixSearch() {
-        /*
-template <typename T>
-void test_common_prefix_search(const T &dic,
-    const std::vector<const char *> &keys,
-    const std::vector<std::size_t> &lengths,
-    const std::vector<typename T::value_type> &values,
-    const std::set<std::string> &invalid_keys) {
-  static const std::size_t MAX_NUM_RESULTS = 16;
-  typename T::result_pair_type results[MAX_NUM_RESULTS];
-  typename T::result_pair_type results_with_length[MAX_NUM_RESULTS];
-
-  for (std::size_t i = 0; i < keys.size(); ++i) {
-    std::size_t num_results = dic.commonPrefixSearch(
-        keys[i], results, MAX_NUM_RESULTS);
-
-    assert(num_results >= 1);
-    assert(num_results < 10);
-
-    assert(results[num_results - 1].value == values[i]);
-    assert(results[num_results - 1].length == lengths[i]);
-
-    std::size_t num_results_with_length = dic.commonPrefixSearch(
-        keys[i], results_with_length, MAX_NUM_RESULTS, lengths[i]);
-
-    assert(num_results == num_results_with_length);
-    for (std::size_t j = 0; j < num_results; ++j) {
-      assert(results[j].value == results_with_length[j].value);
-      assert(results[j].length == results_with_length[j].length);
-    }
-  }
-
-
-  std::cerr << "ok" << std::endl;
-}
-         */
         val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
         for (i in keys.indices) {
             val key: ByteArray = keys[i]
             val results = dic.commonPrefixSearch(key)
-//            println("key=${String(key.toByteArray())} results=$results")
             assert(results.size >= 1)
             assert(results.size < 10)
             assert(results[results.size - 1].value == values[i])
             assert(results[results.size - 1].length.toInt() == key.size)
         }
 
-/*
-      for (std::set<std::string>::const_iterator it = invalid_keys.begin();
-      it != invalid_keys.end(); ++it) {
-    std::size_t num_results = dic.commonPrefixSearch(
-        it->c_str(), results, MAX_NUM_RESULTS);
-
-    assert(num_results < 10);
-
-    if (num_results > 0) {
-      assert(results[num_results - 1].value != -1);
-      assert(results[num_results - 1].length < it->length());
-    }
-
-    std::size_t num_results_with_length = dic.commonPrefixSearch(
-        it->c_str(), results_with_length, MAX_NUM_RESULTS, it->length());
-
-    assert(num_results == num_results_with_length);
-    for (std::size_t j = 0; j < num_results; ++j) {
-      assert(results[j].value == results_with_length[j].value);
-      assert(results[j].length == results_with_length[j].length);
-    }
-  }
-}
- */
         for (invalidKey in invalidKeys) {
             val results = dic.commonPrefixSearch(invalidKey)
             assert(results.size < 10)
