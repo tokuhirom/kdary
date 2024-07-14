@@ -44,8 +44,8 @@ class DoubleArrayImpl<T : Number> {
     }
 
     // TODO: Consider using a sealed class
-    data class ResultPairType<T>(
-        var value: T,
+    data class ResultPairType(
+        var value: ValueType,
         var length: SizeType,
     )
 
@@ -95,12 +95,12 @@ class DoubleArrayImpl<T : Number> {
     fun exactMatchSearch(
         key: ByteArray,
         nodePos: SizeType = 0u,
-    ): ResultPairType<Int> = exactMatchSearchInternal(key, nodePos)
+    ): ResultPairType = exactMatchSearchInternal(key, nodePos)
 
     private fun exactMatchSearchInternal(
         key: ByteArray,
         nodePosParam: SizeType = 0u,
-    ): ResultPairType<Int> {
+    ): ResultPairType {
         var unit = array[nodePosParam.toInt()]
         var nodePos = nodePosParam
         val length = key.size.toSizeType()
@@ -132,20 +132,20 @@ class DoubleArrayImpl<T : Number> {
         key: ByteArray,
         maxNumResults: SizeType? = null,
         nodePos: SizeType = 0u,
-    ): List<ResultPairType<ValueType>> = commonPrefixSearchInternal(key, maxNumResults, nodePos)
+    ): List<ResultPairType> = commonPrefixSearchInternal(key, maxNumResults, nodePos)
 
     private fun commonPrefixSearchInternal(
         key: ByteArray,
         maxNumResults: SizeType?,
         nodePosParam: SizeType = 0u,
-    ): List<ResultPairType<ValueType>> {
+    ): List<ResultPairType> {
         var nodePos: SizeType = nodePosParam
         val length: SizeType = key.size.toSizeType()
 
         var unit: DoubleArrayUnit = array[nodePos.toInt()]
         nodePos = nodePos xor unit.offset().toSizeType()
 
-        val results = mutableListOf<ResultPairType<ValueType>>()
+        val results = mutableListOf<ResultPairType>()
 
         for (i in 0uL until length) {
             nodePos = nodePos xor key[i.toInt()].toUByte().toSizeType()
