@@ -200,13 +200,14 @@ std::cerr << "ok" << std::endl;
         for (i in keys.indices) {
             val result = dic.exactMatchSearch(keys[i])
 //            debug("result=$result expected=${values[i]}")
+            assert(result is DoubleArrayImpl.ExactMatchSearchResult.Found)
             assert(result.value == values[i])
         }
 
         invalidKeys.forEach { invalidKey ->
             val result = dic.exactMatchSearch(invalidKey)
 //            debug("result=$result invalidKey=$invalidKey")
-            assert(result.value == -1)
+            assert(result is DoubleArrayImpl.ExactMatchSearchResult.NotFound)
         }
     }
 
@@ -293,6 +294,7 @@ void test_traverse(const T &dic,
         println("----------")
         val v = dic.exactMatchSearch("abc".toByteArray())
         println(v)
+        assert(v is DoubleArrayImpl.ExactMatchSearchResult.Found)
         assertEquals(4, v.value)
     }
 

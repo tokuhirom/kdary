@@ -43,8 +43,19 @@ class DoubleArrayImpl<T : Number> {
         this.array = array
     }
 
-    // TODO: Consider using a sealed class
-    data class ResultPairType(
+    sealed class ExactMatchSearchResult(
+        open val value: ValueType,
+        open val length: SizeType,
+    ) {
+        data class Found(
+            override val value: ValueType,
+            override val length: SizeType,
+        ) : ExactMatchSearchResult(value, length)
+
+        data object NotFound : ExactMatchSearchResult(-1, 0u)
+    }
+
+    data class CommonPrefixSearchResult(
         var value: ValueType,
         var length: SizeType,
     )
@@ -86,21 +97,21 @@ class DoubleArrayImpl<T : Number> {
 
     /**
      * Tests whether the given key exists or not, and if it exists, sets its value and length in the result.
-     * Otherwise, the value and length of the result are set to -1 and 0 respectively.
+     * Otherwise, the return value is ExactMatchSearchResult.NotFound.
      *
      * @param key The key to search for.
      * @param nodePos The starting position of the node.
-     * @return A ResultPairType containing the value and length.
+     * @return A ExactMatchSearchResult containing the value and length.
      */
     fun exactMatchSearch(
         key: ByteArray,
         nodePos: SizeType = 0u,
-    ): ResultPairType = exactMatchSearchInternal(key, nodePos)
+    ): ExactMatchSearchResult = exactMatchSearchInternal(key, nodePos)
 
     private fun exactMatchSearchInternal(
         key: ByteArray,
         nodePosParam: SizeType = 0u,
-    ): ResultPairType {
+    ): ExactMatchSearchResult {
         var unit = array[nodePosParam.toInt()]
         var nodePos = nodePosParam
         val length = key.size.toSizeType()
@@ -108,15 +119,15 @@ class DoubleArrayImpl<T : Number> {
             nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
             unit = array[nodePos.toInt()]
             if (unit.label() != key[i.toInt()].toUInt()) {
-                return ResultPairType(-1, 0u)
+                return ExactMatchSearchResult.NotFound
             }
         }
 
         if (!unit.hasLeaf()) {
-            return ResultPairType(-1, 0u)
+            return ExactMatchSearchResult.NotFound
         }
         unit = array[nodePos.toInt() xor unit.offset().toInt()]
-        return ResultPairType(unit.value(), length)
+        return ExactMatchSearchResult.Found(unit.value(), length)
     }
 
     /**
@@ -126,26 +137,26 @@ class DoubleArrayImpl<T : Number> {
      * @param key The key to search for.
      * @param maxNumResults The maximum number of results to return.
      * @param nodePos The starting position of the node.
-     * @return A list of ResultPairType containing the values and lengths of matched keys.
+     * @return A list of CommonPrefixSearchResult containing the values and lengths of matched keys.
      */
     fun commonPrefixSearch(
         key: ByteArray,
         maxNumResults: SizeType? = null,
         nodePos: SizeType = 0u,
-    ): List<ResultPairType> = commonPrefixSearchInternal(key, maxNumResults, nodePos)
+    ): List<CommonPrefixSearchResult> = commonPrefixSearchInternal(key, maxNumResults, nodePos)
 
     private fun commonPrefixSearchInternal(
         key: ByteArray,
         maxNumResults: SizeType?,
         nodePosParam: SizeType = 0u,
-    ): List<ResultPairType> {
+    ): List<CommonPrefixSearchResult> {
         var nodePos: SizeType = nodePosParam
         val length: SizeType = key.size.toSizeType()
 
         var unit: DoubleArrayUnit = array[nodePos.toInt()]
         nodePos = nodePos xor unit.offset().toSizeType()
 
-        val results = mutableListOf<ResultPairType>()
+        val results = mutableListOf<CommonPrefixSearchResult>()
 
         for (i in 0uL until length) {
             nodePos = nodePos xor key[i.toInt()].toUByte().toSizeType()
@@ -158,7 +169,7 @@ class DoubleArrayImpl<T : Number> {
             if (unit.hasLeaf()) {
                 if (maxNumResults == null || results.size.toULong() < maxNumResults) {
                     val v = array[nodePos.toInt()].value()
-                    results.add(ResultPairType(v, (i + 1u)))
+                    results.add(CommonPrefixSearchResult(v, (i + 1u)))
                 }
             }
         }
