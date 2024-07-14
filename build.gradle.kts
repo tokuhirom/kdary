@@ -31,6 +31,7 @@ kotlin {
             }
         }
     }
+    macosArm64()
 
     sourceSets {
         val commonMain by getting {
@@ -50,6 +51,11 @@ kotlin {
             }
         }
         val jsMain by getting {
+            dependencies {
+                implementation("com.squareup.okio:okio:3.9.0")
+            }
+        }
+        val macosArm64Main by getting {
             dependencies {
                 implementation("com.squareup.okio:okio:3.9.0")
             }
