@@ -4,6 +4,9 @@ import me.geso.kdary.result.ExactMatchSearchResult
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+fun byteArrayToString(byteArray: ByteArray): String = byteArray.decodeToString()
 
 class DoubleArrayTest {
     private val random = Random(seed = 0)
@@ -17,20 +20,20 @@ class DoubleArrayTest {
         val keys: MutableList<ByteArray> = mutableListOf()
         val values: MutableList<ValueType> = mutableListOf()
 
-        for ((keyId, key) in validKeys.sortedBy { String(it) }.withIndex()) {
+        for ((keyId, key) in validKeys.sortedBy { byteArrayToString(it) }.withIndex()) {
             keys.add(key)
             values.add(keyId)
         }
         keys.forEachIndexed { index, key ->
             if (index <= 3 || index >= NUM_VALID_KEYS - 3) {
-                println("index: $index, key: ${String(keys[index])}, value: ${values[index]}")
+                println("index: $index, key: ${byteArrayToString(keys[index])}, value: ${values[index]}")
             }
         }
         assertEquals(0, values[0])
 
-        // validKeys と invalidKeys の重複を確認する。
-        val validKeyStrings = validKeys.map { String(it) }.toSet()
-        val invalidKeyStrings = invalidKeys.map { String(it) }.toSet()
+        // Check the duplication between validKeys and invalidKeys.
+        val validKeyStrings = validKeys.map { byteArrayToString(it) }.toSet()
+        val invalidKeyStrings = invalidKeys.map { byteArrayToString(it) }.toSet()
         val intersection = validKeyStrings.intersect(invalidKeyStrings)
         assertEquals(0, intersection.size)
         return TestData(keys, values)
@@ -51,9 +54,9 @@ class DoubleArrayTest {
             for (i in key.indices) {
                 key[i] = ('A'.code + (0..25).random(random)).toByte()
             }
-            keys.add(String(key))
+            keys.add(byteArrayToString(key))
         }
-        return keys.map { it.toByteArray() }.toSet()
+        return keys.map { it.encodeToByteArray() }.toSet()
     }
 
     private fun generateInvalidKeys(
@@ -62,39 +65,33 @@ class DoubleArrayTest {
         random: Random,
     ): Set<ByteArray> {
         val keys = mutableSetOf<String>()
-        val validKeyStrings = validKeys.map { String(it) }.toSet()
+        val validKeyStrings = validKeys.map { byteArrayToString(it) }.toSet()
         while (keys.size < numInvalidKeys) {
             val key = ByteArray(1 + (0..7).random(random))
             for (i in key.indices) {
                 key[i] = ('A'.code + (0..25).random(random)).toByte()
             }
-            if (!validKeyStrings.contains(String(key))) {
-                keys.add(String(key))
+            if (!validKeyStrings.contains(byteArrayToString(key))) {
+                keys.add(byteArrayToString(key))
             }
         }
-        return keys.map { it.toByteArray() }.toSet()
+        return keys.map { it.encodeToByteArray() }.toSet()
     }
 
     @Test
-    fun `build() with keys`() {
+    fun buildWithKeys() {
         val dic = DoubleArray.build<Any>(keys.toTypedArray())
         testDic(dic, keys, values, invalidKeys)
     }
 
     @Test
-    fun `build() with keys, lengths`() {
-        val dic = DoubleArray.build<Any>(keys.toTypedArray())
-        testDic(dic, keys, values, invalidKeys)
-    }
-
-    @Test
-    fun `build() with keys, lengths, values`() {
+    fun buildWithKeysValues() {
         val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
         testDic(dic, keys, values, invalidKeys)
     }
 
     @Test
-    fun `build() with keys, lengths and random values`() {
+    fun buildWithKeysAndRandomValues() {
         val newValues = values.map { (0..9).random(random) }
 
         val dic = DoubleArray.build(keys.toTypedArray(), newValues.toTypedArray())
@@ -102,7 +99,7 @@ class DoubleArrayTest {
     }
 
     @Test
-    fun `save() and open()`() {
+    fun saveAndOpen() {
         val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
         saveDoubleArray(dic, "test-darts.dic")
 
@@ -124,13 +121,13 @@ class DoubleArrayTest {
     ) {
         for (i in keys.indices) {
             val result = dic.exactMatchSearch(keys[i])
-            assert(result is ExactMatchSearchResult.Found)
-            assert(result.value == values[i])
+            assertTrue(result is ExactMatchSearchResult.Found)
+            assertEquals(result.value, values[i])
         }
 
         invalidKeys.forEach { invalidKey ->
             val result = dic.exactMatchSearch(invalidKey)
-            assert(result is ExactMatchSearchResult.NotFound)
+            assertTrue(result is ExactMatchSearchResult.NotFound)
         }
     }
 
@@ -145,10 +142,10 @@ class DoubleArrayTest {
             var result = 0
             for (j in 0uL until keys[i].size.toSizeType()) {
                 val r = dic.traverse(key, id, keyPos)
-                assert(r.status != -2)
+                assertTrue(r.status != -2)
                 result = r.status
             }
-            assert(result == values[i])
+            assertEquals(result, values[i])
         }
 
         for (invalidKey in invalidKeys) {
@@ -162,17 +159,17 @@ class DoubleArrayTest {
                     break
                 }
             }
-            assert(result < 0)
+            assertTrue(result < 0)
         }
     }
 
     @Test
     fun simple() {
-        val dic = DoubleArray.build(arrayOf("abc".toByteArray()), arrayOf(4))
+        val dic = DoubleArray.build(arrayOf("abc".encodeToByteArray()), arrayOf(4))
         println("----------")
-        val v = dic.exactMatchSearch("abc".toByteArray())
+        val v = dic.exactMatchSearch("abc".encodeToByteArray())
         println(v)
-        assert(v is ExactMatchSearchResult.Found)
+        assertTrue(v is ExactMatchSearchResult.Found)
         assertEquals(4, v.value)
     }
 
@@ -181,14 +178,14 @@ class DoubleArrayTest {
         val dic =
             DoubleArray.build(
                 arrayOf(
-                    "京都".toByteArray(),
-                    "東".toByteArray(),
-                    "東京都".toByteArray(),
+                    "京都".encodeToByteArray(),
+                    "東".encodeToByteArray(),
+                    "東京都".encodeToByteArray(),
                 ),
                 arrayOf(5963, 4649, 7676),
             )
         println("----------")
-        val result = dic.commonPrefixSearch("東京都庁".toByteArray())
+        val result = dic.commonPrefixSearch("東京都庁".encodeToByteArray())
         println(result)
         assertEquals(2, result.size)
         assertEquals(4649, result[0].value)
@@ -201,19 +198,19 @@ class DoubleArrayTest {
         for (i in keys.indices) {
             val key: ByteArray = keys[i]
             val results = dic.commonPrefixSearch(key)
-            assert(results.size >= 1)
-            assert(results.size < 10)
-            assert(results[results.size - 1].value == values[i])
-            assert(results[results.size - 1].length.toInt() == key.size)
+            assertTrue(results.isNotEmpty())
+            assertTrue(results.size < 10)
+            assertEquals(results[results.size - 1].value, values[i])
+            assertEquals(results[results.size - 1].length.toInt(), key.size)
         }
 
         for (invalidKey in invalidKeys) {
             val results = dic.commonPrefixSearch(invalidKey)
-            assert(results.size < 10)
+            assertTrue(results.size < 10)
 
             if (results.isNotEmpty()) {
-                assert(results[results.size - 1].value != -1)
-                assert(results[results.size - 1].length.toInt() < invalidKey.size)
+                assertTrue(results[results.size - 1].value != -1)
+                assertTrue(results[results.size - 1].length.toInt() < invalidKey.size)
             }
         }
     }
@@ -221,7 +218,7 @@ class DoubleArrayTest {
     @Test
     fun testTotalSize() {
         val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
-        assert(800000u < dic.totalSize())
+        assertTrue(800000u < dic.totalSize())
     }
 
     companion object {

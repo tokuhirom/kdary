@@ -22,6 +22,15 @@ kotlin {
     }
 
     jvm()
+    js {
+        nodejs {
+            testTask {
+                useMocha {
+                    timeout = "10000" // 10 seconds timeout
+                }
+            }
+        }
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -32,6 +41,17 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
+            }
+        }
+
+        val jvmMain by getting {
+            dependencies {
+                implementation("com.squareup.okio:okio:3.9.0")
+            }
+        }
+        val jsMain by getting {
+            dependencies {
+                implementation("com.squareup.okio:okio:3.9.0")
             }
         }
     }

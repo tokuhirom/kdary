@@ -7,12 +7,12 @@ import kotlin.test.assertTrue
 class KeysetTest {
     @Test
     fun testKeyset() {
-        val keys = arrayOf("apple", "banana", "cherry").map { it.toByteArray() }.toTypedArray()
+        val keys = arrayOf("apple", "banana", "cherry").map { it.encodeToByteArray() }.toTypedArray()
         val values = arrayOf(1, 2, 3)
         val keyset = Keyset(keys, values)
 
         assertEquals(3u, keyset.numKeys())
-        assertEquals("apple", String(keyset.keys(0u)))
+        assertEquals("apple", keyset.keys(0u).decodeToString())
         assertEquals('b'.code.toUByte(), keyset.keys(1u, 0u))
         assertTrue(keyset.hasValues())
         assertEquals(2, keyset.values(1u))
