@@ -1,5 +1,6 @@
 package me.geso.kdary
 
+import me.geso.kdary.result.ExactMatchSearchResult
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -200,14 +201,14 @@ std::cerr << "ok" << std::endl;
         for (i in keys.indices) {
             val result = dic.exactMatchSearch(keys[i])
 //            debug("result=$result expected=${values[i]}")
-            assert(result is DoubleArray.ExactMatchSearchResult.Found)
+            assert(result is ExactMatchSearchResult.Found)
             assert(result.value == values[i])
         }
 
         invalidKeys.forEach { invalidKey ->
             val result = dic.exactMatchSearch(invalidKey)
 //            debug("result=$result invalidKey=$invalidKey")
-            assert(result is DoubleArray.ExactMatchSearchResult.NotFound)
+            assert(result is ExactMatchSearchResult.NotFound)
         }
     }
 
@@ -294,7 +295,7 @@ void test_traverse(const T &dic,
         println("----------")
         val v = dic.exactMatchSearch("abc".toByteArray())
         println(v)
-        assert(v is DoubleArray.ExactMatchSearchResult.Found)
+        assert(v is ExactMatchSearchResult.Found)
         assertEquals(4, v.value)
     }
 

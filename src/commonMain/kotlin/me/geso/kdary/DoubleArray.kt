@@ -3,6 +3,8 @@ package me.geso.kdary
 import me.geso.kdary.internal.DoubleArrayBuilder
 import me.geso.kdary.internal.DoubleArrayUnit
 import me.geso.kdary.internal.Keyset
+import me.geso.kdary.result.CommonPrefixSearchResult
+import me.geso.kdary.result.ExactMatchSearchResult
 import okio.IOException
 import okio.buffer
 import okio.sink
@@ -51,23 +53,6 @@ class DoubleArray {
     private constructor(array: Array<DoubleArrayUnit>) {
         this.array = array
     }
-
-    sealed class ExactMatchSearchResult(
-        open val value: ValueType,
-        open val length: SizeType,
-    ) {
-        data class Found(
-            override val value: ValueType,
-            override val length: SizeType,
-        ) : ExactMatchSearchResult(value, length)
-
-        data object NotFound : ExactMatchSearchResult(-1, 0u)
-    }
-
-    data class CommonPrefixSearchResult(
-        var value: ValueType,
-        var length: SizeType,
-    )
 
     internal fun array(): Array<DoubleArrayUnit> = array
 
