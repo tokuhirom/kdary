@@ -5,7 +5,9 @@ import okio.IOException
 import okio.buffer
 import okio.sink
 import okio.source
-import java.io.File
+import kotlin.io.path.Path
+import kotlin.io.path.exists
+import kotlin.io.path.fileSize
 
 /**
  * Reads an unsigned 32-bit integer in little-endian format from the given source.
@@ -45,13 +47,13 @@ private fun writeUIntLe(
  * @throws IOException If the file is not found or invalid.
  */
 fun loadDoubleArray(fileName: String): DoubleArray {
-    val file = File(fileName)
+    val file = Path(fileName)
     if (!file.exists()) {
         throw IOException("File not found: $fileName")
     }
 
     return file.source().buffer().use { source ->
-        val actualSize = file.length().toULong()
+        val actualSize = file.fileSize().toULong()
 
         val unitSize = DoubleArray.unitSize()
         val numUnits = actualSize / unitSize
@@ -116,7 +118,7 @@ fun saveDoubleArray(
         "You can't save empty array"
     }
 
-    val file = File(fileName)
+    val file = Path(fileName)
     file.sink().buffer().use { sink ->
         doubleArray.array().forEach { unit ->
             writeUIntLe(sink, unit.unit)
