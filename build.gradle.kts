@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
     kotlin("multiplatform") version "2.0.0"
     id("io.gitlab.arturbosch.detekt") version "1.23.6"
@@ -14,12 +16,9 @@ allprojects {
 }
 
 kotlin {
-    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class).all {
-        compilations.all {
-            kotlinOptions {
-                freeCompilerArgs += listOf("-Xexpect-actual-classes")
-            }
-        }
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
     jvm()
