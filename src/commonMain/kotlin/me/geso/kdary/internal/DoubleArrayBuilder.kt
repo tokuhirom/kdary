@@ -16,7 +16,6 @@ internal class DoubleArrayBuilder(
     private val units = mutableListOf<DoubleArrayBuilderUnit>()
     private val extras = Array(NUM_EXTRAS) { DoubleArrayBuilderExtraUnit() }
     private val labels = mutableListOf<UByte>()
-    private val table = AutoArray<IdType>()
     private var extrasHead: IdType = 0u
 
     companion object {
@@ -63,7 +62,10 @@ internal class DoubleArrayBuilder(
             numUnits = numUnits shl 1
         }
 
-        table.reset(Array(dawg.numIntersections()) { 0u })
+        val table =
+            Array(dawg.numIntersections()) {
+                0u
+            }
 
         reserveId(0u)
         extras(0u).setIsUsed(true)
@@ -71,19 +73,19 @@ internal class DoubleArrayBuilder(
         units[0].setLabel(0u)
 
         if (dawg.child(dawg.root()) != 0u) {
-            buildFromDawg(dawg, dawg.root(), 0u)
+            buildFromDawg(dawg, dawg.root(), 0u, table)
         }
 
         fixAllBlocks()
 
         labels.clear()
-        table.clear()
     }
 
     private fun buildFromDawg(
         dawg: Dawg,
         dawgId: IdType,
         dicId: IdType,
+        table: Array<IdType>,
     ) {
         var dawgChildId = dawg.child(dawgId)
         if (dawg.isIntersection(dawgChildId)) {
@@ -110,7 +112,7 @@ internal class DoubleArrayBuilder(
             val childLabel: UByte = dawg.label(dawgChildId)
             val dicChildId: IdType = offset xor childLabel.toIdType()
             if (childLabel != 0.toUByte()) {
-                buildFromDawg(dawg, dawgChildId, dicChildId)
+                buildFromDawg(dawg, dawgChildId, dicChildId, table)
             }
             dawgChildId = dawg.sibling(dawgChildId)
         } while (dawgChildId != 0u)
