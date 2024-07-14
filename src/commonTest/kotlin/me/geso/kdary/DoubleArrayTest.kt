@@ -4,7 +4,7 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class DoubleArrayImplTest {
+class DoubleArrayTest {
     private val random = Random(seed = 0)
     private val validKeys = generateValidKeys(NUM_VALID_KEYS, random)
     private val invalidKeys = generateInvalidKeys(NUM_INVALID_KEYS, validKeys, random)
@@ -200,14 +200,14 @@ std::cerr << "ok" << std::endl;
         for (i in keys.indices) {
             val result = dic.exactMatchSearch(keys[i])
 //            debug("result=$result expected=${values[i]}")
-            assert(result is DoubleArrayImpl.ExactMatchSearchResult.Found)
+            assert(result is DoubleArray.ExactMatchSearchResult.Found)
             assert(result.value == values[i])
         }
 
         invalidKeys.forEach { invalidKey ->
             val result = dic.exactMatchSearch(invalidKey)
 //            debug("result=$result invalidKey=$invalidKey")
-            assert(result is DoubleArrayImpl.ExactMatchSearchResult.NotFound)
+            assert(result is DoubleArray.ExactMatchSearchResult.NotFound)
         }
     }
 
@@ -294,7 +294,7 @@ void test_traverse(const T &dic,
         println("----------")
         val v = dic.exactMatchSearch("abc".toByteArray())
         println(v)
-        assert(v is DoubleArrayImpl.ExactMatchSearchResult.Found)
+        assert(v is DoubleArray.ExactMatchSearchResult.Found)
         assertEquals(4, v.value)
     }
 
