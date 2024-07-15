@@ -2,12 +2,8 @@ package me.geso.kdary
 
 import me.geso.kdary.DoubleArray.Companion.unitSize
 import me.geso.kdary.internal.DoubleArrayUnit
-import okio.buffer
-import okio.sink
-import okio.source
-import kotlin.io.path.Path
-import kotlin.io.path.exists
-import kotlin.io.path.fileSize
+import okio.FileSystem
+import okio.Path.Companion.toPath
 
 /**
  * Saves the double array into the specified file.
@@ -23,10 +19,10 @@ actual fun saveDoubleArray(
         "You can't save empty array"
     }
 
-    val file = Path(fileName)
-    file.sink().buffer().use { sink ->
+    val file = fileName.toPath()
+    FileSystem.SYSTEM.write(file) {
         doubleArray.array().forEach { unit ->
-            writeUIntLe(sink, unit.unit)
+            writeUIntLe(this, unit.unit)
         }
     }
 }
@@ -36,16 +32,22 @@ actual fun saveDoubleArray(
  *
  * @param fileName The name of the file to read.
  * @return A DoubleArray containing the read units.
- * @throws IOException If the file is not found or invalid.
+ * @throws DoubleArrayIOException If the file is not found or invalid.
  */
 actual fun loadDoubleArray(fileName: String): DoubleArray {
-    val file = Path(fileName)
-    if (!file.exists()) {
+    val file = fileName.toPath()
+    if (!FileSystem.SYSTEM.exists(file)) {
         throw DoubleArrayIOException("File not found: $fileName")
     }
 
-    return file.source().buffer().use { source ->
-        val actualSize = file.fileSize().toULong()
+    return FileSystem.SYSTEM.read(file) {
+        val source = this
+        val actualSize =
+            FileSystem.SYSTEM
+                .metadata(file)
+                .size
+                ?.toULong()
+        check(actualSize != null)
 
         val unitSize = unitSize()
         val numUnits = actualSize / unitSize

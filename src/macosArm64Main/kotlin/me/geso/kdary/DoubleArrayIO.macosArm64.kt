@@ -32,7 +32,7 @@ actual fun saveDoubleArray(
  *
  * @param fileName The name of the file to read.
  * @return A DoubleArray containing the read units.
- * @throws IOException If the file is not found or invalid.
+ * @throws DoubleArrayIOException If the file is not found or invalid.
  */
 actual fun loadDoubleArray(fileName: String): DoubleArray {
     val file = fileName.toPath()
