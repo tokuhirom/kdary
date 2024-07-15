@@ -252,3 +252,12 @@ commonPrefixSearch が直ったのでよさそう。
 KMP なライブラリとするためには inline value class が JVM 以外では使えないので、
 actual/expect にした。
 DoubleArrayUnit を対象とする。
+
+## 2024-07-15
+
+okio 周りを整理。
+あとは、DoubleArray クラスを KDary クラスに変更したほうがいいかも。
+DoubleArrayIO のほうも同じく。
+
+それができたらリリースでよさそう。
+github actions での CI 設定も必要だ。
