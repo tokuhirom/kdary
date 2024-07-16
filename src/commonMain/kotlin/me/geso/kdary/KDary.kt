@@ -199,12 +199,12 @@ class KDary {
             val builder = DoubleArrayBuilder(progressCallback)
             val buf = builder.build(keyset)
 
-            val KDary = KDary(buf)
+            val kdary = KDary(buf)
 
             val numKeys = keys.size.toSizeType()
             progressCallback?.invoke(numKeys + 1u, numKeys + 1u)
 
-            return KDary
+            return kdary
         }
 
         /**
