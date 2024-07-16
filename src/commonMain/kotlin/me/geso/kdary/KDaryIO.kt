@@ -16,16 +16,16 @@ class DoubleArrayIOException(
  * @throws IllegalStateException If the array is empty.
  */
 fun saveKDary(
-    KDary: KDary,
+    kdary: KDary,
     fileName: String,
 ) {
-    check(KDary.array().size.toSizeType() != 0uL) {
+    check(kdary.array().size.toSizeType() != 0uL) {
         "You can't save empty array"
     }
 
     val file = fileName.toPath()
     getFileSystem().write(file) {
-        KDary.array().forEach { unit ->
+        kdary.array().forEach { unit ->
             writeUIntLe(this, unit.unit)
         }
     }
