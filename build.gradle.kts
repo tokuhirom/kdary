@@ -1,9 +1,15 @@
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
+    id("root.publication")
+    id("module.publication")
+
     kotlin("multiplatform") version "2.0.0"
+
     id("io.gitlab.arturbosch.detekt") version "1.23.6"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
+    id("com.vanniktech.maven.publish") version "0.29.0"
 }
 
 group = "io.github.tokuhirom.kdary"
@@ -62,5 +68,14 @@ kotlin {
                 implementation("com.squareup.okio:okio:3.9.0")
             }
         }
+    }
+}
+
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    if (project.hasProperty("mavenCentralUsername") ||
+        System.getenv("ORG_GRADLE_PROJECT_mavenCentralUsername") != null
+    ) {
+        signAllPublications()
     }
 }

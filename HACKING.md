@@ -261,3 +261,44 @@ DoubleArrayIO のほうも同じく。
 
 それができたらリリースでよさそう。
 github actions での CI 設定も必要だ。
+
+## 2024-07-16
+
+github actions での CI を実施した。
+
+maven central へのリリースを考える。
+パッケージ名を、色々考える。
+
+このテンプレートを参考にして設定していく.
+
+https://github.com/Kotlin/multiplatform-library-template/tree/main
+
+を参考にして勧める。
+
+https://zenn.dev/atsushieno/articles/d066e757c9640f
+https://github.com/atsushieno/multiplatform-library-template-nexus-publisher
+
+これを参考にしないとうまくいかなそう。
+
+手順通りに `gpg --gen-key` したら
+
+```
+We need to generate a lot of random bytes. It is a good idea to perform
+some other action (type on the keyboard, move the mouse, utilize the
+disks) during the prime generation; this gives the random number
+generator a better chance to gain enough entropy.
+gpg: agent_genkey failed: Screen or window too small
+Key generation failed: Screen or window too small
+```
+
+となって進まなくなったので、`gpgconf --kill gpg-agent` したら進んだ。
+
+`gpg --gen-key` がダメなので、`gpg --list-keys`
+
+keyserver.ubuntu.com にキー登録しようとしたが、うまくいかないので以下のようにした。
+
+    gpg --send-keys --keyserver hkps://keys.openpgp.org <KEY>
+
+`OSSRH_USERNAME` については https://central.sonatype.com/publishing/io.github.tokuhirom/users を参考にして
+`github_21084` のような user ID のようなのでこれを使ってみる。
+
