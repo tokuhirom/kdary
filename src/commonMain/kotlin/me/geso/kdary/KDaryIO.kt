@@ -1,6 +1,6 @@
 package me.geso.kdary
 
-import me.geso.kdary.DoubleArray.Companion.unitSize
+import me.geso.kdary.KDary.Companion.unitSize
 import me.geso.kdary.internal.DoubleArrayUnit
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -15,17 +15,17 @@ class DoubleArrayIOException(
  * @param fileName The name of the file to save to.
  * @throws IllegalStateException If the array is empty.
  */
-fun saveDoubleArray(
-    doubleArray: DoubleArray,
+fun saveKDary(
+    KDary: KDary,
     fileName: String,
 ) {
-    check(doubleArray.array().size.toSizeType() != 0uL) {
+    check(KDary.array().size.toSizeType() != 0uL) {
         "You can't save empty array"
     }
 
     val file = fileName.toPath()
     getFileSystem().write(file) {
-        doubleArray.array().forEach { unit ->
+        KDary.array().forEach { unit ->
             writeUIntLe(this, unit.unit)
         }
     }
@@ -38,7 +38,7 @@ fun saveDoubleArray(
  * @return A DoubleArray containing the read units.
  * @throws DoubleArrayIOException If the file is not found or invalid.
  */
-fun loadDoubleArray(fileName: String): DoubleArray {
+fun loadKDary(fileName: String): KDary {
     val fileSystem = getFileSystem()
     val file = fileName.toPath()
     if (!fileSystem.exists(file)) {
@@ -99,7 +99,7 @@ fun loadDoubleArray(fileName: String): DoubleArray {
             doubleArrayUnits[i + 256] = DoubleArrayUnit(value)
         }
 
-        DoubleArray(doubleArrayUnits)
+        KDary(doubleArrayUnits)
     }
 }
 

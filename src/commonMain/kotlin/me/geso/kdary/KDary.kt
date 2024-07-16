@@ -12,7 +12,7 @@ import me.geso.kdary.result.ExactMatchSearchResult
  */
 typealias ProgressCallback = (ULong, ULong) -> Int
 
-class DoubleArray {
+class KDary {
     private val array: Array<DoubleArrayUnit>
 
     internal constructor(array: Array<DoubleArrayUnit>) {
@@ -193,18 +193,18 @@ class DoubleArray {
             keys: Array<ByteArray>,
             values: Array<T>? = null,
             progressCallback: ProgressCallback? = null,
-        ): DoubleArray {
+        ): KDary {
             val keyset = Keyset(keys, values)
 
             val builder = DoubleArrayBuilder(progressCallback)
             val buf = builder.build(keyset)
 
-            val doubleArray = DoubleArray(buf)
+            val KDary = KDary(buf)
 
             val numKeys = keys.size.toSizeType()
             progressCallback?.invoke(numKeys + 1u, numKeys + 1u)
 
-            return doubleArray
+            return KDary
         }
 
         /**

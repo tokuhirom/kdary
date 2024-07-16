@@ -80,13 +80,13 @@ class DoubleArrayTest {
 
     @Test
     fun buildWithKeys() {
-        val dic = DoubleArray.build<Any>(keys.toTypedArray())
+        val dic = KDary.build<Any>(keys.toTypedArray())
         testDic(dic, keys, values, invalidKeys)
     }
 
     @Test
     fun buildWithKeysValues() {
-        val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
+        val dic = KDary.build(keys.toTypedArray(), values.toTypedArray())
         testDic(dic, keys, values, invalidKeys)
     }
 
@@ -94,16 +94,16 @@ class DoubleArrayTest {
     fun buildWithKeysAndRandomValues() {
         val newValues = values.map { (0..9).random(random) }
 
-        val dic = DoubleArray.build(keys.toTypedArray(), newValues.toTypedArray())
+        val dic = KDary.build(keys.toTypedArray(), newValues.toTypedArray())
         testDic(dic, keys, newValues, invalidKeys)
     }
 
     @Test
     fun saveAndOpen() {
-        val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
-        saveDoubleArray(dic, "test-darts.dic")
+        val dic = KDary.build(keys.toTypedArray(), values.toTypedArray())
+        saveKDary(dic, "test-darts.dic")
 
-        val dicCopy = loadDoubleArray("test-darts.dic")
+        val dicCopy = loadKDary("test-darts.dic")
 
         assertEquals(dic.array()?.size, dicCopy.array()?.size)
         println(dic.array()?.size)
@@ -114,7 +114,7 @@ class DoubleArrayTest {
     }
 
     private fun testDic(
-        dic: DoubleArray,
+        dic: KDary,
         keys: List<ByteArray>,
         values: List<ValueType>,
         invalidKeys: Set<ByteArray>,
@@ -133,7 +133,7 @@ class DoubleArrayTest {
 
     @Test
     fun testTraverse() {
-        val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
+        val dic = KDary.build(keys.toTypedArray(), values.toTypedArray())
 
         for (i in keys.indices) {
             val key = keys[i]
@@ -165,7 +165,7 @@ class DoubleArrayTest {
 
     @Test
     fun simple() {
-        val dic = DoubleArray.build(arrayOf("abc".encodeToByteArray()), arrayOf(4))
+        val dic = KDary.build(arrayOf("abc".encodeToByteArray()), arrayOf(4))
         println("----------")
         val v = dic.exactMatchSearch("abc".encodeToByteArray())
         println(v)
@@ -176,7 +176,7 @@ class DoubleArrayTest {
     @Test
     fun testCommonPrefixSearchSimple() {
         val dic =
-            DoubleArray.build(
+            KDary.build(
                 arrayOf(
                     "京都".encodeToByteArray(),
                     "東".encodeToByteArray(),
@@ -194,7 +194,7 @@ class DoubleArrayTest {
 
     @Test
     fun testCommonPrefixSearch() {
-        val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
+        val dic = KDary.build(keys.toTypedArray(), values.toTypedArray())
         for (i in keys.indices) {
             val key: ByteArray = keys[i]
             val results = dic.commonPrefixSearch(key)
@@ -217,7 +217,7 @@ class DoubleArrayTest {
 
     @Test
     fun testTotalSize() {
-        val dic = DoubleArray.build(keys.toTypedArray(), values.toTypedArray())
+        val dic = KDary.build(keys.toTypedArray(), values.toTypedArray())
         assertTrue(800000u < dic.totalSize())
     }
 
