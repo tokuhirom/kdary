@@ -39,7 +39,7 @@ jobs:
 #          fi
 
       - name: build(macOS)
-        if: matrix.os != 'macos-latest'
+        if: matrix.os == 'macos-latest'
         run: |
           ./gradlew build
 
