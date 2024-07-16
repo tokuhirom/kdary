@@ -1,6 +1,8 @@
 name: Deploy to central
 
-on: workflow_dispatch
+on:
+  release:
+    types: [ published ]
 
 permissions:
   contents: read
@@ -43,6 +45,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Show Version Number
+        id: version
+        run: |
+          echo "Version=${{ github.event.release.tag_name }}"
       - name: Gradle publish
         uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
         with:
@@ -52,4 +58,5 @@ jobs:
             -PsigningInMemoryKeyId=${{secrets.OSSRH_GPG_SECRET_KEY_ID}}
             -PsigningInMemoryPassword=${{secrets.OSSRH_GPG_SECRET_KEY_PASSWORD}}
             ${{ matrix.target }}
-
+        env:
+          LIB_VERSION: ${{ github.event.release.tag_name }}
