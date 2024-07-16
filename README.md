@@ -3,6 +3,15 @@
 Double Array Trie library for Kotlin.
 Main logic is ported from [darts-clone](https://github.com/s-yata/darts-clone/).
 
+## Supported Environments
+
+- Kotlin 2.0.0 or later
+- One of the following environment
+  - JVM 17.0 or later
+  - JS
+  - Linux
+  - MacOS(Arm, X64)
+
 ## LICENSE
 
 See darts-clone's license.
