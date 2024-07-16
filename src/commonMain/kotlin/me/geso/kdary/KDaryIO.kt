@@ -47,12 +47,11 @@ fun loadKDary(fileName: String): KDary {
 
     return fileSystem.read(file) {
         val source = this
-        val actualSize =
-            fileSystem
-                .metadata(file)
-                .size
-                ?.toULong()
-        check(actualSize != null)
+        val metadata = fileSystem.metadata(file)
+        val actualSize = metadata.size?.toULong()
+        check(actualSize != null) {
+            "Cannot get the size of the file: $fileName"
+        }
 
         val unitSize = unitSize()
         val numUnits = actualSize / unitSize
