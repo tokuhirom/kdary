@@ -32,6 +32,7 @@ kotlin {
         }
     }
     macosArm64()
+    macosX64()
 
     sourceSets {
         val commonMain by getting {
