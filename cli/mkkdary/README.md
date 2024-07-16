@@ -2,29 +2,52 @@
 
 ## Description
 
-This is a command line tool to create a double array trie file from a plain text file.
+`mkkdary` is a command line tool that creates a double array trie file from a plain text file.
 
-Supported format is following:
+### Supported Formats
 
-**key only**
+You can provide input in two formats:
 
-    apple
-    banana
-    cherry
-    date
+**Key only**
 
-**key and value**
+```
+apple
+banana
+cherry
+date
+```
 
-    apple   100
-    banana  200
-    cherry  300
-    date    400
+**Key and value**
 
-- key and value is splitted by `\t`.
-- value must be an integer.
+```
+apple   100
+banana  200
+cherry  300
+date    400
+```
 
-Every key must be ordered in ascending order.
+- Keys and values are separated by a tab (`\t`).
+- Values must be integers.
+
+You have the option to sort the keys in ascending order using a command-line flag.
 
 ## How do I run this?
 
-    ./gradlew :cli:mkkdary:run --args "mydict.txt mydata.kdary"
+To run the tool, use the following command:
+
+```sh
+./gradlew :cli:mkkdary:run --args "mydict.txt mydata.kdary"
+```
+
+### Command-Line Options
+
+- `--sort` : Sort the keys in ascending order before creating the trie.
+- `--tab` : Use tab as the separator between keys and values.
+
+Example usage:
+
+```sh
+./gradlew :cli:mkkdary:run --args "--sort --tab mydict.txt mydata.kdary"
+```
+
+This will read the input from `mydict.txt`, optionally sort the keys, and save the resulting double array trie to `mydata.kdary`.
