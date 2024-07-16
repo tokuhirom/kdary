@@ -11,3 +11,6 @@ plugins {
 }
 
 rootProject.name = "kdary"
+
+include(":cli:mkkdary")
+include(":cli:kdary")
