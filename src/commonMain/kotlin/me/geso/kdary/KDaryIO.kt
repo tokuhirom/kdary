@@ -48,10 +48,9 @@ fun loadKDary(fileName: String): KDary {
     return fileSystem.read(file) {
         val source = this
         val metadata = fileSystem.metadata(file)
-        val actualSize = metadata.size?.toULong()
-        check(actualSize != null) {
-            "Cannot get the size of the file: $fileName"
-        }
+        val actualSize =
+            metadata.size?.toULong()
+                ?: throw DoubleArrayIOException("Cannot get the size of the file: $fileName")
 
         val unitSize = unitSize()
         val numUnits = actualSize / unitSize
@@ -61,9 +60,10 @@ fun loadKDary(fileName: String): KDary {
 
         val headerBuffer = ByteArray(256 * unitSize().toInt())
         val readSize = source.read(headerBuffer, 0, 256 * unitSize().toInt())
-        check(readSize == 256 * unitSize().toInt()) {
-            "Failed to read the header of KDary file from $fileName: $readSize"
+        if (readSize != 256 * unitSize().toInt()) {
+            throw DoubleArrayIOException("Failed to read the header of KDary file from $fileName: $readSize")
         }
+
         val units =
             (0 until 256)
                 .map { readUIntLeFromBuffer(it, headerBuffer) }
@@ -74,12 +74,12 @@ fun loadKDary(fileName: String): KDary {
             units[0].offset() == 0u ||
             units[0].offset() >= 512u
         ) {
-            throw DoubleArrayIOException("Invalid file format")
+            throw DoubleArrayIOException("Broken kdary header: $fileName")
         }
 
         for (i in 1 until 256) {
             if (units[i].label() <= 0xFF.toUInt() && units[i].offset() >= numUnits.toUInt()) {
-                throw DoubleArrayIOException("Invalid file format(bad unit)")
+                throw DoubleArrayIOException("Invalid file format(bad unit): $fileName")
             }
         }
 
