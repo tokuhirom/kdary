@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "io.github.tokuhirom.kdary"
-version = System.getenv("SDK_VERSION") ?: (
+version = System.getenv("LIB_VERSION") ?: (
     "1.0.0" +
         if (hasProperty("release")) {
             ""
