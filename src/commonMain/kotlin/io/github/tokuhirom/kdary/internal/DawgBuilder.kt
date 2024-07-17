@@ -113,7 +113,7 @@ internal class DawgBuilder {
                 i = nodes[i.toInt()].sibling
             }
 
-            var (hashId, matchId) = findNode(nodeId)
+            var (hashId, matchId) = findNode(nodeId.toInt())
             if (matchId != 0u) {
                 isIntersectionsBuilder.set(matchId.toSizeType(), true)
             } else {
@@ -170,8 +170,8 @@ internal class DawgBuilder {
         return hashId to 0u
     }
 
-    private fun findNode(nodeId: IdType): Pair<UInt, IdType> {
-        var hashId = hashNode(nodeId.toInt()) % table.size.toSizeType().toUInt()
+    private fun findNode(nodeId: Int): Pair<UInt, IdType> {
+        var hashId = hashNode(nodeId) % table.size.toSizeType().toUInt()
         while (true) {
             val unitId = table[hashId.toInt()]
             if (unitId == 0u) {
@@ -188,11 +188,11 @@ internal class DawgBuilder {
     }
 
     private fun areEqual(
-        nodeId: IdType,
+        nodeId: Int,
         unitId: IdType,
     ): Boolean {
         var unitIdVar = unitId
-        var i = nodes[nodeId.toInt()].sibling
+        var i = nodes[nodeId].sibling
         while (i != 0u) {
             if (!units[unitIdVar.toInt()].hasSibling()) {
                 return false
@@ -204,7 +204,7 @@ internal class DawgBuilder {
             return false
         }
 
-        i = nodeId
+        i = nodeId.toUInt()
         while (i != 0u) {
             if (nodes[i.toInt()].unit() != units[unitIdVar.toInt()].unit() ||
                 nodes[i.toInt()].label != labels[unitIdVar.toInt()]
