@@ -1,6 +1,5 @@
 package io.github.tokuhirom.kdary.internal
 
-import io.github.tokuhirom.kdary.toSizeType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

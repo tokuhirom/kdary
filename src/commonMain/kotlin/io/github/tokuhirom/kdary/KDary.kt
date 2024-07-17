@@ -2,18 +2,23 @@ package io.github.tokuhirom.kdary
 
 import io.github.tokuhirom.kdary.internal.DoubleArrayBuilder
 import io.github.tokuhirom.kdary.internal.DoubleArrayUnit
+import io.github.tokuhirom.kdary.internal.IdType
 import io.github.tokuhirom.kdary.internal.Keyset
+import io.github.tokuhirom.kdary.internal.SizeType
+import io.github.tokuhirom.kdary.internal.toIdType
+import io.github.tokuhirom.kdary.internal.toSizeType
 import io.github.tokuhirom.kdary.result.CommonPrefixSearchResult
 import io.github.tokuhirom.kdary.result.ExactMatchSearchResult
+import io.github.tokuhirom.kdary.result.TraverseResult
 
 /**
  * A callback function to check the progress of dictionary construction.
  * The first argument is the number of processed keys, and the second argument is the total number of keys.
  */
-typealias ProgressCallback = (ULong, ULong) -> Int
+typealias ProgressCallback = (Int, Int) -> Int
 
 class KDary {
-    private val array: Array<DoubleArrayUnit>
+    internal val array: Array<DoubleArrayUnit>
 
     internal constructor(array: Array<DoubleArrayUnit>) {
         check(array.isNotEmpty()) {
@@ -23,21 +28,19 @@ class KDary {
         this.array = array
     }
 
-    internal fun array(): Array<DoubleArrayUnit> = array
-
     /**
      * Returns the number of units.
      *
      * @return The number of units.
      */
-    fun size(): SizeType = array.size.toSizeType()
+    fun size(): Int = array.size
 
     /**
      * Returns the total size of the array in bytes.
      *
      * @return The total size of the array in bytes.
      */
-    fun totalSize(): SizeType = unitSize() * size()
+    fun totalSize(): Int = UNIT_SIZE * size()
 
     /**
      * Tests whether the given key exists or not, and if it exists, sets its value and length in the result.
@@ -49,15 +52,15 @@ class KDary {
      */
     fun exactMatchSearch(
         key: ByteArray,
-        nodePos: SizeType = 0u,
+        nodePos: Int = 0,
     ): ExactMatchSearchResult = exactMatchSearchInternal(key, nodePos)
 
     private fun exactMatchSearchInternal(
         key: ByteArray,
-        nodePosParam: SizeType = 0u,
+        nodePosParam: Int = 0,
     ): ExactMatchSearchResult {
-        var unit = array[nodePosParam.toInt()]
-        var nodePos = nodePosParam
+        var unit = array[nodePosParam]
+        var nodePos = nodePosParam.toSizeType()
         val length = key.size.toSizeType()
         for (i in 0uL until length) {
             nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
@@ -85,35 +88,35 @@ class KDary {
      */
     fun commonPrefixSearch(
         key: ByteArray,
-        maxNumResults: SizeType? = null,
-        nodePos: SizeType = 0u,
+        maxNumResults: Int? = null,
+        nodePos: Int = 0,
     ): List<CommonPrefixSearchResult> = commonPrefixSearchInternal(key, maxNumResults, nodePos)
 
     private fun commonPrefixSearchInternal(
         key: ByteArray,
-        maxNumResults: SizeType?,
-        nodePosParam: SizeType = 0u,
+        maxNumResults: Int?,
+        nodePosParam: Int = 0,
     ): List<CommonPrefixSearchResult> {
-        var nodePos: SizeType = nodePosParam
-        val length: SizeType = key.size.toSizeType()
+        var nodePos: SizeType = nodePosParam.toSizeType()
+        val length = key.size
 
         var unit: DoubleArrayUnit = array[nodePos.toInt()]
         nodePos = nodePos xor unit.offset().toSizeType()
 
         val results = mutableListOf<CommonPrefixSearchResult>()
 
-        for (i in 0uL until length) {
-            nodePos = nodePos xor key[i.toInt()].toUByte().toSizeType()
+        for (i in 0 until length) {
+            nodePos = nodePos xor key[i].toUByte().toSizeType()
             unit = array[nodePos.toInt()]
-            if (unit.label() != (key[i.toInt()].toUByte() and 0xFFU).toIdType()) {
+            if (unit.label() != (key[i].toUByte() and 0xFFU).toIdType()) {
                 return results
             }
 
             nodePos = nodePos xor unit.offset().toSizeType()
             if (unit.hasLeaf()) {
-                if (maxNumResults == null || results.size.toULong() < maxNumResults) {
+                if (maxNumResults == null || results.size < maxNumResults) {
                     val v = array[nodePos.toInt()].value()
-                    results.add(CommonPrefixSearchResult(v, (i + 1u)))
+                    results.add(CommonPrefixSearchResult(v, i + 1))
                 }
             }
         }
@@ -137,22 +140,22 @@ class KDary {
      */
     fun traverse(
         key: ByteArray,
-        nodePos: SizeType,
-        keyPos: SizeType,
+        nodePos: Int,
+        keyPos: Int,
     ): TraverseResult = traverseInternal(key, nodePos, keyPos)
 
     private fun traverseInternal(
         key: ByteArray,
-        nodePosParam: SizeType,
-        keyPosParam: SizeType,
+        nodePosParam: Int,
+        keyPosParam: Int,
     ): TraverseResult {
         var id: IdType = nodePosParam.toIdType()
         val length = key.size.toSizeType()
 
         var unit = array[id.toInt()]
 
-        var nodePos = nodePosParam
-        var keyPos = keyPosParam
+        var nodePos = nodePosParam.toSizeType()
+        var keyPos = keyPosParam.toSizeType()
 
         while (keyPos < length) {
             id = id xor (unit.offset() xor key[keyPos.toInt()].toUByte().toUInt())
@@ -173,12 +176,6 @@ class KDary {
         }
     }
 
-    data class TraverseResult(
-        val status: Int,
-        val nodePos: SizeType? = null,
-        val keyPos: SizeType? = null,
-    )
-
     companion object {
         /**
          * Constructs a dictionary from given key-value pairs.
@@ -193,9 +190,9 @@ class KDary {
          * @param progressCallback A callback function to check the progress of dictionary construction.
          * @return A DoubleArray containing the built dictionary.
          */
-        fun <T> build(
-            keys: Array<ByteArray>,
-            values: Array<T>? = null,
+        fun build(
+            keys: List<ByteArray>,
+            values: List<Int>? = null,
             progressCallback: ProgressCallback? = null,
         ): KDary {
             val keyset = Keyset(keys, values)
@@ -205,8 +202,8 @@ class KDary {
 
             val kdary = KDary(buf)
 
-            val numKeys = keys.size.toSizeType()
-            progressCallback?.invoke(numKeys + 1u, numKeys + 1u)
+            val numKeys = keys.size
+            progressCallback?.invoke(numKeys + 1, numKeys + 1)
 
             return kdary
         }
@@ -216,6 +213,6 @@ class KDary {
          *
          * @return The size of each unit.
          */
-        internal fun unitSize(): SizeType = 4u
+        internal const val UNIT_SIZE: Int = 4
     }
 }

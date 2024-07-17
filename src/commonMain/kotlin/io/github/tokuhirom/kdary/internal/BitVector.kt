@@ -1,14 +1,11 @@
 package io.github.tokuhirom.kdary.internal
 
-import io.github.tokuhirom.kdary.IdType
-import io.github.tokuhirom.kdary.SizeType
-
 /**
  * Succinct bit vector.
  */
 internal data class BitVector(
     private val units: List<IdType>,
-    private val ranks: Array<IdType>,
+    private val ranks: List<IdType>,
     private val numOnes: SizeType = 0u,
     private val size: SizeType = 0u,
 ) {

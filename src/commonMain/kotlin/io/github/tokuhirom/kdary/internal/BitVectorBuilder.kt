@@ -1,10 +1,5 @@
 package io.github.tokuhirom.kdary.internal
 
-import io.github.tokuhirom.kdary.IdType
-import io.github.tokuhirom.kdary.SizeType
-import io.github.tokuhirom.kdary.toIdType
-import io.github.tokuhirom.kdary.toSizeType
-
 /**
  * Succinct bit vector.
  */
@@ -60,13 +55,10 @@ internal class BitVectorBuilder {
      */
     fun build(): BitVector {
         // Initialize ranks array with the size of units array
-        val ranks =
-            Array(units.size.toSizeType().toInt()) {
-                0u
-            }
+        val ranks = MutableList(units.size) { 0u }
         var numOnes: SizeType = 0u
         // Populate ranks array and count the number of 1's
-        for (i in 0 until units.size.toSizeType().toInt()) {
+        for (i in 0 until units.size) {
             ranks[i] = numOnes.toIdType()
             numOnes += BitVector.popCount(units[i])
         }

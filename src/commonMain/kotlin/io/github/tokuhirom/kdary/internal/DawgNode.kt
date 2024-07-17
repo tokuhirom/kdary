@@ -1,7 +1,5 @@
 package io.github.tokuhirom.kdary.internal
 
-import io.github.tokuhirom.kdary.IdType
-
 /**
  * Node of Directed Acyclic Word Graph (DAWG).
  */

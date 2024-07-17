@@ -1,11 +1,6 @@
 package io.github.tokuhirom.kdary.internal
 
-import io.github.tokuhirom.kdary.IdType
 import io.github.tokuhirom.kdary.ProgressCallback
-import io.github.tokuhirom.kdary.SizeType
-import io.github.tokuhirom.kdary.ValueType
-import io.github.tokuhirom.kdary.toIdType
-import io.github.tokuhirom.kdary.toSizeType
 
 /**
  * DAWG -> double-array converter.
@@ -27,7 +22,7 @@ internal class DoubleArrayBuilder(
         const val LOWER_MASK = 0xFF
     }
 
-    fun <T> build(keyset: Keyset<T>): Array<DoubleArrayUnit> {
+    fun build(keyset: Keyset): Array<DoubleArrayUnit> {
         if (keyset.hasValues()) {
             val dawg = buildDawg(keyset)
             buildFromDawg(dawg)
@@ -38,20 +33,20 @@ internal class DoubleArrayBuilder(
     }
 
     private fun copy(): Array<DoubleArrayUnit> =
-        (0uL until units.size.toSizeType())
+        (0 until units.size)
             .map {
-                DoubleArrayUnit(units[it.toInt()].unit())
+                DoubleArrayUnit(units[it].unit())
             }.toTypedArray()
 
-    private fun numBlocks(): SizeType = units.size.toSizeType() / BLOCK_SIZE.toSizeType()
+    private fun numBlocks(): Int = units.size / BLOCK_SIZE
 
-    private fun extras(id: IdType): DoubleArrayBuilderExtraUnit = extras[id.toInt() % NUM_EXTRAS]
+    private fun extras(id: Int): DoubleArrayBuilderExtraUnit = extras[id % NUM_EXTRAS]
 
-    private fun <T> buildDawg(keyset: Keyset<T>): Dawg {
+    private fun buildDawg(keyset: Keyset): Dawg {
         val dawgBuilder = DawgBuilder()
-        for (i: SizeType in 0uL until keyset.numKeys()) {
+        for (i in 0 until keyset.numKeys()) {
             dawgBuilder.insert(keyset.keys(i), keyset.values(i))
-            progressCallback?.invoke(i + 1uL, keyset.numKeys() + 1uL)
+            progressCallback?.invoke(i + 1, keyset.numKeys() + 1)
         }
         return dawgBuilder.finish()
     }
@@ -68,7 +63,7 @@ internal class DoubleArrayBuilder(
             }
 
         reserveId(0u)
-        extras(0u).setIsUsed(true)
+        extras(0).isUsed = true
         units[0].setOffset(1u)
         units[0].setLabel(0u)
 
@@ -135,36 +130,36 @@ internal class DoubleArrayBuilder(
         units[dicId.toInt()].setOffset(dicId xor offset)
 
         dawgChildId = dawg.child(dawgId)
-        for (i: SizeType in 0uL until labels.size.toSizeType()) {
-            val dicChildId: IdType = offset xor labels[i.toInt()].toIdType()
+        for (i in 0 until labels.size) {
+            val dicChildId: IdType = offset xor labels[i].toIdType()
             reserveId(dicChildId)
 
             if (dawg.isLeaf(dawgChildId)) {
                 units[dicId.toInt()].setHasLeaf(true)
                 units[dicChildId.toInt()].setValue(dawg.value(dawgChildId))
             } else {
-                units[dicChildId.toInt()].setLabel(labels[i.toInt()])
+                units[dicChildId.toInt()].setLabel(labels[i])
             }
             dawgChildId = dawg.sibling(dawgChildId)
         }
-        extras(offset).setIsUsed(true)
+        extras(offset.toInt()).isUsed = true
 
         return offset
     }
 
-    private fun <T> buildFromKeyset(keyset: Keyset<T>) {
+    private fun buildFromKeyset(keyset: Keyset) {
         var numUnits: SizeType = 1uL
-        while (numUnits < keyset.numKeys()) {
+        while (numUnits < keyset.numKeys().toSizeType()) {
             numUnits = numUnits shl 1
         }
 
         reserveId(0u)
-        extras(0u).setIsUsed(true)
+        extras(0).isUsed = true
         units[0].setOffset(1u)
         units[0].setLabel(0u)
 
-        if (keyset.numKeys() > 0u) {
-            buildFromKeyset(keyset, 0u, keyset.numKeys(), 0u, 0u)
+        if (keyset.numKeys() > 0L) {
+            buildFromKeyset(keyset, 0, keyset.numKeys(), 0u, 0u)
         }
 
         fixAllBlocks()
@@ -172,51 +167,51 @@ internal class DoubleArrayBuilder(
         labels.clear()
     }
 
-    private fun <T> buildFromKeyset(
-        keyset: Keyset<T>,
-        begin: SizeType,
-        end: SizeType,
+    private fun buildFromKeyset(
+        keyset: Keyset,
+        begin: Int,
+        end: Int,
         depth: SizeType,
         dicId: IdType,
     ) {
         val offset: IdType = arrangeFromKeyset(keyset, begin, end, depth, dicId)
 
-        var i: SizeType = begin
-        while (i < end) {
-            if (keyset.keys(i, depth) != 0.toUByte()) {
+        var i: SizeType = begin.toSizeType()
+        while (i < end.toSizeType()) {
+            if (keyset.keys(i.toInt(), depth.toInt()) != 0.toUByte()) {
                 break
             }
             i++
         }
-        if (i == end) {
+        if (i == end.toSizeType()) {
             return
         }
 
         var lastBegin: SizeType = i
-        var lastLabel: UByte = keyset.keys(i, depth)
-        while (++i < end) {
-            val label: UByte = keyset.keys(i, depth)
+        var lastLabel: UByte = keyset.keys(i.toInt(), depth.toInt())
+        while (++i < end.toSizeType()) {
+            val label: UByte = keyset.keys(i.toInt(), depth.toInt())
             if (label != lastLabel) {
-                buildFromKeyset(keyset, lastBegin, i, depth + 1uL, offset xor lastLabel.toIdType())
+                buildFromKeyset(keyset, lastBegin.toInt(), i.toInt(), depth + 1uL, offset xor lastLabel.toIdType())
                 lastBegin = i
-                lastLabel = keyset.keys(i, depth)
+                lastLabel = keyset.keys(i.toInt(), depth.toInt())
             }
         }
-        buildFromKeyset(keyset, lastBegin, end, depth + 1uL, offset xor lastLabel.toIdType())
+        buildFromKeyset(keyset, lastBegin.toInt(), end, depth + 1uL, offset xor lastLabel.toIdType())
     }
 
-    private fun <T> arrangeFromKeyset(
-        keyset: Keyset<T>,
-        begin: SizeType,
-        end: SizeType,
+    private fun arrangeFromKeyset(
+        keyset: Keyset,
+        begin: Int,
+        end: Int,
         depth: SizeType,
         dicId: IdType,
     ): IdType {
         labels.resize(0uL, 0.toUByte())
 
         var vaue: ValueType = -1
-        for (i: SizeType in begin until end) {
-            val label: UByte = keyset.keys(i, depth)
+        for (i in begin until end) {
+            val label: UByte = keyset.keys(i, depth.toInt())
             if (label == 0.toUByte()) {
                 if (keyset.values(i) < 0) {
                     throw IllegalArgumentException("failed to build double-array: negative value")
@@ -225,13 +220,13 @@ internal class DoubleArrayBuilder(
                 if (vaue == -1) {
                     vaue = keyset.values(i)
                 }
-                progressCallback?.invoke(i + 1uL, keyset.numKeys() + 1uL)
+                progressCallback?.invoke(i + 1, keyset.numKeys() + 1)
             }
 
             if (labels.isEmpty()) {
                 labels.add(label)
-            } else if (label != labels[(labels.size.toSizeType() - 1uL).toInt()]) {
-                if (label < labels[(labels.size.toSizeType() - 1uL).toInt()]) {
+            } else if (label != labels[labels.size - 1]) {
+                if (label < labels[labels.size - 1]) {
                     throw IllegalArgumentException("failed to build double-array: wrong key order")
                 }
                 labels.add(label)
@@ -241,17 +236,17 @@ internal class DoubleArrayBuilder(
         val offset: IdType = findValidOffset(dicId)
         units[dicId.toInt()].setOffset(dicId xor offset)
 
-        for (i: SizeType in 0uL until labels.size.toSizeType()) {
-            val dicChildId: IdType = offset xor labels[i.toInt()].toIdType()
+        for (i in 0 until labels.size) {
+            val dicChildId: IdType = offset xor labels[i].toIdType()
             reserveId(dicChildId)
-            if (labels[i.toInt()] == 0.toUByte()) {
+            if (labels[i] == 0.toUByte()) {
                 units[dicId.toInt()].setHasLeaf(true)
                 units[dicChildId.toInt()].setValue(vaue)
             } else {
-                units[dicChildId.toInt()].setLabel(labels[i.toInt()])
+                units[dicChildId.toInt()].setLabel(labels[i])
             }
         }
-        extras(offset).setIsUsed(true)
+        extras(offset.toInt()).isUsed = true
 
         return offset
     }
@@ -267,7 +262,7 @@ internal class DoubleArrayBuilder(
             if (isValidOffset(id, offset)) {
                 return offset
             }
-            unfixedId = extras(unfixedId).next()
+            unfixedId = extras(unfixedId.toInt()).next
         } while (unfixedId != extrasHead)
 
         return units.size.toSizeType().toUInt() or (id and LOWER_MASK.toUInt())
@@ -277,7 +272,7 @@ internal class DoubleArrayBuilder(
         id: IdType,
         offset: IdType,
     ): Boolean {
-        if (extras(offset).isUsed()) {
+        if (extras(offset.toInt()).isUsed) {
             return false
         }
 
@@ -286,8 +281,8 @@ internal class DoubleArrayBuilder(
             return false
         }
 
-        for (i: SizeType in 1uL until labels.size.toSizeType()) {
-            if (extras(offset xor labels[i.toInt()].toIdType()).isFixed()) {
+        for (i in 1 until labels.size) {
+            if (extras((offset xor labels[i].toIdType()).toInt()).isFixed) {
                 return false
             }
         }
@@ -301,14 +296,14 @@ internal class DoubleArrayBuilder(
         }
 
         if (id == extrasHead) {
-            extrasHead = extras(id).next()
+            extrasHead = extras(id.toInt()).next
             if (extrasHead == id) {
                 extrasHead = units.size.toSizeType().toUInt()
             }
         }
-        extras(extras(id).prev()).setNext(extras(id).next())
-        extras(extras(id).next()).setPrev(extras(id).prev())
-        extras(id).setIsFixed(true)
+        extras(extras(id.toInt()).prev.toInt()).next = extras(id.toInt()).next
+        extras(extras(id.toInt()).next.toInt()).prev = extras(id.toInt()).prev
+        extras(id.toInt()).isFixed = true
     }
 
     private fun expandUnits() {
@@ -328,29 +323,29 @@ internal class DoubleArrayBuilder(
 
         if (destNumBlocks > NUM_EXTRA_BLOCKS.toIdType()) {
             for (id in srcNumUnits until destNumUnits) {
-                extras(id).setIsUsed(false)
-                extras(id).setIsFixed(false)
+                extras(id.toInt()).isUsed = false
+                extras(id.toInt()).isFixed = false
             }
         }
 
         for (i: IdType in srcNumUnits + 1u until destNumUnits) {
-            extras(i - 1u).setNext(i)
-            extras(i).setPrev(i - 1u)
+            extras((i - 1u).toInt()).next = i
+            extras(i.toInt()).prev = i - 1u
         }
 
-        extras(srcNumUnits).setPrev(destNumUnits - 1u)
-        extras(destNumUnits - 1u).setNext(srcNumUnits)
+        extras(srcNumUnits.toInt()).prev = destNumUnits - 1u
+        extras((destNumUnits - 1u).toInt()).next = srcNumUnits
 
-        extras(srcNumUnits).setPrev(extras(extrasHead).prev())
-        extras(destNumUnits - 1u).setNext(extrasHead)
+        extras(srcNumUnits.toInt()).prev = extras(extrasHead.toInt()).prev
+        extras((destNumUnits - 1u).toInt()).next = extrasHead
 
-        extras(extras(extrasHead).prev()).setNext(srcNumUnits)
-        extras(extrasHead).setPrev(destNumUnits - 1u)
+        extras(extras(extrasHead.toInt()).prev.toInt()).next = srcNumUnits
+        extras(extrasHead.toInt()).prev = destNumUnits - 1u
     }
 
     private fun fixAllBlocks() {
         var begin: IdType = 0u
-        if (numBlocks() > NUM_EXTRA_BLOCKS.toIdType()) {
+        if (numBlocks() > NUM_EXTRA_BLOCKS) {
             begin = numBlocks().toIdType() - NUM_EXTRA_BLOCKS.toIdType()
         }
         val end: IdType = numBlocks().toIdType()
@@ -366,14 +361,14 @@ internal class DoubleArrayBuilder(
 
         var unusedOffset: IdType = 0u
         for (offset in begin until end) {
-            if (!extras(offset).isUsed()) {
+            if (!extras(offset.toInt()).isUsed) {
                 unusedOffset = offset
                 break
             }
         }
 
         for (id: IdType in begin until end) {
-            if (!extras(id).isFixed()) {
+            if (!extras(id.toInt()).isFixed) {
                 reserveId(id)
                 units[id.toInt()].setLabel((id xor unusedOffset).toUByte())
             }

@@ -1,48 +1,24 @@
 package io.github.tokuhirom.kdary.internal
 
-import io.github.tokuhirom.kdary.SizeType
-import io.github.tokuhirom.kdary.ValueType
-import io.github.tokuhirom.kdary.toSizeType
-
-internal class Keyset<T>(
-    private val keys: Array<ByteArray>,
-    private val values: Array<T>?,
+internal class Keyset(
+    private val keys: List<ByteArray>,
+    private val values: List<Int>?,
 ) {
-    fun numKeys(): SizeType = keys.size.toSizeType()
+    fun numKeys(): Int = keys.size
 
-    fun keys(id: SizeType): ByteArray = keys[id.toInt()]
+    fun keys(id: Int): ByteArray = keys[id]
 
     fun keys(
-        keyId: SizeType,
-        charId: SizeType,
-    ): UByte = keys[keyId.toInt()].getOrNull(charId.toInt())?.toUByte() ?: 0.toUByte()
+        keyId: Int,
+        charId: Int,
+    ): UByte = keys[keyId].getOrNull(charId)?.toUByte() ?: 0.toUByte()
 
     fun hasValues(): Boolean = values != null
 
-    fun values(id: SizeType): ValueType {
-        if (hasValues()) {
-            return values!![id.toInt()]!!.toValueType()
+    fun values(id: Int): ValueType {
+        if (values != null) {
+            return values[id]
         }
-        return id.toValueType()
-    }
-
-    private fun <T : Any> T.toValueType(): ValueType {
-        return when (this) {
-            is Int -> {
-                return this
-            }
-
-            is UInt -> {
-                return this.toInt()
-            }
-
-            is ULong -> {
-                return this.toInt()
-            }
-
-            else -> {
-                throw IllegalArgumentException("Unsupported type: ${this::class.simpleName}")
-            }
-        }
+        return id
     }
 }

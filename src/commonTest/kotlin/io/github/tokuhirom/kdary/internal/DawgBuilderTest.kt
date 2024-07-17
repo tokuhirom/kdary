@@ -1,7 +1,5 @@
 package io.github.tokuhirom.kdary.internal
 
-import io.github.tokuhirom.kdary.SizeType
-import io.github.tokuhirom.kdary.toSizeType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -11,13 +9,13 @@ class DawgBuilderTest {
     fun testSimple() {
         val keyset =
             Keyset(
-                keys = arrayOf("abc".encodeToByteArray()),
-                values = arrayOf(1),
+                keys = listOf("abc".encodeToByteArray()),
+                values = listOf(1),
             )
 
         val builder = DawgBuilder()
-        for (i: SizeType in 0uL until keyset.numKeys()) {
-            builder.insert(keyset.keys(i), keyset.values(i))
+        for (i: SizeType in 0uL until keyset.numKeys().toSizeType()) {
+            builder.insert(keyset.keys(i.toInt()), keyset.values(i.toInt()))
         }
 
         for (i: SizeType in 0uL until builder.nodes.size.toSizeType()) {

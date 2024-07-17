@@ -10,16 +10,16 @@ import io.github.tokuhirom.kdary.saveKDary
 import java.io.File
 
 class MkkdaryApplication : CliktCommand() {
-    val sort by option(help = "Sort the keys").boolean().default(false)
-    val tab by option(help = "Use tab as a separator").boolean().default(false)
+    private val sort by option(help = "Sort the keys").boolean().default(false)
+    private val tab by option(help = "Use tab as a separator").boolean().default(false)
 
-    val input by argument()
-    val output by argument()
+    private val input by argument()
+    private val output by argument()
 
     override fun run() {
         val rows = sortIfRequired(loadFile(input))
-        val keys = rows.map { it.first.toByteArray() }.toList().toTypedArray()
-        val values = rows.map { it.second }.toList().toTypedArray()
+        val keys = rows.map { it.first.toByteArray() }.toList()
+        val values = rows.map { it.second }.toList()
         val progressBar = ProgressBar()
 
         val kdary =
@@ -33,14 +33,14 @@ class MkkdaryApplication : CliktCommand() {
         saveKDary(kdary, output)
     }
 
-    private fun sortIfRequired(rows: List<Pair<String, Any>>): List<Pair<String, Any>> =
+    private fun sortIfRequired(rows: List<Pair<String, Int>>): List<Pair<String, Int>> =
         if (sort) {
             rows.sortedBy { it.first }
         } else {
             rows
         }
 
-    private fun loadFile(input: String): List<Pair<String, Any>> {
+    private fun loadFile(input: String): List<Pair<String, Int>> {
         val lines = File(input).readLines()
         return lines
             .mapIndexedNotNull { index, line ->
@@ -52,7 +52,7 @@ class MkkdaryApplication : CliktCommand() {
                         check(splitted.size == 2) {
                             "Invalid line, doesn't contain the tab character: `$line` at line $index"
                         }
-                        splitted[0] to splitted[1]
+                        splitted[0] to splitted[1].toInt()
                     } else {
                         line to index
                     }

@@ -1,6 +1,6 @@
 package io.github.tokuhirom.kdary
 
-import io.github.tokuhirom.kdary.KDary.Companion.unitSize
+import io.github.tokuhirom.kdary.KDary.Companion.UNIT_SIZE
 import io.github.tokuhirom.kdary.internal.DoubleArrayUnit
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -21,7 +21,7 @@ fun saveKDary(
 ) {
     val file = fileName.toPath()
     getFileSystem().write(file) {
-        kdary.array().forEach { unit ->
+        kdary.array.forEach { unit ->
             writeUIntLe(this, unit.unit)
         }
     }
@@ -45,18 +45,18 @@ fun loadKDary(fileName: String): KDary {
         val source = this
         val metadata = fileSystem.metadata(file)
         val actualSize =
-            metadata.size?.toULong()
+            metadata.size
                 ?: throw DoubleArrayIOException("Cannot get the size of the file: $fileName")
 
-        val unitSize = unitSize()
-        val numUnits = actualSize / unitSize
-        if (numUnits < 256uL || numUnits % 256u != 0uL) {
+        val unitSize = UNIT_SIZE
+        val numUnits: Long = actualSize / unitSize
+        if (numUnits < 256L || numUnits % 256 != 0L) {
             throw DoubleArrayIOException("numUnits must be 256 or multiple of 256: $numUnits")
         }
 
-        val headerBuffer = ByteArray(256 * unitSize().toInt())
-        val readSize = source.read(headerBuffer, 0, 256 * unitSize().toInt())
-        if (readSize != 256 * unitSize().toInt()) {
+        val headerBuffer = ByteArray(256 * UNIT_SIZE)
+        val readSize = source.read(headerBuffer, 0, 256 * UNIT_SIZE)
+        if (readSize != 256 * UNIT_SIZE) {
             throw DoubleArrayIOException("Failed to read the header of KDary file from $fileName: $readSize")
         }
 
@@ -79,7 +79,7 @@ fun loadKDary(fileName: String): KDary {
             }
         }
 
-        val buf = ByteArray((numUnits - 256u).toInt() * unitSize().toInt())
+        val buf = ByteArray((numUnits - 256L).toInt() * UNIT_SIZE)
         source.readFully(buf)
 
         val doubleArrayUnits: Array<DoubleArrayUnit> = Array(numUnits.toInt()) { DoubleArrayUnit(0u) }
@@ -88,7 +88,7 @@ fun loadKDary(fileName: String): KDary {
             doubleArrayUnits[i] = units[i]
         }
 
-        for (i in 0 until (numUnits - 256u).toInt()) {
+        for (i in 0 until (numUnits - 256L).toInt()) {
             doubleArrayUnits[i + 256] = readUIntLeFromBuffer(i, buf)
         }
 
@@ -102,7 +102,7 @@ private fun readUIntLeFromBuffer(
     i: Int,
     buf: ByteArray,
 ): DoubleArrayUnit {
-    val offset = i * unitSize().toInt()
+    val offset = i * UNIT_SIZE.toInt()
     val value = (
         (buf[offset].toUInt() and 0xFFU) or
             ((buf[offset + 1].toUInt() and 0xFFU) shl 8) or
