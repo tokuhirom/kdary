@@ -5,6 +5,7 @@ import io.github.tokuhirom.kdary.internal.DoubleArrayUnit
 import io.github.tokuhirom.kdary.internal.Keyset
 import io.github.tokuhirom.kdary.result.CommonPrefixSearchResult
 import io.github.tokuhirom.kdary.result.ExactMatchSearchResult
+import io.github.tokuhirom.kdary.result.TraverseResult
 
 /**
  * A callback function to check the progress of dictionary construction.
@@ -170,12 +171,6 @@ class KDary {
             TraverseResult(unit.value(), nodePos, keyPos)
         }
     }
-
-    data class TraverseResult(
-        val status: Int,
-        val nodePos: SizeType? = null,
-        val keyPos: SizeType? = null,
-    )
 
     companion object {
         /**
