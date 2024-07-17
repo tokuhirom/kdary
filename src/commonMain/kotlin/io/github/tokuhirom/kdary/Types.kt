@@ -1,12 +1,12 @@
 package io.github.tokuhirom.kdary
 
-typealias ValueType = Int
+internal typealias ValueType = Int
 internal typealias IdType = UInt
 
 /**
  * size_t in C++
  */
-typealias SizeType = ULong
+internal typealias SizeType = ULong
 
 internal fun ULong.toIdType(): IdType = this.toUInt()
 
