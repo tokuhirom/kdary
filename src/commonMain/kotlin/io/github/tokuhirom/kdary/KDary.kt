@@ -36,7 +36,7 @@ class KDary {
      *
      * @return The total size of the array in bytes.
      */
-    fun totalSize(): SizeType = UNIT_SIZE.toSizeType() * size().toSizeType()
+    fun totalSize(): Int = UNIT_SIZE * size()
 
     /**
      * Tests whether the given key exists or not, and if it exists, sets its value and length in the result.

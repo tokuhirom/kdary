@@ -218,7 +218,7 @@ class DoubleArrayTest {
     @Test
     fun testTotalSize() {
         val dic = KDary.build(keys, values)
-        assertTrue(800000u < dic.totalSize())
+        assertTrue(800000 < dic.totalSize())
     }
 
     companion object {
