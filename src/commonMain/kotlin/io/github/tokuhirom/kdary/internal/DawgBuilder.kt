@@ -49,12 +49,12 @@ internal class DawgBuilder {
             throw IllegalArgumentException("failed to insert key: zero-length key")
         }
 
-        var id = 0u
+        var id = 0
         var keyPos = 0
 
         while (keyPos <= length) {
-            val childId = nodes[id.toInt()].child
-            if (childId == 0u) {
+            val childId = nodes[id].child.toInt()
+            if (childId == 0) {
                 break
             }
 
@@ -63,12 +63,12 @@ internal class DawgBuilder {
                 throw IllegalArgumentException("failed to insert key: invalid null character")
             }
 
-            val unitLabel = nodes[childId.toInt()].label
+            val unitLabel = nodes[childId].label
             if (keyLabel < unitLabel) {
                 throw IllegalArgumentException("failed to insert key: wrong key order")
             } else if (keyLabel > unitLabel) {
-                nodes[childId.toInt()].hasSibling = true
-                flush(childId)
+                nodes[childId].hasSibling = true
+                flush(childId.toIdType())
                 break
             }
             id = childId
@@ -83,18 +83,18 @@ internal class DawgBuilder {
             val keyLabel = if (keyPos < length) key[keyPos].toUByte() else 0u
             val childId = appendNode()
 
-            if (nodes[id.toInt()].child == 0u) {
-                nodes[childId.toInt()].isState = true
+            if (nodes[id].child == 0u) {
+                nodes[childId].isState = true
             }
-            nodes[childId.toInt()].sibling = nodes[id.toInt()].child
-            nodes[childId.toInt()].label = keyLabel
-            nodes[id.toInt()].child = childId
-            nodeStack.add(childId)
+            nodes[childId].sibling = nodes[id].child
+            nodes[childId].label = keyLabel
+            nodes[id].child = childId.toUInt()
+            nodeStack.add(childId.toUInt())
 
             id = childId
             keyPos++
         }
-        nodes[id.toInt()].child = value.toIdType()
+        nodes[id].child = value.toIdType()
     }
 
     private fun flush(id: IdType) {
@@ -246,14 +246,14 @@ internal class DawgBuilder {
         return hashValue
     }
 
-    private fun appendNode(): IdType {
-        val id: IdType
+    private fun appendNode(): Int {
+        val id: Int
         if (recycleBin.isEmpty()) {
-            id = nodes.size.toSizeType().toUInt()
+            id = nodes.size.toSizeType().toInt()
             nodes.add(DawgNode())
         } else {
-            id = recycleBin[recycleBin.size - 1]
-            nodes[id.toInt()] = DawgNode()
+            id = recycleBin[recycleBin.size - 1].toInt()
+            nodes[id] = DawgNode()
             recycleBin.removeLast()
         }
         return id
