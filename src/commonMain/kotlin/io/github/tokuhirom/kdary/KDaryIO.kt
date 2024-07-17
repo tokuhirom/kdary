@@ -1,6 +1,6 @@
 package io.github.tokuhirom.kdary
 
-import io.github.tokuhirom.kdary.KDary.Companion.unitSize
+import io.github.tokuhirom.kdary.KDary.Companion.UNIT_SIZE
 import io.github.tokuhirom.kdary.internal.DoubleArrayUnit
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -48,15 +48,15 @@ fun loadKDary(fileName: String): KDary {
             metadata.size?.toULong()
                 ?: throw DoubleArrayIOException("Cannot get the size of the file: $fileName")
 
-        val unitSize = unitSize()
+        val unitSize = UNIT_SIZE
         val numUnits = actualSize / unitSize
         if (numUnits < 256uL || numUnits % 256u != 0uL) {
             throw DoubleArrayIOException("numUnits must be 256 or multiple of 256: $numUnits")
         }
 
-        val headerBuffer = ByteArray(256 * unitSize().toInt())
-        val readSize = source.read(headerBuffer, 0, 256 * unitSize().toInt())
-        if (readSize != 256 * unitSize().toInt()) {
+        val headerBuffer = ByteArray(256 * UNIT_SIZE.toInt())
+        val readSize = source.read(headerBuffer, 0, 256 * UNIT_SIZE.toInt())
+        if (readSize != 256 * UNIT_SIZE.toInt()) {
             throw DoubleArrayIOException("Failed to read the header of KDary file from $fileName: $readSize")
         }
 
@@ -79,7 +79,7 @@ fun loadKDary(fileName: String): KDary {
             }
         }
 
-        val buf = ByteArray((numUnits - 256u).toInt() * unitSize().toInt())
+        val buf = ByteArray((numUnits - 256u).toInt() * UNIT_SIZE.toInt())
         source.readFully(buf)
 
         val doubleArrayUnits: Array<DoubleArrayUnit> = Array(numUnits.toInt()) { DoubleArrayUnit(0u) }
@@ -102,7 +102,7 @@ private fun readUIntLeFromBuffer(
     i: Int,
     buf: ByteArray,
 ): DoubleArrayUnit {
-    val offset = i * unitSize().toInt()
+    val offset = i * UNIT_SIZE.toInt()
     val value = (
         (buf[offset].toUInt() and 0xFFU) or
             ((buf[offset + 1].toUInt() and 0xFFU) shl 8) or
