@@ -38,7 +38,7 @@ internal class DoubleArrayBuilder(
                 DoubleArrayUnit(units[it].unit())
             }.toTypedArray()
 
-    private fun numBlocks(): SizeType = units.size.toSizeType() / BLOCK_SIZE.toSizeType()
+    private fun numBlocks(): Int = units.size / BLOCK_SIZE
 
     private fun extras(id: Int): DoubleArrayBuilderExtraUnit = extras[id % NUM_EXTRAS]
 
@@ -345,7 +345,7 @@ internal class DoubleArrayBuilder(
 
     private fun fixAllBlocks() {
         var begin: IdType = 0u
-        if (numBlocks() > NUM_EXTRA_BLOCKS.toIdType()) {
+        if (numBlocks() > NUM_EXTRA_BLOCKS) {
             begin = numBlocks().toIdType() - NUM_EXTRA_BLOCKS.toIdType()
         }
         val end: IdType = numBlocks().toIdType()
