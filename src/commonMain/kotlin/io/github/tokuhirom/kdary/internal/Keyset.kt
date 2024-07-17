@@ -5,8 +5,8 @@ import io.github.tokuhirom.kdary.ValueType
 import io.github.tokuhirom.kdary.toSizeType
 
 internal class Keyset<T>(
-    private val keys: Array<ByteArray>,
-    private val values: Array<T>?,
+    private val keys: List<ByteArray>,
+    private val values: List<T>?,
 ) {
     fun numKeys(): SizeType = keys.size.toSizeType()
 

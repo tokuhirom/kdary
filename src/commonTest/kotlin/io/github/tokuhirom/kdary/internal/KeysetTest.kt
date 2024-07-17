@@ -7,8 +7,8 @@ import kotlin.test.assertTrue
 class KeysetTest {
     @Test
     fun testKeyset() {
-        val keys = arrayOf("apple", "banana", "cherry").map { it.encodeToByteArray() }.toTypedArray()
-        val values = arrayOf(1, 2, 3)
+        val keys = listOf("apple", "banana", "cherry").map { it.encodeToByteArray() }
+        val values = listOf(1, 2, 3)
         val keyset = Keyset(keys, values)
 
         assertEquals(3u, keyset.numKeys())

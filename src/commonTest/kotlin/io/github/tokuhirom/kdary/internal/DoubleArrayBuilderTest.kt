@@ -8,8 +8,8 @@ class DoubleArrayBuilderTest {
     fun simple() {
         val keyset =
             Keyset(
-                keys = arrayOf("abc".encodeToByteArray()),
-                values = arrayOf(1),
+                keys = listOf("abc".encodeToByteArray()),
+                values = listOf(1),
             )
 
         val builder = DoubleArrayBuilder()
@@ -25,8 +25,8 @@ class DoubleArrayBuilderTest {
     fun build() {
         val keyset =
             Keyset(
-                keys = arrayOf("apple", "banana", "cherry").map { it.encodeToByteArray() }.toTypedArray(),
-                values = arrayOf(1, 2, 3),
+                keys = listOf("apple", "banana", "cherry").map { it.encodeToByteArray() },
+                values = listOf(1, 2, 3),
             )
 
         val builder = DoubleArrayBuilder()

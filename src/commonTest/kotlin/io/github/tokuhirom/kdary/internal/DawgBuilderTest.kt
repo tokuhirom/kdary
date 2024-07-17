@@ -11,8 +11,8 @@ class DawgBuilderTest {
     fun testSimple() {
         val keyset =
             Keyset(
-                keys = arrayOf("abc".encodeToByteArray()),
-                values = arrayOf(1),
+                keys = listOf("abc".encodeToByteArray()),
+                values = listOf(1),
             )
 
         val builder = DawgBuilder()

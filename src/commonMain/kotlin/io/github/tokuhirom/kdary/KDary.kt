@@ -192,8 +192,8 @@ class KDary {
          * @return A DoubleArray containing the built dictionary.
          */
         fun build(
-            keys: Array<ByteArray>,
-            values: Array<ValueType>? = null,
+            keys: List<ByteArray>,
+            values: List<ValueType>? = null,
             progressCallback: ProgressCallback? = null,
         ): KDary {
             val keyset = Keyset(keys, values)

@@ -18,8 +18,8 @@ class MkkdaryApplication : CliktCommand() {
 
     override fun run() {
         val rows = sortIfRequired(loadFile(input))
-        val keys = rows.map { it.first.toByteArray() }.toList().toTypedArray()
-        val values = rows.map { it.second }.toList().toTypedArray()
+        val keys = rows.map { it.first.toByteArray() }.toList()
+        val values = rows.map { it.second }.toList()
         val progressBar = ProgressBar()
 
         val kdary =
