@@ -119,7 +119,7 @@ internal class DawgBuilder {
             } else {
                 var unitId: IdType = 0u
                 for (j in 0 until numSiblings.toInt()) {
-                    unitId = appendUnit()
+                    unitId = appendUnit().toUInt() // TODO use Int
                 }
                 i = nodeId
                 while (i != 0u) {
@@ -257,11 +257,11 @@ internal class DawgBuilder {
             id
         }
 
-    private fun appendUnit(): IdType {
+    private fun appendUnit(): Int {
         isIntersectionsBuilder.append()
         units.add(DawgUnit(0u))
         labels.add(0.toUByte())
-        return (isIntersectionsBuilder.size() - 1uL).toIdType()
+        return isIntersectionsBuilder.size().toInt() - 1
     }
 
     private fun freeNode(id: Int) {

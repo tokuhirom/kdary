@@ -5,7 +5,7 @@ package io.github.tokuhirom.kdary.internal
  */
 internal class BitVectorBuilder {
     private val units: MutableList<IdType> = mutableListOf()
-    private var size: SizeType = 0u
+    private var size: Int = 0
 
     /**
      * Returns the bit value at the specified index.
@@ -13,7 +13,8 @@ internal class BitVectorBuilder {
      * @param id the index of the bit.
      * @return the bit value at the specified index.
      */
-    operator fun get(id: UInt): Boolean = (units[(id / BitVector.UNIT_SIZE).toInt()] shr (id % BitVector.UNIT_SIZE).toInt() and 1u) == 1u
+    operator fun get(id: UInt): Boolean =
+        (units[(id / BitVector.UNIT_SIZE.toUInt()).toInt()] shr (id % BitVector.UNIT_SIZE.toUInt()).toInt() and 1u) == 1u
 
     /**
      * Sets the bit at the specified index.
@@ -25,11 +26,11 @@ internal class BitVectorBuilder {
         id: SizeType,
         bit: Boolean,
     ) {
-        val unitId = (id / BitVector.UNIT_SIZE).toInt()
+        val unitId = (id / BitVector.UNIT_SIZE.toUInt()).toInt()
         if (bit) {
-            units[unitId] = units[unitId] or (1u shl (id % BitVector.UNIT_SIZE).toInt())
+            units[unitId] = units[unitId] or (1u shl (id % BitVector.UNIT_SIZE.toUInt()).toInt())
         } else {
-            units[unitId] = units[unitId] and (1u shl (id % BitVector.UNIT_SIZE).toInt()).inv()
+            units[unitId] = units[unitId] and (1u shl (id % BitVector.UNIT_SIZE.toUInt()).toInt()).inv()
         }
     }
 
@@ -38,13 +39,13 @@ internal class BitVectorBuilder {
      *
      * @return the total number of bits.
      */
-    fun size(): SizeType = size
+    fun size(): Int = size
 
     /**
      * Adds a new bit to the vector.
      */
     fun append() {
-        if ((size % BitVector.UNIT_SIZE) == 0uL) {
+        if ((size % BitVector.UNIT_SIZE) == 0) {
             units.add(0u)
         }
         size++

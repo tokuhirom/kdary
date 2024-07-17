@@ -7,7 +7,7 @@ internal data class BitVector(
     private val units: List<IdType>,
     private val ranks: List<IdType>,
     private val numOnes: SizeType = 0u,
-    private val size: SizeType = 0u,
+    private val size: Int,
 ) {
     /**
      * Returns the bit value at the specified index.
@@ -15,7 +15,7 @@ internal data class BitVector(
      * @param id the index of the bit.
      * @return the bit value at the specified index.
      */
-    operator fun get(id: UInt): Boolean = (units[(id / UNIT_SIZE).toInt()] shr (id % UNIT_SIZE).toInt() and 1u) == 1u
+    operator fun get(id: UInt): Boolean = (units[(id / UNIT_SIZE.toUInt()).toInt()] shr (id % UNIT_SIZE.toUInt()).toInt() and 1u) == 1u
 
     /**
      * Returns the number of 1's up to the specified index.
@@ -24,8 +24,8 @@ internal data class BitVector(
      * @return the number of 1's up to the specified index.
      */
     fun rank(id: SizeType): IdType {
-        val unitId = id / UNIT_SIZE
-        val offset: SizeType = UNIT_SIZE - (id % UNIT_SIZE) - 1u
+        val unitId = id / UNIT_SIZE.toUInt()
+        val offset: SizeType = UNIT_SIZE.toUInt() - (id % UNIT_SIZE.toUInt()) - 1u
         val mask: UInt = 0U.inv() shr offset.toInt()
         return ranks[unitId.toInt()] +
             popCount(units[unitId.toInt()] and mask)
@@ -42,7 +42,7 @@ internal data class BitVector(
         /**
          * Number of bits per unit.
          */
-        internal const val UNIT_SIZE = 32u
+        internal const val UNIT_SIZE = 32
 
         /**
          * Returns the population count (number of 1's) in the given unit.
