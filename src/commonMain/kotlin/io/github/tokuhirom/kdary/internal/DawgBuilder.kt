@@ -11,7 +11,7 @@ internal class DawgBuilder {
     private var numStates: SizeType = 0u
 
     init {
-        table.resize(INITIAL_TABLE_SIZE.toSizeType(), 0u)
+        table.resize(INITIAL_TABLE_SIZE, 0u)
         check(recycleBin.isEmpty())
 
         nodes.add(DawgNode())
@@ -146,7 +146,7 @@ internal class DawgBuilder {
     }
 
     private fun expandTable() {
-        val tableSize = table.size.toSizeType() shl 1
+        val tableSize = table.size shl 1
         table.clear()
         table.resize(tableSize, 0u)
 

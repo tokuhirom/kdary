@@ -118,7 +118,7 @@ internal class DoubleArrayBuilder(
         dawgId: IdType,
         dicId: Int,
     ): UInt {
-        labels.resize(0uL, 0.toUByte())
+        labels.resize(0, 0.toUByte())
 
         var dawgChildId: IdType = dawg.child(dawgId)
         while (dawgChildId != 0u) {
@@ -207,7 +207,7 @@ internal class DoubleArrayBuilder(
         depth: SizeType,
         dicId: IdType,
     ): IdType {
-        labels.resize(0uL, 0.toUByte())
+        labels.resize(0, 0.toUByte())
 
         var vaue: ValueType = -1
         for (i in begin until end) {
