@@ -171,7 +171,7 @@ internal class DawgBuilder {
     }
 
     private fun findNode(nodeId: IdType): Pair<UInt, IdType> {
-        var hashId = hashNode(nodeId) % table.size.toSizeType().toUInt()
+        var hashId = hashNode(nodeId.toInt()) % table.size.toSizeType().toUInt()
         while (true) {
             val unitId = table[hashId.toInt()]
             if (unitId == 0u) {
@@ -233,14 +233,14 @@ internal class DawgBuilder {
         return hashValue
     }
 
-    private fun hashNode(id: IdType): IdType {
+    private fun hashNode(id: Int): IdType {
         var hashValue: IdType = 0u
-        var currentId = id
-        while (currentId != 0u) {
-            val unit = nodes[currentId.toInt()].unit()
-            val label = nodes[currentId.toInt()].label
+        var currentId: Int = id
+        while (currentId != 0) {
+            val unit = nodes[currentId].unit()
+            val label = nodes[currentId].label
             hashValue = hashValue xor hash((label.toUInt() shl 24) xor unit)
-            currentId = nodes[currentId.toInt()].sibling
+            currentId = nodes[currentId].sibling.toInt()
         }
         return hashValue
     }
