@@ -24,5 +24,5 @@ internal data class Dawg(
 
     fun sibling(id: IdType): IdType = if (units[id.toInt()].hasSibling()) (id + 1u) else 0u
 
-    fun value(id: IdType): ValueType = units[id.toInt()].value()
+    fun value(id: Int): ValueType = units[id].value()
 }

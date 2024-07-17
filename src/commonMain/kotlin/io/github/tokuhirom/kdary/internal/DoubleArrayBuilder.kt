@@ -138,7 +138,7 @@ internal class DoubleArrayBuilder(
 
             if (dawg.isLeaf(dawgChildId.toInt())) {
                 units[dicId].setHasLeaf(true)
-                units[dicChildId.toInt()].setValue(dawg.value(dawgChildId))
+                units[dicChildId.toInt()].setValue(dawg.value(dawgChildId.toInt()))
             } else {
                 units[dicChildId.toInt()].setLabel(labels[i])
             }

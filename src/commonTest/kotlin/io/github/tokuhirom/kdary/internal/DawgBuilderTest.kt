@@ -76,7 +76,7 @@ class DawgBuilderTest {
         val builder = DawgBuilder()
         builder.insert("key".encodeToByteArray(), 1)
         val dawg = builder.finish()
-        assertEquals(5, dawg.value(3u)) // Value set in the last node
+        assertEquals(5, dawg.value(3)) // Value set in the last node
     }
 
     @Test
