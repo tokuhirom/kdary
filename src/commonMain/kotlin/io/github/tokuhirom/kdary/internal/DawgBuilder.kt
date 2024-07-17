@@ -152,13 +152,13 @@ internal class DawgBuilder {
 
         for (id in 1 until units.size) {
             if (labels[id] == 0.toUByte() || units[id].isState()) {
-                val (hashId, _) = findUnit(id.toUInt())
+                val (hashId, _) = findUnit(id)
                 table[hashId.toInt()] = id.toUInt()
             }
         }
     }
 
-    private fun findUnit(id: IdType): Pair<UInt, UInt> {
+    private fun findUnit(id: Int): Pair<UInt, UInt> {
         var hashId = hashUnit(id) % table.size.toSizeType().toUInt()
         while (true) {
             val unitId = table[hashId.toInt()]
@@ -217,15 +217,15 @@ internal class DawgBuilder {
         return true
     }
 
-    private fun hashUnit(id: IdType): IdType {
+    private fun hashUnit(id: Int): IdType {
         var hashValue: IdType = 0u
         var currentId = id
-        while (currentId != 0u) {
-            val unit = units[currentId.toInt()].unit()
-            val label = labels[currentId.toInt()]
+        while (currentId != 0) {
+            val unit = units[currentId].unit()
+            val label = labels[currentId]
             hashValue = hashValue xor hash((label.toUInt() shl 24) xor unit)
 
-            if (!units[currentId.toInt()].hasSibling()) {
+            if (!units[currentId].hasSibling()) {
                 break
             }
             currentId++
