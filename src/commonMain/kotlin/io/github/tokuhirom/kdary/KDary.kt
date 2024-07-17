@@ -59,11 +59,11 @@ class KDary {
         nodePosParam: Int = 0,
     ): ExactMatchSearchResult {
         var unit = array[nodePosParam]
-        var nodePos = nodePosParam.toSizeType()
+        var nodePos = nodePosParam
         val length = key.size
         for (i in 0 until length) {
-            nodePos = nodePos xor ((unit.offset() xor key[i].toUInt()).toULong())
-            unit = array[nodePos.toInt()]
+            nodePos = (nodePos.toSizeType() xor ((unit.offset() xor key[i].toUInt()).toULong())).toInt()
+            unit = array[nodePos]
             if (unit.label() != key[i].toUInt()) {
                 return ExactMatchSearchResult.NotFound
             }
@@ -72,7 +72,7 @@ class KDary {
         if (!unit.hasLeaf()) {
             return ExactMatchSearchResult.NotFound
         }
-        unit = array[nodePos.toInt() xor unit.offset().toInt()]
+        unit = array[nodePos xor unit.offset().toInt()]
         return ExactMatchSearchResult.Found(unit.value(), length)
     }
 
