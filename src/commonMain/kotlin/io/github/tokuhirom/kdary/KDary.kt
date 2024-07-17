@@ -84,13 +84,13 @@ class KDary {
      */
     fun commonPrefixSearch(
         key: ByteArray,
-        maxNumResults: SizeType? = null,
+        maxNumResults: Int? = null,
         nodePos: SizeType = 0u,
     ): List<CommonPrefixSearchResult> = commonPrefixSearchInternal(key, maxNumResults, nodePos)
 
     private fun commonPrefixSearchInternal(
         key: ByteArray,
-        maxNumResults: SizeType?,
+        maxNumResults: Int?,
         nodePosParam: SizeType = 0u,
     ): List<CommonPrefixSearchResult> {
         var nodePos: SizeType = nodePosParam
@@ -110,7 +110,7 @@ class KDary {
 
             nodePos = nodePos xor unit.offset().toSizeType()
             if (unit.hasLeaf()) {
-                if (maxNumResults == null || results.size.toULong() < maxNumResults) {
+                if (maxNumResults == null || results.size < maxNumResults) {
                     val v = array[nodePos.toInt()].value()
                     results.add(CommonPrefixSearchResult(v, (i + 1u)))
                 }
