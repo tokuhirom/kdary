@@ -7,6 +7,7 @@ import io.github.tokuhirom.kdary.internal.toIdType
 import io.github.tokuhirom.kdary.internal.toSizeType
 import io.github.tokuhirom.kdary.result.CommonPrefixSearchResult
 import io.github.tokuhirom.kdary.result.ExactMatchSearchResult
+import io.github.tokuhirom.kdary.result.ExactMatchSearchResult.NotFound.length
 import io.github.tokuhirom.kdary.result.TraverseResult
 
 /**
@@ -59,11 +60,11 @@ class KDary {
     ): ExactMatchSearchResult {
         var unit = array[nodePosParam]
         var nodePos = nodePosParam.toSizeType()
-        val length = key.size.toSizeType()
-        for (i in 0uL until length) {
-            nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
+        val length = key.size
+        for (i in 0 until length) {
+            nodePos = nodePos xor ((unit.offset() xor key[i].toUInt()).toULong())
             unit = array[nodePos.toInt()]
-            if (unit.label() != key[i.toInt()].toUInt()) {
+            if (unit.label() != key[i].toUInt()) {
                 return ExactMatchSearchResult.NotFound
             }
         }
