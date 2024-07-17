@@ -33,9 +33,9 @@ internal class DoubleArrayBuilder(
     }
 
     private fun copy(): Array<DoubleArrayUnit> =
-        (0uL until units.size.toSizeType())
+        (0 until units.size)
             .map {
-                DoubleArrayUnit(units[it.toInt()].unit())
+                DoubleArrayUnit(units[it].unit())
             }.toTypedArray()
 
     private fun numBlocks(): SizeType = units.size.toSizeType() / BLOCK_SIZE.toSizeType()
