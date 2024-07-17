@@ -86,7 +86,7 @@ internal class DawgBuilder {
             if (nodes[id].child == 0u) {
                 nodes[childId].isState = true
             }
-            nodes[childId].sibling = nodes[id].child
+            nodes[childId].sibling = nodes[id].child.toInt()
             nodes[childId].label = keyLabel
             nodes[id].child = childId.toUInt()
             nodeStack.add(childId.toUInt())
@@ -110,7 +110,7 @@ internal class DawgBuilder {
             var i: Int = nodeId.toInt()
             while (i != 0) {
                 numSiblings++
-                i = nodes[i].sibling.toInt()
+                i = nodes[i].sibling
             }
 
             var (hashId, matchId) = findNode(nodeId.toInt())
@@ -126,7 +126,7 @@ internal class DawgBuilder {
                     units[unitId] = DawgUnit(nodes[i].unit())
                     labels[unitId] = nodes[i].label
                     unitId--
-                    i = nodes[i].sibling.toInt()
+                    i = nodes[i].sibling
                 }
                 matchId = unitId.toUInt() + 1u
                 table[hashId.toInt()] = matchId
@@ -193,26 +193,26 @@ internal class DawgBuilder {
     ): Boolean {
         var unitIdVar: Int = unitId.toInt()
         var i = nodes[nodeId].sibling
-        while (i != 0u) {
+        while (i != 0) {
             if (!units[unitIdVar].hasSibling()) {
                 return false
             }
             unitIdVar++
-            i = nodes[i.toInt()].sibling
+            i = nodes[i].sibling
         }
         if (units[unitIdVar].hasSibling()) {
             return false
         }
 
-        i = nodeId.toUInt()
-        while (i != 0u) {
-            if (nodes[i.toInt()].unit() != units[unitIdVar].unit() ||
-                nodes[i.toInt()].label != labels[unitIdVar]
+        i = nodeId
+        while (i != 0) {
+            if (nodes[i].unit() != units[unitIdVar].unit() ||
+                nodes[i].label != labels[unitIdVar]
             ) {
                 return false
             }
             unitIdVar--
-            i = nodes[i.toInt()].sibling
+            i = nodes[i].sibling
         }
         return true
     }
@@ -240,7 +240,7 @@ internal class DawgBuilder {
             val unit = nodes[currentId].unit()
             val label = nodes[currentId].label
             hashValue = hashValue xor hash((label.toUInt() shl 24) xor unit)
-            currentId = nodes[currentId].sibling.toInt()
+            currentId = nodes[currentId].sibling
         }
         return hashValue
     }

@@ -5,7 +5,7 @@ package io.github.tokuhirom.kdary.internal
  */
 internal class DawgNode {
     internal var child: IdType = 0u
-    internal var sibling: IdType = 0u
+    internal var sibling: Int = 0
     internal var label: UByte = 0u
     internal var isState: Boolean = false
     internal var hasSibling: Boolean = false
