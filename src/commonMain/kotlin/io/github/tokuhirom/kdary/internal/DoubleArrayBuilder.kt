@@ -22,7 +22,7 @@ internal class DoubleArrayBuilder(
         const val LOWER_MASK = 0xFF
     }
 
-    fun build(keyset: Keyset<ValueType>): Array<DoubleArrayUnit> {
+    fun build(keyset: Keyset): Array<DoubleArrayUnit> {
         if (keyset.hasValues()) {
             val dawg = buildDawg(keyset)
             buildFromDawg(dawg)
@@ -42,7 +42,7 @@ internal class DoubleArrayBuilder(
 
     private fun extras(id: IdType): DoubleArrayBuilderExtraUnit = extras[id.toInt() % NUM_EXTRAS]
 
-    private fun <T> buildDawg(keyset: Keyset<T>): Dawg {
+    private fun buildDawg(keyset: Keyset): Dawg {
         val dawgBuilder = DawgBuilder()
         for (i: SizeType in 0uL until keyset.numKeys()) {
             dawgBuilder.insert(keyset.keys(i), keyset.values(i))
@@ -147,7 +147,7 @@ internal class DoubleArrayBuilder(
         return offset
     }
 
-    private fun <T> buildFromKeyset(keyset: Keyset<T>) {
+    private fun buildFromKeyset(keyset: Keyset) {
         var numUnits: SizeType = 1uL
         while (numUnits < keyset.numKeys()) {
             numUnits = numUnits shl 1
@@ -167,8 +167,8 @@ internal class DoubleArrayBuilder(
         labels.clear()
     }
 
-    private fun <T> buildFromKeyset(
-        keyset: Keyset<T>,
+    private fun buildFromKeyset(
+        keyset: Keyset,
         begin: SizeType,
         end: SizeType,
         depth: SizeType,
@@ -200,8 +200,8 @@ internal class DoubleArrayBuilder(
         buildFromKeyset(keyset, lastBegin, end, depth + 1uL, offset xor lastLabel.toIdType())
     }
 
-    private fun <T> arrangeFromKeyset(
-        keyset: Keyset<T>,
+    private fun arrangeFromKeyset(
+        keyset: Keyset,
         begin: SizeType,
         end: SizeType,
         depth: SizeType,
