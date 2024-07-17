@@ -1,7 +1,5 @@
 package io.github.tokuhirom.kdary.internal
 
-import io.github.tokuhirom.kdary.toIdType
-import io.github.tokuhirom.kdary.toValueType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

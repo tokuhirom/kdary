@@ -1,10 +1,5 @@
 package io.github.tokuhirom.kdary.internal
 
-import io.github.tokuhirom.kdary.IdType
-import io.github.tokuhirom.kdary.SizeType
-import io.github.tokuhirom.kdary.toIdType
-import io.github.tokuhirom.kdary.toSizeType
-
 /**
  * Succinct bit vector.
  */

@@ -1,7 +1,5 @@
 package io.github.tokuhirom.kdary.internal
 
-import io.github.tokuhirom.kdary.IdType
-
 /**
  * Extra unit of double-array builder.
  */

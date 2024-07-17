@@ -2,7 +2,11 @@ package io.github.tokuhirom.kdary
 
 import io.github.tokuhirom.kdary.internal.DoubleArrayBuilder
 import io.github.tokuhirom.kdary.internal.DoubleArrayUnit
+import io.github.tokuhirom.kdary.internal.IdType
 import io.github.tokuhirom.kdary.internal.Keyset
+import io.github.tokuhirom.kdary.internal.SizeType
+import io.github.tokuhirom.kdary.internal.toIdType
+import io.github.tokuhirom.kdary.internal.toSizeType
 import io.github.tokuhirom.kdary.result.CommonPrefixSearchResult
 import io.github.tokuhirom.kdary.result.ExactMatchSearchResult
 import io.github.tokuhirom.kdary.result.TraverseResult

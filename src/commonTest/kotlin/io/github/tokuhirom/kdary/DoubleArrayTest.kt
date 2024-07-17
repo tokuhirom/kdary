@@ -1,5 +1,7 @@
 package io.github.tokuhirom.kdary
 
+import io.github.tokuhirom.kdary.internal.ValueType
+import io.github.tokuhirom.kdary.internal.toSizeType
 import io.github.tokuhirom.kdary.result.ExactMatchSearchResult
 import kotlin.random.Random
 import kotlin.test.Test

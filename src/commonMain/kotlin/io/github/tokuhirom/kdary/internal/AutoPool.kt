@@ -1,7 +1,5 @@
 package io.github.tokuhirom.kdary.internal
 
-import io.github.tokuhirom.kdary.SizeType
-
 fun <T> MutableList<T>.resize(
     tableSize: SizeType,
     value: T,

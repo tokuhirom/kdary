@@ -1,4 +1,4 @@
-package io.github.tokuhirom.kdary
+package io.github.tokuhirom.kdary.internal
 
 internal typealias ValueType = Int
 internal typealias IdType = UInt
