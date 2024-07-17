@@ -68,7 +68,7 @@ class DawgBuilderTest {
         val builder = DawgBuilder()
         builder.insert("key".encodeToByteArray(), 1)
         val dawg = builder.finish()
-        assertEquals(0u, dawg.sibling(0u))
+        assertEquals(0, dawg.sibling(0))
     }
 
     @Test

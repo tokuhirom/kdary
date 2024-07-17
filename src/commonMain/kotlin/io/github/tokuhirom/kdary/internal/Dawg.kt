@@ -22,7 +22,7 @@ internal data class Dawg(
 
     fun label(id: Int): UByte = labels[id]
 
-    fun sibling(id: IdType): IdType = if (units[id.toInt()].hasSibling()) (id + 1u) else 0u
+    fun sibling(id: Int): Int = if (units[id].hasSibling()) (id + 1) else 0
 
     fun value(id: Int): ValueType = units[id].value()
 }
