@@ -35,7 +35,7 @@ class KDary {
      *
      * @return The total size of the array in bytes.
      */
-    fun totalSize(): SizeType = UNIT_SIZE * size().toSizeType()
+    fun totalSize(): SizeType = UNIT_SIZE.toSizeType() * size().toSizeType()
 
     /**
      * Tests whether the given key exists or not, and if it exists, sets its value and length in the result.
@@ -214,6 +214,6 @@ class KDary {
          *
          * @return The size of each unit.
          */
-        internal const val UNIT_SIZE: SizeType = 4u
+        internal const val UNIT_SIZE: Int = 4
     }
 }
