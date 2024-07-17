@@ -159,7 +159,7 @@ internal class DoubleArrayBuilder(
         units[0].setLabel(0u)
 
         if (keyset.numKeys() > 0L) {
-            buildFromKeyset(keyset, 0u, keyset.numKeys().toSizeType(), 0u, 0u)
+            buildFromKeyset(keyset, 0, keyset.numKeys(), 0u, 0u)
         }
 
         fixAllBlocks()
@@ -169,48 +169,48 @@ internal class DoubleArrayBuilder(
 
     private fun buildFromKeyset(
         keyset: Keyset,
-        begin: SizeType,
-        end: SizeType,
+        begin: Int,
+        end: Int,
         depth: SizeType,
         dicId: IdType,
     ) {
         val offset: IdType = arrangeFromKeyset(keyset, begin, end, depth, dicId)
 
-        var i: SizeType = begin
-        while (i < end) {
+        var i: SizeType = begin.toSizeType()
+        while (i < end.toSizeType()) {
             if (keyset.keys(i.toInt(), depth.toInt()) != 0.toUByte()) {
                 break
             }
             i++
         }
-        if (i == end) {
+        if (i == end.toSizeType()) {
             return
         }
 
         var lastBegin: SizeType = i
         var lastLabel: UByte = keyset.keys(i.toInt(), depth.toInt())
-        while (++i < end) {
+        while (++i < end.toSizeType()) {
             val label: UByte = keyset.keys(i.toInt(), depth.toInt())
             if (label != lastLabel) {
-                buildFromKeyset(keyset, lastBegin, i, depth + 1uL, offset xor lastLabel.toIdType())
+                buildFromKeyset(keyset, lastBegin.toInt(), i.toInt(), depth + 1uL, offset xor lastLabel.toIdType())
                 lastBegin = i
                 lastLabel = keyset.keys(i.toInt(), depth.toInt())
             }
         }
-        buildFromKeyset(keyset, lastBegin, end, depth + 1uL, offset xor lastLabel.toIdType())
+        buildFromKeyset(keyset, lastBegin.toInt(), end, depth + 1uL, offset xor lastLabel.toIdType())
     }
 
     private fun arrangeFromKeyset(
         keyset: Keyset,
-        begin: SizeType,
-        end: SizeType,
+        begin: Int,
+        end: Int,
         depth: SizeType,
         dicId: IdType,
     ): IdType {
         labels.resize(0uL, 0.toUByte())
 
         var vaue: ValueType = -1
-        for (i in begin.toInt() until end.toInt()) {
+        for (i in begin until end) {
             val label: UByte = keyset.keys(i, depth.toInt())
             if (label == 0.toUByte()) {
                 if (keyset.values(i) < 0) {
