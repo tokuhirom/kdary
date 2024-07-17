@@ -63,7 +63,7 @@ internal class DoubleArrayBuilder(
             }
 
         reserveId(0u)
-        extras(0u).setIsUsed(true)
+        extras(0u).isUsed = true
         units[0].setOffset(1u)
         units[0].setLabel(0u)
 
@@ -142,7 +142,7 @@ internal class DoubleArrayBuilder(
             }
             dawgChildId = dawg.sibling(dawgChildId)
         }
-        extras(offset).setIsUsed(true)
+        extras(offset).isUsed = true
 
         return offset
     }
@@ -154,7 +154,7 @@ internal class DoubleArrayBuilder(
         }
 
         reserveId(0u)
-        extras(0u).setIsUsed(true)
+        extras(0u).isUsed = true
         units[0].setOffset(1u)
         units[0].setLabel(0u)
 
@@ -246,7 +246,7 @@ internal class DoubleArrayBuilder(
                 units[dicChildId.toInt()].setLabel(labels[i.toInt()])
             }
         }
-        extras(offset).setIsUsed(true)
+        extras(offset).isUsed = true
 
         return offset
     }
@@ -262,7 +262,7 @@ internal class DoubleArrayBuilder(
             if (isValidOffset(id, offset)) {
                 return offset
             }
-            unfixedId = extras(unfixedId).next()
+            unfixedId = extras(unfixedId).next
         } while (unfixedId != extrasHead)
 
         return units.size.toSizeType().toUInt() or (id and LOWER_MASK.toUInt())
@@ -272,7 +272,7 @@ internal class DoubleArrayBuilder(
         id: IdType,
         offset: IdType,
     ): Boolean {
-        if (extras(offset).isUsed()) {
+        if (extras(offset).isUsed) {
             return false
         }
 
@@ -282,7 +282,7 @@ internal class DoubleArrayBuilder(
         }
 
         for (i: SizeType in 1uL until labels.size.toSizeType()) {
-            if (extras(offset xor labels[i.toInt()].toIdType()).isFixed()) {
+            if (extras(offset xor labels[i.toInt()].toIdType()).isFixed) {
                 return false
             }
         }
@@ -296,14 +296,14 @@ internal class DoubleArrayBuilder(
         }
 
         if (id == extrasHead) {
-            extrasHead = extras(id).next()
+            extrasHead = extras(id).next
             if (extrasHead == id) {
                 extrasHead = units.size.toSizeType().toUInt()
             }
         }
-        extras(extras(id).prev()).setNext(extras(id).next())
-        extras(extras(id).next()).setPrev(extras(id).prev())
-        extras(id).setIsFixed(true)
+        extras(extras(id).prev).next = extras(id).next
+        extras(extras(id).next).prev = extras(id).prev
+        extras(id).isFixed = true
     }
 
     private fun expandUnits() {
@@ -323,24 +323,24 @@ internal class DoubleArrayBuilder(
 
         if (destNumBlocks > NUM_EXTRA_BLOCKS.toIdType()) {
             for (id in srcNumUnits until destNumUnits) {
-                extras(id).setIsUsed(false)
-                extras(id).setIsFixed(false)
+                extras(id).isUsed = false
+                extras(id).isFixed = false
             }
         }
 
         for (i: IdType in srcNumUnits + 1u until destNumUnits) {
-            extras(i - 1u).setNext(i)
-            extras(i).setPrev(i - 1u)
+            extras(i - 1u).next = i
+            extras(i).prev = i - 1u
         }
 
-        extras(srcNumUnits).setPrev(destNumUnits - 1u)
-        extras(destNumUnits - 1u).setNext(srcNumUnits)
+        extras(srcNumUnits).prev = destNumUnits - 1u
+        extras(destNumUnits - 1u).next = srcNumUnits
 
-        extras(srcNumUnits).setPrev(extras(extrasHead).prev())
-        extras(destNumUnits - 1u).setNext(extrasHead)
+        extras(srcNumUnits).prev = extras(extrasHead).prev
+        extras(destNumUnits - 1u).next = extrasHead
 
-        extras(extras(extrasHead).prev()).setNext(srcNumUnits)
-        extras(extrasHead).setPrev(destNumUnits - 1u)
+        extras(extras(extrasHead).prev).next = srcNumUnits
+        extras(extrasHead).prev = destNumUnits - 1u
     }
 
     private fun fixAllBlocks() {
@@ -361,14 +361,14 @@ internal class DoubleArrayBuilder(
 
         var unusedOffset: IdType = 0u
         for (offset in begin until end) {
-            if (!extras(offset).isUsed()) {
+            if (!extras(offset).isUsed) {
                 unusedOffset = offset
                 break
             }
         }
 
         for (id: IdType in begin until end) {
-            if (!extras(id).isFixed()) {
+            if (!extras(id).isFixed) {
                 reserveId(id)
                 units[id.toInt()].setLabel((id xor unusedOffset).toUByte())
             }

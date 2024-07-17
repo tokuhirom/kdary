@@ -9,32 +9,32 @@ class DoubleArrayBuilderExtraUnitTest {
     @Test
     fun testSetPrev() {
         val unit = DoubleArrayBuilderExtraUnit()
-        unit.setPrev(42u)
-        assertEquals(42u, unit.prev())
+        unit.prev = 42u
+        assertEquals(42u, unit.prev)
     }
 
     @Test
     fun testSetNext() {
         val unit = DoubleArrayBuilderExtraUnit()
-        unit.setNext(24u)
-        assertEquals(24u, unit.next())
+        unit.next = 24u
+        assertEquals(24u, unit.next)
     }
 
     @Test
     fun testSetIsFixed() {
         val unit = DoubleArrayBuilderExtraUnit()
-        unit.setIsFixed(true)
-        assertTrue(unit.isFixed())
-        unit.setIsFixed(false)
-        assertFalse(unit.isFixed())
+        unit.isFixed = true
+        assertTrue(unit.isFixed)
+        unit.isFixed = false
+        assertFalse(unit.isFixed)
     }
 
     @Test
     fun testSetIsUsed() {
         val unit = DoubleArrayBuilderExtraUnit()
-        unit.setIsUsed(true)
-        assertTrue(unit.isUsed())
-        unit.setIsUsed(false)
-        assertFalse(unit.isUsed())
+        unit.isUsed = true
+        assertTrue(unit.isUsed)
+        unit.isUsed = false
+        assertFalse(unit.isUsed)
     }
 }
