@@ -130,15 +130,15 @@ internal class DoubleArrayBuilder(
         units[dicId.toInt()].setOffset(dicId xor offset)
 
         dawgChildId = dawg.child(dawgId)
-        for (i: SizeType in 0uL until labels.size.toSizeType()) {
-            val dicChildId: IdType = offset xor labels[i.toInt()].toIdType()
+        for (i in 0 until labels.size) {
+            val dicChildId: IdType = offset xor labels[i].toIdType()
             reserveId(dicChildId)
 
             if (dawg.isLeaf(dawgChildId)) {
                 units[dicId.toInt()].setHasLeaf(true)
                 units[dicChildId.toInt()].setValue(dawg.value(dawgChildId))
             } else {
-                units[dicChildId.toInt()].setLabel(labels[i.toInt()])
+                units[dicChildId.toInt()].setLabel(labels[i])
             }
             dawgChildId = dawg.sibling(dawgChildId)
         }
