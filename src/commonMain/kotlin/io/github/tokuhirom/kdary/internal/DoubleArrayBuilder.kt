@@ -44,9 +44,9 @@ internal class DoubleArrayBuilder(
 
     private fun buildDawg(keyset: Keyset): Dawg {
         val dawgBuilder = DawgBuilder()
-        for (i: SizeType in 0uL until keyset.numKeys()) {
+        for (i: SizeType in 0uL until keyset.numKeys().toSizeType()) {
             dawgBuilder.insert(keyset.keys(i), keyset.values(i))
-            progressCallback?.invoke(i + 1uL, keyset.numKeys() + 1uL)
+            progressCallback?.invoke(i + 1uL, keyset.numKeys().toSizeType() + 1uL)
         }
         return dawgBuilder.finish()
     }
@@ -149,7 +149,7 @@ internal class DoubleArrayBuilder(
 
     private fun buildFromKeyset(keyset: Keyset) {
         var numUnits: SizeType = 1uL
-        while (numUnits < keyset.numKeys()) {
+        while (numUnits < keyset.numKeys().toSizeType()) {
             numUnits = numUnits shl 1
         }
 
@@ -158,8 +158,8 @@ internal class DoubleArrayBuilder(
         units[0].setOffset(1u)
         units[0].setLabel(0u)
 
-        if (keyset.numKeys() > 0u) {
-            buildFromKeyset(keyset, 0u, keyset.numKeys(), 0u, 0u)
+        if (keyset.numKeys() > 0L) {
+            buildFromKeyset(keyset, 0u, keyset.numKeys().toSizeType(), 0u, 0u)
         }
 
         fixAllBlocks()
@@ -220,7 +220,7 @@ internal class DoubleArrayBuilder(
                 if (vaue == -1) {
                     vaue = keyset.values(i)
                 }
-                progressCallback?.invoke(i + 1uL, keyset.numKeys() + 1uL)
+                progressCallback?.invoke(i + 1uL, (keyset.numKeys() + 1).toSizeType())
             }
 
             if (labels.isEmpty()) {

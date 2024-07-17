@@ -11,7 +11,7 @@ class KeysetTest {
         val values = listOf(1, 2, 3)
         val keyset = Keyset(keys, values)
 
-        assertEquals(3u, keyset.numKeys())
+        assertEquals(3, keyset.numKeys())
         assertEquals("apple", keyset.keys(0u).decodeToString())
         assertEquals('b'.code.toUByte(), keyset.keys(1u, 0u))
         assertTrue(keyset.hasValues())

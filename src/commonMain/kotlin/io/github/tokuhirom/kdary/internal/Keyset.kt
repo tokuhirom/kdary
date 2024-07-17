@@ -4,7 +4,7 @@ internal class Keyset(
     private val keys: List<ByteArray>,
     private val values: List<Int>?,
 ) {
-    fun numKeys(): SizeType = keys.size.toSizeType()
+    fun numKeys(): Int = keys.size
 
     fun keys(id: SizeType): ByteArray = keys[id.toInt()]
 
