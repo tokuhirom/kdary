@@ -107,10 +107,10 @@ internal class DawgBuilder {
             }
 
             var numSiblings: IdType = 0u
-            var i = nodeId
-            while (i != 0u) {
+            var i: Int = nodeId.toInt()
+            while (i != 0) {
                 numSiblings++
-                i = nodes[i.toInt()].sibling
+                i = nodes[i].sibling.toInt()
             }
 
             var (hashId, matchId) = findNode(nodeId.toInt())
@@ -121,23 +121,23 @@ internal class DawgBuilder {
                 for (j in 0 until numSiblings.toInt()) {
                     unitId = appendUnit()
                 }
-                i = nodeId
-                while (i != 0u) {
-                    units[unitId] = DawgUnit(nodes[i.toInt()].unit())
-                    labels[unitId] = nodes[i.toInt()].label
+                i = nodeId.toInt()
+                while (i != 0) {
+                    units[unitId] = DawgUnit(nodes[i].unit())
+                    labels[unitId] = nodes[i].label
                     unitId--
-                    i = nodes[i.toInt()].sibling
+                    i = nodes[i].sibling.toInt()
                 }
                 matchId = unitId.toUInt() + 1u
                 table[hashId.toInt()] = matchId
                 numStates++
             }
 
-            i = nodeId
-            while (i != 0u) {
-                val next = nodes[i.toInt()].sibling
-                freeNode(i.toInt())
-                i = next
+            i = nodeId.toInt()
+            while (i != 0) {
+                val next = nodes[i].sibling
+                freeNode(i)
+                i = next.toInt()
             }
 
             nodes[nodeStack[nodeStack.size - 1].toInt()].child = matchId
