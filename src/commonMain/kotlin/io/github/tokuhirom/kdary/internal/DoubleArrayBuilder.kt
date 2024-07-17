@@ -236,14 +236,14 @@ internal class DoubleArrayBuilder(
         val offset: IdType = findValidOffset(dicId)
         units[dicId.toInt()].setOffset(dicId xor offset)
 
-        for (i: SizeType in 0uL until labels.size.toSizeType()) {
-            val dicChildId: IdType = offset xor labels[i.toInt()].toIdType()
+        for (i in 0 until labels.size) {
+            val dicChildId: IdType = offset xor labels[i].toIdType()
             reserveId(dicChildId)
-            if (labels[i.toInt()] == 0.toUByte()) {
+            if (labels[i] == 0.toUByte()) {
                 units[dicId.toInt()].setHasLeaf(true)
                 units[dicChildId.toInt()].setValue(vaue)
             } else {
-                units[dicChildId.toInt()].setLabel(labels[i.toInt()])
+                units[dicChildId.toInt()].setLabel(labels[i])
             }
         }
         extras(offset.toInt()).isUsed = true
