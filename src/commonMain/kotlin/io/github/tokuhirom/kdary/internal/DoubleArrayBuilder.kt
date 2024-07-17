@@ -89,7 +89,7 @@ internal class DoubleArrayBuilder(
             if (offset != 0u) {
                 offset = offset xor dicId.toUInt()
                 if ((offset and UPPER_MASK.toUInt()) == 0u || (offset and LOWER_MASK.toUInt()) == 0u) {
-                    if (dawg.isLeaf(dawgChildId.toUInt())) {
+                    if (dawg.isLeaf(dawgChildId)) {
                         units[dicId].setHasLeaf(true)
                     }
                     units[dicId].setOffset(offset)
@@ -104,7 +104,7 @@ internal class DoubleArrayBuilder(
         }
 
         do {
-            val childLabel: UByte = dawg.label(dawgChildId.toUInt())
+            val childLabel: UByte = dawg.label(dawgChildId)
             val dicChildId: IdType = offset xor childLabel.toIdType()
             if (childLabel != 0.toUByte()) {
                 // TODO dawgChildId を Int に?
@@ -121,9 +121,10 @@ internal class DoubleArrayBuilder(
     ): UInt {
         labels.resize(0, 0.toUByte())
 
+        // TODO use Int
         var dawgChildId: IdType = dawg.child(dawgId).toUInt()
         while (dawgChildId != 0u) {
-            labels.add(dawg.label(dawgChildId))
+            labels.add(dawg.label(dawgChildId.toInt()))
             dawgChildId = dawg.sibling(dawgChildId)
         }
 
@@ -135,7 +136,7 @@ internal class DoubleArrayBuilder(
             val dicChildId: IdType = offset xor labels[i].toIdType()
             reserveId(dicChildId.toInt())
 
-            if (dawg.isLeaf(dawgChildId)) {
+            if (dawg.isLeaf(dawgChildId.toInt())) {
                 units[dicId].setHasLeaf(true)
                 units[dicChildId.toInt()].setValue(dawg.value(dawgChildId))
             } else {
