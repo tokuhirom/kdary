@@ -191,9 +191,9 @@ class KDary {
          * @param progressCallback A callback function to check the progress of dictionary construction.
          * @return A DoubleArray containing the built dictionary.
          */
-        fun <T> build(
+        fun build(
             keys: Array<ByteArray>,
-            values: Array<T>? = null,
+            values: Array<ValueType>? = null,
             progressCallback: ProgressCallback? = null,
         ): KDary {
             val keyset = Keyset(keys, values)

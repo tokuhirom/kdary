@@ -33,14 +33,14 @@ class MkkdaryApplication : CliktCommand() {
         saveKDary(kdary, output)
     }
 
-    private fun sortIfRequired(rows: List<Pair<String, Any>>): List<Pair<String, Any>> =
+    private fun sortIfRequired(rows: List<Pair<String, Int>>): List<Pair<String, Int>> =
         if (sort) {
             rows.sortedBy { it.first }
         } else {
             rows
         }
 
-    private fun loadFile(input: String): List<Pair<String, Any>> {
+    private fun loadFile(input: String): List<Pair<String, Int>> {
         val lines = File(input).readLines()
         return lines
             .mapIndexedNotNull { index, line ->
@@ -52,7 +52,7 @@ class MkkdaryApplication : CliktCommand() {
                         check(splitted.size == 2) {
                             "Invalid line, doesn't contain the tab character: `$line` at line $index"
                         }
-                        splitted[0] to splitted[1]
+                        splitted[0] to splitted[1].toInt()
                     } else {
                         line to index
                     }

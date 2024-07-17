@@ -80,7 +80,7 @@ class DoubleArrayTest {
 
     @Test
     fun buildWithKeys() {
-        val dic = KDary.build<Any>(keys.toTypedArray())
+        val dic = KDary.build(keys.toTypedArray())
         testDic(dic, keys, values, invalidKeys)
     }
 

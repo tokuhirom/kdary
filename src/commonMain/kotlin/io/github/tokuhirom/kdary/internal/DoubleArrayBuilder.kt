@@ -27,7 +27,7 @@ internal class DoubleArrayBuilder(
         const val LOWER_MASK = 0xFF
     }
 
-    fun <T> build(keyset: Keyset<T>): Array<DoubleArrayUnit> {
+    fun build(keyset: Keyset<ValueType>): Array<DoubleArrayUnit> {
         if (keyset.hasValues()) {
             val dawg = buildDawg(keyset)
             buildFromDawg(dawg)
