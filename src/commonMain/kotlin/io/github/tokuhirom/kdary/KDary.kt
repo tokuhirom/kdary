@@ -48,15 +48,15 @@ class KDary {
      */
     fun exactMatchSearch(
         key: ByteArray,
-        nodePos: SizeType = 0u,
+        nodePos: Int = 0,
     ): ExactMatchSearchResult = exactMatchSearchInternal(key, nodePos)
 
     private fun exactMatchSearchInternal(
         key: ByteArray,
-        nodePosParam: SizeType = 0u,
+        nodePosParam: Int = 0,
     ): ExactMatchSearchResult {
-        var unit = array[nodePosParam.toInt()]
-        var nodePos = nodePosParam
+        var unit = array[nodePosParam]
+        var nodePos = nodePosParam.toSizeType()
         val length = key.size.toSizeType()
         for (i in 0uL until length) {
             nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
@@ -85,26 +85,26 @@ class KDary {
     fun commonPrefixSearch(
         key: ByteArray,
         maxNumResults: Int? = null,
-        nodePos: SizeType = 0u,
+        nodePos: Int = 0,
     ): List<CommonPrefixSearchResult> = commonPrefixSearchInternal(key, maxNumResults, nodePos)
 
     private fun commonPrefixSearchInternal(
         key: ByteArray,
         maxNumResults: Int?,
-        nodePosParam: SizeType = 0u,
+        nodePosParam: Int = 0,
     ): List<CommonPrefixSearchResult> {
-        var nodePos: SizeType = nodePosParam
-        val length: SizeType = key.size.toSizeType()
+        var nodePos: SizeType = nodePosParam.toSizeType()
+        val length = key.size
 
         var unit: DoubleArrayUnit = array[nodePos.toInt()]
         nodePos = nodePos xor unit.offset().toSizeType()
 
         val results = mutableListOf<CommonPrefixSearchResult>()
 
-        for (i in 0uL until length) {
-            nodePos = nodePos xor key[i.toInt()].toUByte().toSizeType()
+        for (i in 0 until length) {
+            nodePos = nodePos xor key[i].toUByte().toSizeType()
             unit = array[nodePos.toInt()]
-            if (unit.label() != (key[i.toInt()].toUByte() and 0xFFU).toIdType()) {
+            if (unit.label() != (key[i].toUByte() and 0xFFU).toIdType()) {
                 return results
             }
 
@@ -112,7 +112,7 @@ class KDary {
             if (unit.hasLeaf()) {
                 if (maxNumResults == null || results.size < maxNumResults) {
                     val v = array[nodePos.toInt()].value()
-                    results.add(CommonPrefixSearchResult(v, (i + 1u)))
+                    results.add(CommonPrefixSearchResult(v, i + 1))
                 }
             }
         }
@@ -136,22 +136,22 @@ class KDary {
      */
     fun traverse(
         key: ByteArray,
-        nodePos: SizeType,
-        keyPos: SizeType,
+        nodePos: Int,
+        keyPos: Int,
     ): TraverseResult = traverseInternal(key, nodePos, keyPos)
 
     private fun traverseInternal(
         key: ByteArray,
-        nodePosParam: SizeType,
-        keyPosParam: SizeType,
+        nodePosParam: Int,
+        keyPosParam: Int,
     ): TraverseResult {
         var id: IdType = nodePosParam.toIdType()
         val length = key.size.toSizeType()
 
         var unit = array[id.toInt()]
 
-        var nodePos = nodePosParam
-        var keyPos = keyPosParam
+        var nodePos = nodePosParam.toSizeType()
+        var keyPos = keyPosParam.toSizeType()
 
         while (keyPos < length) {
             id = id xor (unit.offset() xor key[keyPos.toInt()].toUByte().toUInt())
@@ -188,7 +188,7 @@ class KDary {
          */
         fun build(
             keys: List<ByteArray>,
-            values: List<ValueType>? = null,
+            values: List<Int>? = null,
             progressCallback: ProgressCallback? = null,
         ): KDary {
             val keyset = Keyset(keys, values)

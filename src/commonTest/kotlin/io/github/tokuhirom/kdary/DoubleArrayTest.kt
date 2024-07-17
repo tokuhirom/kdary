@@ -137,8 +137,8 @@ class DoubleArrayTest {
 
         for (i in keys.indices) {
             val key = keys[i]
-            var id = 0.toSizeType()
-            var keyPos = 0.toSizeType()
+            var id = 0
+            var keyPos = 0
             var result = 0
             for (j in 0uL until keys[i].size.toSizeType()) {
                 val r = dic.traverse(key, id, keyPos)
@@ -149,8 +149,8 @@ class DoubleArrayTest {
         }
 
         for (invalidKey in invalidKeys) {
-            var id = 0.toSizeType()
-            var keyPos = 0.toSizeType()
+            var id = 0
+            var keyPos = 0
             var result = 0
             for (i in 0uL until invalidKey.size.toSizeType()) {
                 val r = dic.traverse(invalidKey, id, keyPos)

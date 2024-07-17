@@ -1,6 +1,5 @@
 package io.github.tokuhirom.kdary.result
 
-import io.github.tokuhirom.kdary.SizeType
 import io.github.tokuhirom.kdary.ValueType
 
 /**
@@ -8,5 +7,5 @@ import io.github.tokuhirom.kdary.ValueType
  */
 data class CommonPrefixSearchResult(
     var value: ValueType,
-    var length: SizeType,
+    var length: Int,
 )
