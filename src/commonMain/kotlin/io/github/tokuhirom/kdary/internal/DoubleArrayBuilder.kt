@@ -78,7 +78,7 @@ internal class DoubleArrayBuilder(
 
     private fun buildFromDawg(
         dawg: Dawg,
-        dawgId: IdType,
+        dawgId: Int,
         dicId: Int,
         table: Array<IdType>,
     ) {
@@ -107,7 +107,8 @@ internal class DoubleArrayBuilder(
             val childLabel: UByte = dawg.label(dawgChildId)
             val dicChildId: IdType = offset xor childLabel.toIdType()
             if (childLabel != 0.toUByte()) {
-                buildFromDawg(dawg, dawgChildId, dicChildId.toInt(), table)
+                // TODO dawgChildId を Int に?
+                buildFromDawg(dawg, dawgChildId.toInt(), dicChildId.toInt(), table)
             }
             dawgChildId = dawg.sibling(dawgChildId)
         } while (dawgChildId != 0u)
@@ -115,7 +116,7 @@ internal class DoubleArrayBuilder(
 
     private fun arrangeFromDawg(
         dawg: Dawg,
-        dawgId: IdType,
+        dawgId: Int,
         dicId: Int,
     ): UInt {
         labels.resize(0, 0.toUByte())

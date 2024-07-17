@@ -10,9 +10,9 @@ internal data class Dawg(
 
     fun numIntersections(): Int = isIntersections.numOnes().toInt()
 
-    fun child(id: IdType): IdType = units[id.toInt()].child()
+    fun child(id: Int): IdType = units[id].child()
 
-    fun root(): IdType = 0u
+    fun root(): Int = 0
 
     fun isIntersection(id: IdType): Boolean = isIntersections[id]
 
