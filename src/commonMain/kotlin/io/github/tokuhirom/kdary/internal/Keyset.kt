@@ -15,10 +15,10 @@ internal class Keyset(
 
     fun hasValues(): Boolean = values != null
 
-    fun values(id: SizeType): ValueType {
+    fun values(id: Int): ValueType {
         if (values != null) {
-            return values[id.toInt()]
+            return values[id]
         }
-        return id.toValueType()
+        return id
     }
 }
