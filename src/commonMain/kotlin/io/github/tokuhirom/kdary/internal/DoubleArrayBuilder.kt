@@ -225,8 +225,8 @@ internal class DoubleArrayBuilder(
 
             if (labels.isEmpty()) {
                 labels.add(label)
-            } else if (label != labels[(labels.size.toSizeType() - 1uL).toInt()]) {
-                if (label < labels[(labels.size.toSizeType() - 1uL).toInt()]) {
+            } else if (label != labels[labels.size - 1]) {
+                if (label < labels[labels.size - 1]) {
                     throw IllegalArgumentException("failed to build double-array: wrong key order")
                 }
                 labels.add(label)
