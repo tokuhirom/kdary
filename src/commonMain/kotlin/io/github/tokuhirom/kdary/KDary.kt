@@ -2,7 +2,6 @@ package io.github.tokuhirom.kdary
 
 import io.github.tokuhirom.kdary.internal.DoubleArrayBuilder
 import io.github.tokuhirom.kdary.internal.DoubleArrayUnit
-import io.github.tokuhirom.kdary.internal.IdType
 import io.github.tokuhirom.kdary.internal.Keyset
 import io.github.tokuhirom.kdary.internal.SizeType
 import io.github.tokuhirom.kdary.internal.toIdType
@@ -149,21 +148,21 @@ class KDary {
         nodePosParam: Int,
         keyPosParam: Int,
     ): TraverseResult {
-        var id: IdType = nodePosParam.toIdType()
-        val length = key.size.toSizeType()
+        var id = nodePosParam
+        val length = key.size
 
-        var unit = array[id.toInt()]
+        var unit = array[id]
 
-        var nodePos = nodePosParam.toSizeType()
-        var keyPos = keyPosParam.toSizeType()
+        var nodePos = nodePosParam
+        var keyPos = keyPosParam
 
         while (keyPos < length) {
-            id = id xor (unit.offset() xor key[keyPos.toInt()].toUByte().toUInt())
-            unit = array[id.toInt()]
-            if (unit.label() != key[keyPos.toInt()].toUByte().toIdType()) {
+            id = (id.toUInt() xor (unit.offset() xor key[keyPos].toUByte().toUInt())).toInt()
+            unit = array[id]
+            if (unit.label() != key[keyPos].toUByte().toIdType()) {
                 return TraverseResult(-2, nodePos, keyPos)
             }
-            nodePos = id.toSizeType()
+            nodePos = id
 
             keyPos++
         }
@@ -171,7 +170,7 @@ class KDary {
         return if (!unit.hasLeaf()) {
             TraverseResult(-1, nodePos, keyPos)
         } else {
-            unit = array[(id xor unit.offset()).toInt()]
+            unit = array[(id.toUInt() xor unit.offset()).toInt()]
             TraverseResult(unit.value(), nodePos, keyPos)
         }
     }
