@@ -178,7 +178,7 @@ internal class DoubleArrayBuilder(
 
         var i: SizeType = begin
         while (i < end) {
-            if (keyset.keys(i, depth) != 0.toUByte()) {
+            if (keyset.keys(i.toInt(), depth.toInt()) != 0.toUByte()) {
                 break
             }
             i++
@@ -188,13 +188,13 @@ internal class DoubleArrayBuilder(
         }
 
         var lastBegin: SizeType = i
-        var lastLabel: UByte = keyset.keys(i, depth)
+        var lastLabel: UByte = keyset.keys(i.toInt(), depth.toInt())
         while (++i < end) {
-            val label: UByte = keyset.keys(i, depth)
+            val label: UByte = keyset.keys(i.toInt(), depth.toInt())
             if (label != lastLabel) {
                 buildFromKeyset(keyset, lastBegin, i, depth + 1uL, offset xor lastLabel.toIdType())
                 lastBegin = i
-                lastLabel = keyset.keys(i, depth)
+                lastLabel = keyset.keys(i.toInt(), depth.toInt())
             }
         }
         buildFromKeyset(keyset, lastBegin, end, depth + 1uL, offset xor lastLabel.toIdType())
@@ -211,7 +211,7 @@ internal class DoubleArrayBuilder(
 
         var vaue: ValueType = -1
         for (i: SizeType in begin until end) {
-            val label: UByte = keyset.keys(i, depth)
+            val label: UByte = keyset.keys(i.toInt(), depth.toInt())
             if (label == 0.toUByte()) {
                 if (keyset.values(i) < 0) {
                     throw IllegalArgumentException("failed to build double-array: negative value")

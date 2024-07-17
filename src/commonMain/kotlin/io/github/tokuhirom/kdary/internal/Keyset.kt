@@ -9,9 +9,9 @@ internal class Keyset(
     fun keys(id: Int): ByteArray = keys[id]
 
     fun keys(
-        keyId: SizeType,
-        charId: SizeType,
-    ): UByte = keys[keyId.toInt()].getOrNull(charId.toInt())?.toUByte() ?: 0.toUByte()
+        keyId: Int,
+        charId: Int,
+    ): UByte = keys[keyId].getOrNull(charId)?.toUByte() ?: 0.toUByte()
 
     fun hasValues(): Boolean = values != null
 
