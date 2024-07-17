@@ -45,12 +45,12 @@ fun loadKDary(fileName: String): KDary {
         val source = this
         val metadata = fileSystem.metadata(file)
         val actualSize =
-            metadata.size?.toULong()
+            metadata.size
                 ?: throw DoubleArrayIOException("Cannot get the size of the file: $fileName")
 
-        val unitSize = UNIT_SIZE.toSizeType()
-        val numUnits = actualSize / unitSize
-        if (numUnits < 256uL || numUnits % 256u != 0uL) {
+        val unitSize = UNIT_SIZE
+        val numUnits: Long = actualSize / unitSize
+        if (numUnits < 256L || numUnits % 256 != 0L) {
             throw DoubleArrayIOException("numUnits must be 256 or multiple of 256: $numUnits")
         }
 
@@ -79,7 +79,7 @@ fun loadKDary(fileName: String): KDary {
             }
         }
 
-        val buf = ByteArray((numUnits - 256u).toInt() * UNIT_SIZE)
+        val buf = ByteArray((numUnits - 256L).toInt() * UNIT_SIZE)
         source.readFully(buf)
 
         val doubleArrayUnits: Array<DoubleArrayUnit> = Array(numUnits.toInt()) { DoubleArrayUnit(0u) }
@@ -88,7 +88,7 @@ fun loadKDary(fileName: String): KDary {
             doubleArrayUnits[i] = units[i]
         }
 
-        for (i in 0 until (numUnits - 256u).toInt()) {
+        for (i in 0 until (numUnits - 256L).toInt()) {
             doubleArrayUnits[i + 256] = readUIntLeFromBuffer(i, buf)
         }
 
