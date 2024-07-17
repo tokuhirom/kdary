@@ -5,7 +5,7 @@ package io.github.tokuhirom.kdary.internal
  */
 internal data class BitVector(
     private val units: List<IdType>,
-    private val ranks: Array<IdType>,
+    private val ranks: List<IdType>,
     private val numOnes: SizeType = 0u,
     private val size: SizeType = 0u,
 ) {
