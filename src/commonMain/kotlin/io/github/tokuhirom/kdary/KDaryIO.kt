@@ -19,10 +19,6 @@ fun saveKDary(
     kdary: KDary,
     fileName: String,
 ) {
-    check(kdary.array().size.toSizeType() != 0uL) {
-        "You can't save empty array"
-    }
-
     val file = fileName.toPath()
     getFileSystem().write(file) {
         kdary.array().forEach { unit ->

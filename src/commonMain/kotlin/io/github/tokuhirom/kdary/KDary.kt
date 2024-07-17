@@ -16,6 +16,10 @@ class KDary {
     private val array: Array<DoubleArrayUnit>
 
     internal constructor(array: Array<DoubleArrayUnit>) {
+        check(array.isNotEmpty()) {
+            "You can't create a double array with an empty array"
+        }
+
         this.array = array
     }
 
