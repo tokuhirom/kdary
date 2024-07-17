@@ -67,7 +67,7 @@ internal class DoubleArrayBuilder(
         units[0].setOffset(1u)
         units[0].setLabel(0u)
 
-        if (dawg.child(dawg.root()) != 0u) {
+        if (dawg.child(dawg.root()) != 0) {
             buildFromDawg(dawg, dawg.root(), 0, table)
         }
 
@@ -83,13 +83,13 @@ internal class DoubleArrayBuilder(
         table: Array<IdType>,
     ) {
         var dawgChildId = dawg.child(dawgId)
-        if (dawg.isIntersection(dawgChildId)) {
-            val intersectionId: IdType = dawg.intersectionId(dawgChildId)
+        if (dawg.isIntersection(dawgChildId.toUInt())) {
+            val intersectionId: IdType = dawg.intersectionId(dawgChildId.toUInt())
             var offset: IdType = table[intersectionId.toInt()]
             if (offset != 0u) {
                 offset = offset xor dicId.toUInt()
                 if ((offset and UPPER_MASK.toUInt()) == 0u || (offset and LOWER_MASK.toUInt()) == 0u) {
-                    if (dawg.isLeaf(dawgChildId)) {
+                    if (dawg.isLeaf(dawgChildId.toUInt())) {
                         units[dicId].setHasLeaf(true)
                     }
                     units[dicId].setOffset(offset)
@@ -99,19 +99,19 @@ internal class DoubleArrayBuilder(
         }
 
         val offset: IdType = arrangeFromDawg(dawg, dawgId, dicId)
-        if (dawg.isIntersection(dawgChildId)) {
-            table[dawg.intersectionId(dawgChildId).toInt()] = offset
+        if (dawg.isIntersection(dawgChildId.toUInt())) {
+            table[dawg.intersectionId(dawgChildId.toUInt()).toInt()] = offset
         }
 
         do {
-            val childLabel: UByte = dawg.label(dawgChildId)
+            val childLabel: UByte = dawg.label(dawgChildId.toUInt())
             val dicChildId: IdType = offset xor childLabel.toIdType()
             if (childLabel != 0.toUByte()) {
                 // TODO dawgChildId を Int に?
-                buildFromDawg(dawg, dawgChildId.toInt(), dicChildId.toInt(), table)
+                buildFromDawg(dawg, dawgChildId, dicChildId.toInt(), table)
             }
-            dawgChildId = dawg.sibling(dawgChildId)
-        } while (dawgChildId != 0u)
+            dawgChildId = dawg.sibling(dawgChildId.toUInt()).toInt()
+        } while (dawgChildId != 0)
     }
 
     private fun arrangeFromDawg(
@@ -121,7 +121,7 @@ internal class DoubleArrayBuilder(
     ): UInt {
         labels.resize(0, 0.toUByte())
 
-        var dawgChildId: IdType = dawg.child(dawgId)
+        var dawgChildId: IdType = dawg.child(dawgId).toUInt()
         while (dawgChildId != 0u) {
             labels.add(dawg.label(dawgChildId))
             dawgChildId = dawg.sibling(dawgChildId)
@@ -130,7 +130,7 @@ internal class DoubleArrayBuilder(
         val offset: IdType = findValidOffset(dicId)
         units[dicId].setOffset(dicId.toUInt() xor offset)
 
-        dawgChildId = dawg.child(dawgId)
+        dawgChildId = dawg.child(dawgId).toUInt()
         for (i in 0 until labels.size) {
             val dicChildId: IdType = offset xor labels[i].toIdType()
             reserveId(dicChildId.toInt())

@@ -60,7 +60,7 @@ class DawgBuilderTest {
         val builder = DawgBuilder()
         builder.insert("key".encodeToByteArray(), 1)
         val dawg = builder.finish()
-        assertEquals(4u, dawg.child(0))
+        assertEquals(4, dawg.child(0))
     }
 
     @Test
@@ -85,7 +85,7 @@ class DawgBuilderTest {
         builder.insert("key".encodeToByteArray(), 1)
         val dawg = builder.finish()
         val leafNodeId = dawg.child(0)
-        assertFalse(dawg.isLeaf(leafNodeId))
+        assertFalse(dawg.isLeaf(leafNodeId.toUInt()))
     }
 
     @Test
@@ -94,11 +94,11 @@ class DawgBuilderTest {
         builder.insert("key".encodeToByteArray(), 1)
         val dawg = builder.finish()
         val firstNodeId = dawg.child(0)
-        val secondNodeId = dawg.child(firstNodeId.toInt())
-        val thirdNodeId = dawg.child(secondNodeId.toInt())
-        assertEquals(107.toUByte(), dawg.label(firstNodeId))
-        assertEquals(101.toUByte(), dawg.label(secondNodeId))
-        assertEquals(121.toUByte(), dawg.label(thirdNodeId))
+        val secondNodeId = dawg.child(firstNodeId)
+        val thirdNodeId = dawg.child(secondNodeId)
+        assertEquals(107.toUByte(), dawg.label(firstNodeId.toUInt()))
+        assertEquals(101.toUByte(), dawg.label(secondNodeId.toUInt()))
+        assertEquals(121.toUByte(), dawg.label(thirdNodeId.toUInt()))
     }
 
     @Test

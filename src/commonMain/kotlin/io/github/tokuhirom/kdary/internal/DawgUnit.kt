@@ -8,6 +8,7 @@ internal data class DawgUnit(
 ) {
     fun unit(): IdType = unit
 
+    // TODO 返り値 Int であるべきっぽい
     fun child(): IdType = unit shr 2
 
     fun hasSibling(): Boolean = (unit and 1u) == 1u
