@@ -10,11 +10,11 @@ import io.github.tokuhirom.kdary.saveKDary
 import java.io.File
 
 class MkkdaryApplication : CliktCommand() {
-    val sort by option(help = "Sort the keys").boolean().default(false)
-    val tab by option(help = "Use tab as a separator").boolean().default(false)
+    private val sort by option(help = "Sort the keys").boolean().default(false)
+    private val tab by option(help = "Use tab as a separator").boolean().default(false)
 
-    val input by argument()
-    val output by argument()
+    private val input by argument()
+    private val output by argument()
 
     override fun run() {
         val rows = sortIfRequired(loadFile(input))
