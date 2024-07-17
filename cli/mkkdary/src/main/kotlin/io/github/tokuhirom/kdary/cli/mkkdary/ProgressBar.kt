@@ -1,4 +1,4 @@
-package io.github.tokuhirom.kdary.cli.mkdary
+package io.github.tokuhirom.kdary.cli.mkkdary
 
 class ProgressBar {
     private var prevPercentage: Int = 0

@@ -1,4 +1,4 @@
-package io.github.tokuhirom.kdary.cli.mkdary
+package io.github.tokuhirom.kdary.cli.mkkdary
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
@@ -9,7 +9,7 @@ import io.github.tokuhirom.kdary.KDary
 import io.github.tokuhirom.kdary.saveKDary
 import java.io.File
 
-class MkdaryApplication : CliktCommand() {
+class MkkdaryApplication : CliktCommand() {
     val sort by option(help = "Sort the keys").boolean().default(false)
     val tab by option(help = "Use tab as a separator").boolean().default(false)
 
@@ -62,5 +62,5 @@ class MkdaryApplication : CliktCommand() {
 }
 
 fun main(args: Array<String>) {
-    MkdaryApplication().main(args)
+    MkkdaryApplication().main(args)
 }

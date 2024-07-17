@@ -10,5 +10,5 @@ dependencies {
 }
 
 application {
-    mainClass.set("io.github.tokuhirom.kdary.cli.mkdary.MainKt")
+    mainClass.set("io.github.tokuhirom.kdary.cli.mkkdary.MainKt")
 }
