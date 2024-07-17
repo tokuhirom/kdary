@@ -68,7 +68,7 @@ internal class DoubleArrayBuilder(
         units[0].setLabel(0u)
 
         if (dawg.child(dawg.root()) != 0u) {
-            buildFromDawg(dawg, dawg.root(), 0u, table)
+            buildFromDawg(dawg, dawg.root(), 0, table)
         }
 
         fixAllBlocks()
@@ -79,7 +79,7 @@ internal class DoubleArrayBuilder(
     private fun buildFromDawg(
         dawg: Dawg,
         dawgId: IdType,
-        dicId: IdType,
+        dicId: Int,
         table: Array<IdType>,
     ) {
         var dawgChildId = dawg.child(dawgId)
@@ -87,12 +87,12 @@ internal class DoubleArrayBuilder(
             val intersectionId: IdType = dawg.intersectionId(dawgChildId)
             var offset: IdType = table[intersectionId.toInt()]
             if (offset != 0u) {
-                offset = offset xor dicId
+                offset = offset xor dicId.toUInt()
                 if ((offset and UPPER_MASK.toUInt()) == 0u || (offset and LOWER_MASK.toUInt()) == 0u) {
                     if (dawg.isLeaf(dawgChildId)) {
-                        units[dicId.toInt()].setHasLeaf(true)
+                        units[dicId].setHasLeaf(true)
                     }
-                    units[dicId.toInt()].setOffset(offset)
+                    units[dicId].setOffset(offset)
                     return
                 }
             }
@@ -107,7 +107,7 @@ internal class DoubleArrayBuilder(
             val childLabel: UByte = dawg.label(dawgChildId)
             val dicChildId: IdType = offset xor childLabel.toIdType()
             if (childLabel != 0.toUByte()) {
-                buildFromDawg(dawg, dawgChildId, dicChildId, table)
+                buildFromDawg(dawg, dawgChildId, dicChildId.toInt(), table)
             }
             dawgChildId = dawg.sibling(dawgChildId)
         } while (dawgChildId != 0u)
@@ -116,7 +116,7 @@ internal class DoubleArrayBuilder(
     private fun arrangeFromDawg(
         dawg: Dawg,
         dawgId: IdType,
-        dicId: IdType,
+        dicId: Int,
     ): UInt {
         labels.resize(0uL, 0.toUByte())
 
@@ -127,7 +127,7 @@ internal class DoubleArrayBuilder(
         }
 
         val offset: IdType = findValidOffset(dicId)
-        units[dicId.toInt()].setOffset(dicId xor offset)
+        units[dicId].setOffset(dicId.toUInt() xor offset)
 
         dawgChildId = dawg.child(dawgId)
         for (i in 0 until labels.size) {
@@ -135,7 +135,7 @@ internal class DoubleArrayBuilder(
             reserveId(dicChildId.toInt())
 
             if (dawg.isLeaf(dawgChildId)) {
-                units[dicId.toInt()].setHasLeaf(true)
+                units[dicId].setHasLeaf(true)
                 units[dicChildId.toInt()].setValue(dawg.value(dawgChildId))
             } else {
                 units[dicChildId.toInt()].setLabel(labels[i])
@@ -233,7 +233,7 @@ internal class DoubleArrayBuilder(
             }
         }
 
-        val offset: IdType = findValidOffset(dicId)
+        val offset: IdType = findValidOffset(dicId.toInt())
         units[dicId.toInt()].setOffset(dicId xor offset)
 
         for (i in 0 until labels.size) {
@@ -251,9 +251,9 @@ internal class DoubleArrayBuilder(
         return offset
     }
 
-    private fun findValidOffset(id: IdType): IdType {
+    private fun findValidOffset(id: Int): IdType {
         if (extrasHead >= units.size.toSizeType().toIdType()) {
-            return units.size.toSizeType().toIdType() or (id and LOWER_MASK.toIdType())
+            return units.size.toSizeType().toIdType() or (id.toUInt() and LOWER_MASK.toIdType())
         }
 
         var unfixedId = extrasHead
@@ -265,18 +265,18 @@ internal class DoubleArrayBuilder(
             unfixedId = extras(unfixedId.toInt()).next
         } while (unfixedId != extrasHead)
 
-        return units.size.toSizeType().toUInt() or (id and LOWER_MASK.toUInt())
+        return units.size.toSizeType().toUInt() or (id.toUInt() and LOWER_MASK.toUInt())
     }
 
     private fun isValidOffset(
-        id: IdType,
+        id: Int,
         offset: IdType,
     ): Boolean {
         if (extras(offset.toInt()).isUsed) {
             return false
         }
 
-        val relOffset = id xor offset
+        val relOffset = id.toUInt() xor offset
         if ((relOffset and LOWER_MASK.toUInt()) != 0u && (relOffset and UPPER_MASK.toUInt()) != 0u) {
             return false
         }
