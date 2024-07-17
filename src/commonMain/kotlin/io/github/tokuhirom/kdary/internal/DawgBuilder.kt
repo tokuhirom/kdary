@@ -150,11 +150,10 @@ internal class DawgBuilder {
         table.clear()
         table.resize(tableSize, 0u)
 
-        for (i in 1uL until units.size.toSizeType()) {
-            val id = i.toUInt()
-            if (labels[id.toInt()] == 0.toUByte() || units[id.toInt()].isState()) {
-                val (hashId, _) = findUnit(id)
-                table[hashId.toInt()] = id
+        for (id in 1 until units.size) {
+            if (labels[id] == 0.toUByte() || units[id].isState()) {
+                val (hashId, _) = findUnit(id.toUInt())
+                table[hashId.toInt()] = id.toUInt()
             }
         }
     }
