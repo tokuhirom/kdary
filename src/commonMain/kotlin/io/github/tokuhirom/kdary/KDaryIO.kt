@@ -21,7 +21,7 @@ fun saveKDary(
 ) {
     val file = fileName.toPath()
     getFileSystem().write(file) {
-        kdary.array().forEach { unit ->
+        kdary.array.forEach { unit ->
             writeUIntLe(this, unit.unit)
         }
     }

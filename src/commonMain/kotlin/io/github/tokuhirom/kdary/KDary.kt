@@ -13,7 +13,7 @@ import io.github.tokuhirom.kdary.result.ExactMatchSearchResult
 typealias ProgressCallback = (ULong, ULong) -> Int
 
 class KDary {
-    private val array: Array<DoubleArrayUnit>
+    internal val array: Array<DoubleArrayUnit>
 
     internal constructor(array: Array<DoubleArrayUnit>) {
         check(array.isNotEmpty()) {
@@ -22,8 +22,6 @@ class KDary {
 
         this.array = array
     }
-
-    internal fun array(): Array<DoubleArrayUnit> = array
 
     /**
      * Returns the number of units.

@@ -105,10 +105,10 @@ class DoubleArrayTest {
 
         val dicCopy = loadKDary("test-darts.dic")
 
-        assertEquals(dic.array()?.size, dicCopy.array()?.size)
-        println(dic.array()?.size)
-        dic.array()?.forEachIndexed { index, doubleArrayUnit ->
-            assertEquals(dicCopy.array()?.get(index), doubleArrayUnit, "index=$index")
+        assertEquals(dic.array.size, dicCopy.array.size)
+        println(dic.array.size)
+        dic.array.forEachIndexed { index, doubleArrayUnit ->
+            assertEquals(dicCopy.array[index], doubleArrayUnit, "index=$index")
         }
         testDic(dicCopy, keys, values, invalidKeys)
     }
