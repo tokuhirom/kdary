@@ -10,7 +10,7 @@ internal data class Dawg(
 
     fun numIntersections(): Int = isIntersections.numOnes().toInt()
 
-    fun child(id: Int): Int = units[id].child().toInt()
+    fun child(id: Int): Int = units[id].child()
 
     fun root(): Int = 0
 

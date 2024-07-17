@@ -137,7 +137,7 @@ internal class DawgBuilder {
             while (i != 0) {
                 val next = nodes[i].sibling
                 freeNode(i)
-                i = next.toInt()
+                i = next
             }
 
             nodes[nodeStack[nodeStack.size - 1].toInt()].child = matchId
