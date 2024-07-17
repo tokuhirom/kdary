@@ -367,10 +367,10 @@ internal class DoubleArrayBuilder(
             }
         }
 
-        for (id: IdType in begin until end) {
-            if (!extras(id.toInt()).isFixed) {
-                reserveId(id.toInt())
-                units[id.toInt()].setLabel((id xor unusedOffset).toUByte())
+        for (id in begin.toInt() until end.toInt()) {
+            if (!extras(id).isFixed) {
+                reserveId(id)
+                units[id].setLabel((id.toIdType() xor unusedOffset).toUByte())
             }
         }
     }
