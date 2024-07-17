@@ -174,7 +174,7 @@ internal class DoubleArrayBuilder(
         depth: SizeType,
         dicId: IdType,
     ) {
-        val offset: IdType = arrangeFromKeyset(keyset, begin, end, depth, dicId)
+        val offset: IdType = arrangeFromKeyset(keyset, begin, end, depth, dicId.toInt())
 
         var i: SizeType = begin.toSizeType()
         while (i < end.toSizeType()) {
@@ -205,7 +205,7 @@ internal class DoubleArrayBuilder(
         begin: Int,
         end: Int,
         depth: SizeType,
-        dicId: IdType,
+        dicId: Int,
     ): IdType {
         labels.resize(0, 0.toUByte())
 
@@ -233,14 +233,14 @@ internal class DoubleArrayBuilder(
             }
         }
 
-        val offset: IdType = findValidOffset(dicId.toInt())
-        units[dicId.toInt()].setOffset(dicId xor offset)
+        val offset: IdType = findValidOffset(dicId)
+        units[dicId].setOffset(dicId.toUInt() xor offset)
 
         for (i in 0 until labels.size) {
             val dicChildId = (offset xor labels[i].toIdType()).toInt()
             reserveId(dicChildId)
             if (labels[i] == 0.toUByte()) {
-                units[dicId.toInt()].setHasLeaf(true)
+                units[dicId].setHasLeaf(true)
                 units[dicChildId].setValue(vaue)
             } else {
                 units[dicChildId].setLabel(labels[i])
