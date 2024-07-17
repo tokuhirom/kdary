@@ -44,9 +44,9 @@ internal class DoubleArrayBuilder(
 
     private fun buildDawg(keyset: Keyset): Dawg {
         val dawgBuilder = DawgBuilder()
-        for (i: SizeType in 0uL until keyset.numKeys().toSizeType()) {
-            dawgBuilder.insert(keyset.keys(i.toInt()), keyset.values(i.toInt()))
-            progressCallback?.invoke(i + 1uL, keyset.numKeys().toSizeType() + 1uL)
+        for (i in 0 until keyset.numKeys()) {
+            dawgBuilder.insert(keyset.keys(i), keyset.values(i))
+            progressCallback?.invoke(i + 1, keyset.numKeys() + 1)
         }
         return dawgBuilder.finish()
     }
@@ -210,17 +210,17 @@ internal class DoubleArrayBuilder(
         labels.resize(0uL, 0.toUByte())
 
         var vaue: ValueType = -1
-        for (i: SizeType in begin until end) {
-            val label: UByte = keyset.keys(i.toInt(), depth.toInt())
+        for (i in begin.toInt() until end.toInt()) {
+            val label: UByte = keyset.keys(i, depth.toInt())
             if (label == 0.toUByte()) {
-                if (keyset.values(i.toInt()) < 0) {
+                if (keyset.values(i) < 0) {
                     throw IllegalArgumentException("failed to build double-array: negative value")
                 }
 
                 if (vaue == -1) {
-                    vaue = keyset.values(i.toInt())
+                    vaue = keyset.values(i)
                 }
-                progressCallback?.invoke(i + 1uL, (keyset.numKeys() + 1).toSizeType())
+                progressCallback?.invoke(i + 1, keyset.numKeys() + 1)
             }
 
             if (labels.isEmpty()) {

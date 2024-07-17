@@ -15,7 +15,7 @@ import io.github.tokuhirom.kdary.result.TraverseResult
  * A callback function to check the progress of dictionary construction.
  * The first argument is the number of processed keys, and the second argument is the total number of keys.
  */
-typealias ProgressCallback = (ULong, ULong) -> Int
+typealias ProgressCallback = (Int, Int) -> Int
 
 class KDary {
     internal val array: Array<DoubleArrayUnit>
@@ -202,8 +202,8 @@ class KDary {
 
             val kdary = KDary(buf)
 
-            val numKeys = keys.size.toSizeType()
-            progressCallback?.invoke(numKeys + 1u, numKeys + 1u)
+            val numKeys = keys.size
+            progressCallback?.invoke(numKeys + 1, numKeys + 1)
 
             return kdary
         }
