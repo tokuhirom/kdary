@@ -281,8 +281,8 @@ internal class DoubleArrayBuilder(
             return false
         }
 
-        for (i: SizeType in 1uL until labels.size.toSizeType()) {
-            if (extras((offset xor labels[i.toInt()].toIdType()).toInt()).isFixed) {
+        for (i in 1 until labels.size) {
+            if (extras((offset xor labels[i].toIdType()).toInt()).isFixed) {
                 return false
             }
         }
