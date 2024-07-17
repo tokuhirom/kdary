@@ -62,7 +62,7 @@ internal class DoubleArrayBuilder(
                 0u
             }
 
-        reserveId(0u)
+        reserveId(0)
         extras(0).isUsed = true
         units[0].setOffset(1u)
         units[0].setLabel(0u)
@@ -132,7 +132,7 @@ internal class DoubleArrayBuilder(
         dawgChildId = dawg.child(dawgId)
         for (i in 0 until labels.size) {
             val dicChildId: IdType = offset xor labels[i].toIdType()
-            reserveId(dicChildId)
+            reserveId(dicChildId.toInt())
 
             if (dawg.isLeaf(dawgChildId)) {
                 units[dicId.toInt()].setHasLeaf(true)
@@ -153,7 +153,7 @@ internal class DoubleArrayBuilder(
             numUnits = numUnits shl 1
         }
 
-        reserveId(0u)
+        reserveId(0)
         extras(0).isUsed = true
         units[0].setOffset(1u)
         units[0].setLabel(0u)
@@ -237,13 +237,13 @@ internal class DoubleArrayBuilder(
         units[dicId.toInt()].setOffset(dicId xor offset)
 
         for (i in 0 until labels.size) {
-            val dicChildId: IdType = offset xor labels[i].toIdType()
+            val dicChildId = (offset xor labels[i].toIdType()).toInt()
             reserveId(dicChildId)
             if (labels[i] == 0.toUByte()) {
                 units[dicId.toInt()].setHasLeaf(true)
-                units[dicChildId.toInt()].setValue(vaue)
+                units[dicChildId].setValue(vaue)
             } else {
-                units[dicChildId.toInt()].setLabel(labels[i])
+                units[dicChildId].setLabel(labels[i])
             }
         }
         extras(offset.toInt()).isUsed = true
@@ -290,20 +290,20 @@ internal class DoubleArrayBuilder(
         return true
     }
 
-    private fun reserveId(id: IdType) {
-        if (id >= units.size.toSizeType().toUInt()) {
+    private fun reserveId(id: Int) {
+        if (id >= units.size) {
             expandUnits()
         }
 
-        if (id == extrasHead) {
-            extrasHead = extras(id.toInt()).next
-            if (extrasHead == id) {
+        if (id == extrasHead.toInt()) {
+            extrasHead = extras(id).next
+            if (extrasHead.toInt() == id) {
                 extrasHead = units.size.toSizeType().toUInt()
             }
         }
-        extras(extras(id.toInt()).prev.toInt()).next = extras(id.toInt()).next
-        extras(extras(id.toInt()).next.toInt()).prev = extras(id.toInt()).prev
-        extras(id.toInt()).isFixed = true
+        extras(extras(id).prev.toInt()).next = extras(id).next
+        extras(extras(id).next.toInt()).prev = extras(id).prev
+        extras(id).isFixed = true
     }
 
     private fun expandUnits() {
@@ -369,7 +369,7 @@ internal class DoubleArrayBuilder(
 
         for (id: IdType in begin until end) {
             if (!extras(id.toInt()).isFixed) {
-                reserveId(id)
+                reserveId(id.toInt())
                 units[id.toInt()].setLabel((id xor unusedOffset).toUByte())
             }
         }
