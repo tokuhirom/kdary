@@ -3,7 +3,6 @@ package io.github.tokuhirom.kdary
 import io.github.tokuhirom.kdary.internal.DoubleArrayBuilder
 import io.github.tokuhirom.kdary.internal.DoubleArrayUnit
 import io.github.tokuhirom.kdary.internal.Keyset
-import io.github.tokuhirom.kdary.internal.SizeType
 import io.github.tokuhirom.kdary.internal.toIdType
 import io.github.tokuhirom.kdary.internal.toSizeType
 import io.github.tokuhirom.kdary.result.CommonPrefixSearchResult
@@ -96,25 +95,25 @@ class KDary {
         maxNumResults: Int?,
         nodePosParam: Int = 0,
     ): List<CommonPrefixSearchResult> {
-        var nodePos: SizeType = nodePosParam.toSizeType()
+        var nodePos = nodePosParam
         val length = key.size
 
-        var unit: DoubleArrayUnit = array[nodePos.toInt()]
-        nodePos = nodePos xor unit.offset().toSizeType()
+        var unit: DoubleArrayUnit = array[nodePos]
+        nodePos = nodePos xor unit.offset().toInt()
 
         val results = mutableListOf<CommonPrefixSearchResult>()
 
         for (i in 0 until length) {
-            nodePos = nodePos xor key[i].toUByte().toSizeType()
-            unit = array[nodePos.toInt()]
+            nodePos = (nodePos.toSizeType() xor key[i].toUByte().toSizeType()).toInt()
+            unit = array[nodePos]
             if (unit.label() != (key[i].toUByte() and 0xFFU).toIdType()) {
                 return results
             }
 
-            nodePos = nodePos xor unit.offset().toSizeType()
+            nodePos = (nodePos.toSizeType() xor unit.offset().toSizeType()).toInt()
             if (unit.hasLeaf()) {
                 if (maxNumResults == null || results.size < maxNumResults) {
-                    val v = array[nodePos.toInt()].value()
+                    val v = array[nodePos].value()
                     results.add(CommonPrefixSearchResult(v, i + 1))
                 }
             }
