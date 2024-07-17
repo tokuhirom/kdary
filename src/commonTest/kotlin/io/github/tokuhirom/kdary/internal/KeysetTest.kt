@@ -12,7 +12,7 @@ class KeysetTest {
         val keyset = Keyset(keys, values)
 
         assertEquals(3, keyset.numKeys())
-        assertEquals("apple", keyset.keys(0u).decodeToString())
+        assertEquals("apple", keyset.keys(0).decodeToString())
         assertEquals('b'.code.toUByte(), keyset.keys(1u, 0u))
         assertTrue(keyset.hasValues())
         assertEquals(2, keyset.values(1u))

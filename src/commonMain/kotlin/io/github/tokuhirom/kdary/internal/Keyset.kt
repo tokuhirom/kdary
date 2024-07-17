@@ -6,7 +6,7 @@ internal class Keyset(
 ) {
     fun numKeys(): Int = keys.size
 
-    fun keys(id: SizeType): ByteArray = keys[id.toInt()]
+    fun keys(id: Int): ByteArray = keys[id]
 
     fun keys(
         keyId: SizeType,
