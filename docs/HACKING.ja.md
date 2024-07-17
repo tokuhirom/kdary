@@ -302,3 +302,6 @@ keyserver.ubuntu.com にキー登録しようとしたが、うまくいかな�
 `OSSRH_USERNAME` については https://central.sonatype.com/publishing/io.github.tokuhirom/users を参考にして
 `github_21084` のような user ID のようなのでこれを使ってみる。
 
+## 2024-07-17
+
+mkkdary, kdary という2つの CLI を実装。使い慣れている clikt を実装する。
