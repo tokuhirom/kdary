@@ -160,7 +160,7 @@ internal class DoubleArrayBuilder(
         units[0].setLabel(0u)
 
         if (keyset.numKeys() > 0L) {
-            buildFromKeyset(keyset, 0, keyset.numKeys(), 0u, 0u)
+            buildFromKeyset(keyset, 0, keyset.numKeys(), 0, 0u)
         }
 
         fixAllBlocks()
@@ -172,14 +172,14 @@ internal class DoubleArrayBuilder(
         keyset: Keyset,
         begin: Int,
         end: Int,
-        depth: SizeType,
+        depth: Int,
         dicId: IdType,
     ) {
         val offset = arrangeFromKeyset(keyset, begin, end, depth, dicId.toInt())
 
         var i = begin
         while (i < end) {
-            if (keyset.keys(i, depth.toInt()) != 0.toUByte()) {
+            if (keyset.keys(i, depth) != 0.toUByte()) {
                 break
             }
             i++
@@ -189,30 +189,30 @@ internal class DoubleArrayBuilder(
         }
 
         var lastBegin = i
-        var lastLabel: UByte = keyset.keys(i, depth.toInt())
+        var lastLabel: UByte = keyset.keys(i, depth)
         while (++i < end) {
-            val label: UByte = keyset.keys(i, depth.toInt())
+            val label: UByte = keyset.keys(i, depth)
             if (label != lastLabel) {
-                buildFromKeyset(keyset, lastBegin, i, depth + 1uL, offset.toUInt() xor lastLabel.toIdType())
+                buildFromKeyset(keyset, lastBegin, i, depth + 1, offset.toUInt() xor lastLabel.toIdType())
                 lastBegin = i
-                lastLabel = keyset.keys(i, depth.toInt())
+                lastLabel = keyset.keys(i, depth)
             }
         }
-        buildFromKeyset(keyset, lastBegin, end, depth + 1uL, offset.toUInt() xor lastLabel.toIdType())
+        buildFromKeyset(keyset, lastBegin, end, depth + 1, offset.toUInt() xor lastLabel.toIdType())
     }
 
     private fun arrangeFromKeyset(
         keyset: Keyset,
         begin: Int,
         end: Int,
-        depth: SizeType,
+        depth: Int,
         dicId: Int,
     ): Int {
         labels.resize(0, 0.toUByte())
 
         var vaue: ValueType = -1
         for (i in begin until end) {
-            val label: UByte = keyset.keys(i, depth.toInt())
+            val label: UByte = keyset.keys(i, depth)
             if (label == 0.toUByte()) {
                 if (keyset.values(i) < 0) {
                     throw IllegalArgumentException("failed to build double-array: negative value")
@@ -263,10 +263,10 @@ internal class DoubleArrayBuilder(
             if (isValidOffset(id, offset)) {
                 return offset.toInt()
             }
-            unfixedId = extras(unfixedId).next.toInt()
+            unfixedId = extras(unfixedId).next
         } while (unfixedId != extrasHead)
 
-        return (units.size.toSizeType().toUInt() or (id.toUInt() and LOWER_MASK.toUInt())).toInt()
+        return (units.size.toUInt() or (id.toUInt() and LOWER_MASK.toUInt())).toInt()
     }
 
     private fun isValidOffset(
@@ -302,8 +302,8 @@ internal class DoubleArrayBuilder(
                 extrasHead = units.size
             }
         }
-        extras(extras(id).prev.toInt()).next = extras(id).next
-        extras(extras(id).next.toInt()).prev = extras(id).prev
+        extras(extras(id).prev).next = extras(id).next
+        extras(extras(id).next).prev = extras(id).prev
         extras(id).isFixed = true
     }
 
