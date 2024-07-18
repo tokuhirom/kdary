@@ -67,14 +67,14 @@ fun loadKDary(fileName: String): KDary {
 
         if (units[0].label() != 0u ||
             units[0].hasLeaf() ||
-            units[0].offset() == 0u ||
-            units[0].offset() >= 512u
+            units[0].offset() == 0 ||
+            units[0].offset() >= 512
         ) {
             throw DoubleArrayIOException("Broken kdary header: $fileName")
         }
 
         for (i in 1 until 256) {
-            if (units[i].label() <= 0xFF.toUInt() && units[i].offset() >= numUnits.toUInt()) {
+            if (units[i].label() <= 0xFF.toUInt() && units[i].offset().toUInt() >= numUnits.toUInt()) {
                 throw DoubleArrayIOException("Invalid file format(bad unit): $fileName")
             }
         }

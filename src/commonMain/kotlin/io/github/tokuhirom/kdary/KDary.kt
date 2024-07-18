@@ -62,7 +62,7 @@ class KDary {
         var nodePos = nodePosParam
         val length = key.size
         for (i in 0 until length) {
-            nodePos = (nodePos.toSizeType() xor ((unit.offset() xor key[i].toUInt()).toULong())).toInt()
+            nodePos = (nodePos.toSizeType() xor ((unit.offset().toUInt() xor key[i].toUInt()).toULong())).toInt()
             unit = array[nodePos]
             if (unit.label() != key[i].toUInt()) {
                 return ExactMatchSearchResult.NotFound
@@ -72,7 +72,7 @@ class KDary {
         if (!unit.hasLeaf()) {
             return ExactMatchSearchResult.NotFound
         }
-        unit = array[nodePos xor unit.offset().toInt()]
+        unit = array[nodePos xor unit.offset()]
         return ExactMatchSearchResult.Found(unit.value(), length)
     }
 
@@ -157,7 +157,7 @@ class KDary {
         var keyPos = keyPosParam
 
         while (keyPos < length) {
-            id = (id.toUInt() xor (unit.offset() xor key[keyPos].toUByte().toUInt())).toInt()
+            id = (id.toUInt() xor (unit.offset().toUInt() xor key[keyPos].toUByte().toUInt())).toInt()
             unit = array[id]
             if (unit.label() != key[keyPos].toUByte().toIdType()) {
                 return TraverseResult(-2, nodePos, keyPos)
@@ -170,7 +170,7 @@ class KDary {
         return if (!unit.hasLeaf()) {
             TraverseResult(-1, nodePos, keyPos)
         } else {
-            unit = array[(id.toUInt() xor unit.offset()).toInt()]
+            unit = array[(id.toUInt() xor unit.offset().toUInt()).toInt()]
             TraverseResult(unit.value(), nodePos, keyPos)
         }
     }
