@@ -26,7 +26,7 @@ class MkkdaryApplication : CliktCommand() {
             KDary.build(
                 keys,
                 values,
-            ) { current, _ ->
+            ) { current ->
                 progressBar.update(current)
             }
 
