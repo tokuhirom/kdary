@@ -339,7 +339,7 @@ internal class DoubleArrayBuilder(
         extras(srcNumUnits).prev = extras(extrasHead).prev
         extras(destNumUnits - 1).next = extrasHead
 
-        extras(extras(extrasHead).prev.toInt()).next = srcNumUnits
+        extras(extras(extrasHead).prev).next = srcNumUnits
         extras(extrasHead).prev = destNumUnits - 1
     }
 
