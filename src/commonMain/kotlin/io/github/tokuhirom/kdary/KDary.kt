@@ -2,13 +2,12 @@ package io.github.tokuhirom.kdary
 
 import io.github.tokuhirom.kdary.internal.DoubleArrayBuilder
 import io.github.tokuhirom.kdary.internal.DoubleArrayUnit
-import io.github.tokuhirom.kdary.internal.IdType
 import io.github.tokuhirom.kdary.internal.Keyset
-import io.github.tokuhirom.kdary.internal.SizeType
 import io.github.tokuhirom.kdary.internal.toIdType
 import io.github.tokuhirom.kdary.internal.toSizeType
 import io.github.tokuhirom.kdary.result.CommonPrefixSearchResult
 import io.github.tokuhirom.kdary.result.ExactMatchSearchResult
+import io.github.tokuhirom.kdary.result.ExactMatchSearchResult.NotFound.length
 import io.github.tokuhirom.kdary.result.TraverseResult
 
 /**
@@ -60,12 +59,12 @@ class KDary {
         nodePosParam: Int = 0,
     ): ExactMatchSearchResult {
         var unit = array[nodePosParam]
-        var nodePos = nodePosParam.toSizeType()
-        val length = key.size.toSizeType()
-        for (i in 0uL until length) {
-            nodePos = nodePos xor ((unit.offset() xor key[i.toInt()].toUInt()).toULong())
-            unit = array[nodePos.toInt()]
-            if (unit.label() != key[i.toInt()].toUInt()) {
+        var nodePos = nodePosParam
+        val length = key.size
+        for (i in 0 until length) {
+            nodePos = (nodePos.toSizeType() xor ((unit.offset().toUInt() xor key[i].toUInt()).toULong())).toInt()
+            unit = array[nodePos]
+            if (unit.label() != key[i].toUInt()) {
                 return ExactMatchSearchResult.NotFound
             }
         }
@@ -73,7 +72,7 @@ class KDary {
         if (!unit.hasLeaf()) {
             return ExactMatchSearchResult.NotFound
         }
-        unit = array[nodePos.toInt() xor unit.offset().toInt()]
+        unit = array[nodePos xor unit.offset()]
         return ExactMatchSearchResult.Found(unit.value(), length)
     }
 
@@ -97,25 +96,25 @@ class KDary {
         maxNumResults: Int?,
         nodePosParam: Int = 0,
     ): List<CommonPrefixSearchResult> {
-        var nodePos: SizeType = nodePosParam.toSizeType()
+        var nodePos = nodePosParam
         val length = key.size
 
-        var unit: DoubleArrayUnit = array[nodePos.toInt()]
-        nodePos = nodePos xor unit.offset().toSizeType()
+        var unit: DoubleArrayUnit = array[nodePos]
+        nodePos = nodePos xor unit.offset().toInt()
 
         val results = mutableListOf<CommonPrefixSearchResult>()
 
         for (i in 0 until length) {
-            nodePos = nodePos xor key[i].toUByte().toSizeType()
-            unit = array[nodePos.toInt()]
+            nodePos = (nodePos.toSizeType() xor key[i].toUByte().toSizeType()).toInt()
+            unit = array[nodePos]
             if (unit.label() != (key[i].toUByte() and 0xFFU).toIdType()) {
                 return results
             }
 
-            nodePos = nodePos xor unit.offset().toSizeType()
+            nodePos = (nodePos.toSizeType() xor unit.offset().toSizeType()).toInt()
             if (unit.hasLeaf()) {
                 if (maxNumResults == null || results.size < maxNumResults) {
-                    val v = array[nodePos.toInt()].value()
+                    val v = array[nodePos].value()
                     results.add(CommonPrefixSearchResult(v, i + 1))
                 }
             }
@@ -149,21 +148,21 @@ class KDary {
         nodePosParam: Int,
         keyPosParam: Int,
     ): TraverseResult {
-        var id: IdType = nodePosParam.toIdType()
-        val length = key.size.toSizeType()
+        var id = nodePosParam
+        val length = key.size
 
-        var unit = array[id.toInt()]
+        var unit = array[id]
 
-        var nodePos = nodePosParam.toSizeType()
-        var keyPos = keyPosParam.toSizeType()
+        var nodePos = nodePosParam
+        var keyPos = keyPosParam
 
         while (keyPos < length) {
-            id = id xor (unit.offset() xor key[keyPos.toInt()].toUByte().toUInt())
-            unit = array[id.toInt()]
-            if (unit.label() != key[keyPos.toInt()].toUByte().toIdType()) {
+            id = (id.toUInt() xor (unit.offset().toUInt() xor key[keyPos].toUByte().toUInt())).toInt()
+            unit = array[id]
+            if (unit.label() != key[keyPos].toUByte().toIdType()) {
                 return TraverseResult(-2, nodePos, keyPos)
             }
-            nodePos = id.toSizeType()
+            nodePos = id
 
             keyPos++
         }
@@ -171,7 +170,7 @@ class KDary {
         return if (!unit.hasLeaf()) {
             TraverseResult(-1, nodePos, keyPos)
         } else {
-            unit = array[(id xor unit.offset()).toInt()]
+            unit = array[(id.toUInt() xor unit.offset().toUInt()).toInt()]
             TraverseResult(unit.value(), nodePos, keyPos)
         }
     }

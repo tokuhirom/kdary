@@ -10,24 +10,24 @@ class BitVectorTest {
     fun testSetAndGet() {
         val bitVector = BitVectorBuilder()
         bitVector.append()
-        bitVector.set(0u, true)
-        assertTrue(bitVector[0u])
-        bitVector.set(0u, false)
-        assertFalse(bitVector[0u])
+        bitVector.set(0, true)
+        assertTrue(bitVector[0])
+        bitVector.set(0, false)
+        assertFalse(bitVector[0])
     }
 
     @Test
     fun testRank() {
         val bitVectorBuilder = BitVectorBuilder()
-        for (i in 0u until 10u) {
+        for (i in 0 until 10) {
             bitVectorBuilder.append()
-            bitVectorBuilder.set(i.toSizeType(), i % 2u == 0u)
+            bitVectorBuilder.set(i, i % 2 == 0)
         }
         val bitVector = bitVectorBuilder.build()
 //        assertEquals(listOf(true, false, true, false, true, false, true, false, true, false), bitVector.toList())
-        assertEquals(1u, bitVector.rank(1u))
-        assertEquals(2u, bitVector.rank(3u))
-        assertEquals(5u, bitVector.rank(9u))
+        assertEquals(1, bitVector.rank(1))
+        assertEquals(2, bitVector.rank(3))
+        assertEquals(5, bitVector.rank(9))
     }
 
     @Test
@@ -36,46 +36,46 @@ class BitVectorTest {
         for (i in 0u until 4u) {
             bitVectorBuilder.append()
         }
-        bitVectorBuilder.set(0u, false)
-        bitVectorBuilder.set(1u, true)
-        bitVectorBuilder.set(2u, false)
-        bitVectorBuilder.set(3u, false)
+        bitVectorBuilder.set(0, false)
+        bitVectorBuilder.set(1, true)
+        bitVectorBuilder.set(2, false)
+        bitVectorBuilder.set(3, false)
         val bitVector = bitVectorBuilder.build()
 
         assertEquals(
             listOf(false, true, false, false),
-            (0 until 4).map { bitVector[it.toUInt()] },
+            (0 until 4).map { bitVector[it] },
         )
         assertEquals(
-            listOf(0u, 1u, 1u, 1u),
-            (0 until 4).map { bitVector.rank(it.toSizeType()) },
+            listOf(0, 1, 1, 1),
+            (0 until 4).map { bitVector.rank(it) },
         )
     }
 
     @Test
     fun testNumOnesAndSize() {
         val bitVectorBuilder = BitVectorBuilder()
-        for (i in 0u until 10u) {
+        for (i in 0 until 10) {
             bitVectorBuilder.append()
-            bitVectorBuilder.set(i.toSizeType(), i % 2u == 0u)
+            bitVectorBuilder.set(i, i % 2 == 0)
         }
         val bitVector = bitVectorBuilder.build()
-        assertEquals(5u, bitVector.numOnes())
+        assertEquals(5, bitVector.numOnes())
     }
 
     @Test
     fun testClear() {
         val bitVectorBuilder = BitVectorBuilder()
-        for (i in 0u until 10u) {
+        for (i in 0 until 10) {
             bitVectorBuilder.append()
-            bitVectorBuilder.set(i.toSizeType(), i % 2u == 0u)
+            bitVectorBuilder.set(i, i % 2 == 0)
         }
         val bitVector = bitVectorBuilder.build()
-        assertEquals(5u, bitVector.numOnes())
+        assertEquals(5, bitVector.numOnes())
     }
 
     @Test
     fun testPopCount() {
-        assertEquals(5u, BitVector.Companion.popCount(341u))
+        assertEquals(5, BitVector.Companion.popCount(341u))
     }
 }

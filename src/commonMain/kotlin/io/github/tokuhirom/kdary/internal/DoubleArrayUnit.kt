@@ -36,9 +36,9 @@ internal data class DoubleArrayUnit(
      *
      * @return The offset to the derived unit.
      */
-    fun offset(): IdType {
+    fun offset(): Int {
         val shiftedUnit = (this.unit shr 10).toInt()
         val shiftedMask = ((this.unit and (1u shl 9)) shr 6).toInt()
-        return (shiftedUnit shl shiftedMask).toUInt()
+        return shiftedUnit shl shiftedMask
     }
 }

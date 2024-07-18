@@ -1,17 +1,19 @@
 package io.github.tokuhirom.kdary.internal
 
 internal class DawgBuilder {
-    internal val nodes = mutableListOf<DawgNode>()
-    internal val units = mutableListOf<DawgUnit>()
-    internal val labels = mutableListOf<UByte>()
+    private val nodes = mutableListOf<DawgNode>()
+    private val units = mutableListOf<DawgUnit>()
+    private val labels = mutableListOf<UByte>()
     private val isIntersectionsBuilder = BitVectorBuilder()
     private val table = mutableListOf<IdType>()
-    private val nodeStack = mutableListOf<IdType>()
-    private val recycleBin = mutableListOf<IdType>()
+    private val nodeStack = mutableListOf<Int>()
+    private val recycleBin = mutableListOf<Int>()
+
+    // TODO Int
     private var numStates: SizeType = 0u
 
     init {
-        table.resize(INITIAL_TABLE_SIZE.toSizeType(), 0u)
+        table.resize(INITIAL_TABLE_SIZE, 0u)
         check(recycleBin.isEmpty())
 
         nodes.add(DawgNode())
@@ -19,11 +21,11 @@ internal class DawgBuilder {
         appendUnit()
         numStates = 1u
         nodes[0].label = 0xFF.toUByte()
-        nodeStack.add(0u)
+        nodeStack.add(0)
     }
 
     fun finish(): Dawg {
-        flush(0u)
+        flush(0)
 
         units[0] = DawgUnit(nodes[0].unit())
         labels[0] = nodes[0].label
@@ -35,7 +37,7 @@ internal class DawgBuilder {
 
         val isIntersections = isIntersectionsBuilder.build()
 
-        return Dawg(units, labels, isIntersections, numStates)
+        return Dawg(units, labels, isIntersections)
     }
 
     fun insert(
@@ -49,12 +51,12 @@ internal class DawgBuilder {
             throw IllegalArgumentException("failed to insert key: zero-length key")
         }
 
-        var id = 0u
+        var id = 0
         var keyPos = 0
 
         while (keyPos <= length) {
-            val childId = nodes[id.toInt()].child
-            if (childId == 0u) {
+            val childId = nodes[id].child.toInt()
+            if (childId == 0) {
                 break
             }
 
@@ -63,11 +65,11 @@ internal class DawgBuilder {
                 throw IllegalArgumentException("failed to insert key: invalid null character")
             }
 
-            val unitLabel = nodes[childId.toInt()].label
+            val unitLabel = nodes[childId].label
             if (keyLabel < unitLabel) {
                 throw IllegalArgumentException("failed to insert key: wrong key order")
             } else if (keyLabel > unitLabel) {
-                nodes[childId.toInt()].hasSibling = true
+                nodes[childId].hasSibling = true
                 flush(childId)
                 break
             }
@@ -83,21 +85,21 @@ internal class DawgBuilder {
             val keyLabel = if (keyPos < length) key[keyPos].toUByte() else 0u
             val childId = appendNode()
 
-            if (nodes[id.toInt()].child == 0u) {
-                nodes[childId.toInt()].isState = true
+            if (nodes[id].child == 0u) {
+                nodes[childId].isState = true
             }
-            nodes[childId.toInt()].sibling = nodes[id.toInt()].child
-            nodes[childId.toInt()].label = keyLabel
-            nodes[id.toInt()].child = childId
+            nodes[childId].sibling = nodes[id].child.toInt()
+            nodes[childId].label = keyLabel
+            nodes[id].child = childId.toUInt()
             nodeStack.add(childId)
 
             id = childId
             keyPos++
         }
-        nodes[id.toInt()].child = value.toIdType()
+        nodes[id].child = value.toIdType()
     }
 
-    private fun flush(id: IdType) {
+    private fun flush(id: Int) {
         while (nodeStack[nodeStack.size - 1] != id) {
             val nodeId = nodeStack[nodeStack.size - 1]
             nodeStack.removeLast()
@@ -106,73 +108,73 @@ internal class DawgBuilder {
                 expandTable()
             }
 
-            var numSiblings: IdType = 0u
-            var i = nodeId
-            while (i != 0u) {
+            var numSiblings = 0
+            var i: Int = nodeId
+            while (i != 0) {
                 numSiblings++
-                i = nodes[i.toInt()].sibling
+                i = nodes[i].sibling
             }
 
+            // TODO: matchId should be Int
             var (hashId, matchId) = findNode(nodeId)
             if (matchId != 0u) {
-                isIntersectionsBuilder.set(matchId.toSizeType(), true)
+                isIntersectionsBuilder.set(matchId.toInt(), true)
             } else {
-                var unitId: IdType = 0u
-                for (j in 0 until numSiblings.toInt()) {
+                var unitId = 0
+                for (j in 0 until numSiblings) {
                     unitId = appendUnit()
                 }
                 i = nodeId
-                while (i != 0u) {
-                    units[unitId.toInt()] = DawgUnit(nodes[i.toInt()].unit())
-                    labels[unitId.toInt()] = nodes[i.toInt()].label
+                while (i != 0) {
+                    units[unitId] = DawgUnit(nodes[i].unit())
+                    labels[unitId] = nodes[i].label
                     unitId--
-                    i = nodes[i.toInt()].sibling
+                    i = nodes[i].sibling
                 }
-                matchId = unitId + 1u
+                matchId = unitId.toUInt() + 1u
                 table[hashId.toInt()] = matchId
                 numStates++
             }
 
             i = nodeId
-            while (i != 0u) {
-                val next = nodes[i.toInt()].sibling
+            while (i != 0) {
+                val next = nodes[i].sibling
                 freeNode(i)
                 i = next
             }
 
-            nodes[nodeStack[nodeStack.size - 1].toInt()].child = matchId
+            nodes[nodeStack[nodeStack.size - 1]].child = matchId
         }
         nodeStack.removeLast()
     }
 
     private fun expandTable() {
-        val tableSize = table.size.toSizeType() shl 1
+        val tableSize = table.size shl 1
         table.clear()
         table.resize(tableSize, 0u)
 
-        for (i in 1uL until units.size.toSizeType()) {
-            val id = i.toUInt()
-            if (labels[id.toInt()] == 0.toUByte() || units[id.toInt()].isState()) {
+        for (id in 1 until units.size) {
+            if (labels[id] == 0.toUByte() || units[id].isState()) {
                 val (hashId, _) = findUnit(id)
-                table[hashId.toInt()] = id
+                table[hashId.toInt()] = id.toUInt()
             }
         }
     }
 
-    private fun findUnit(id: IdType): Pair<UInt, UInt> {
-        var hashId = hashUnit(id) % table.size.toSizeType().toUInt()
+    private fun findUnit(id: Int): Pair<UInt, UInt> {
+        var hashId = hashUnit(id) % table.size.toUInt()
         while (true) {
             val unitId = table[hashId.toInt()]
             if (unitId == 0u) {
                 break
             }
-            hashId = (hashId + 1u) % table.size.toSizeType().toUInt()
+            hashId = (hashId + 1u) % table.size.toUInt()
         }
         return hashId to 0u
     }
 
-    private fun findNode(nodeId: IdType): Pair<UInt, IdType> {
-        var hashId = hashNode(nodeId) % table.size.toSizeType().toUInt()
+    private fun findNode(nodeId: Int): Pair<UInt, IdType> {
+        var hashId = hashNode(nodeId) % table.size.toUInt()
         while (true) {
             val unitId = table[hashId.toInt()]
             if (unitId == 0u) {
@@ -183,50 +185,50 @@ internal class DawgBuilder {
                 return hashId to unitId
             }
 
-            hashId = (hashId + 1u) % table.size.toSizeType().toUInt()
+            hashId = (hashId + 1u) % table.size.toUInt()
         }
         return hashId to 0u
     }
 
     private fun areEqual(
-        nodeId: IdType,
+        nodeId: Int,
         unitId: IdType,
     ): Boolean {
-        var unitIdVar = unitId
-        var i = nodes[nodeId.toInt()].sibling
-        while (i != 0u) {
-            if (!units[unitIdVar.toInt()].hasSibling()) {
+        var unitIdVar: Int = unitId.toInt()
+        var i = nodes[nodeId].sibling
+        while (i != 0) {
+            if (!units[unitIdVar].hasSibling()) {
                 return false
             }
             unitIdVar++
-            i = nodes[i.toInt()].sibling
+            i = nodes[i].sibling
         }
-        if (units[unitIdVar.toInt()].hasSibling()) {
+        if (units[unitIdVar].hasSibling()) {
             return false
         }
 
         i = nodeId
-        while (i != 0u) {
-            if (nodes[i.toInt()].unit() != units[unitIdVar.toInt()].unit() ||
-                nodes[i.toInt()].label != labels[unitIdVar.toInt()]
+        while (i != 0) {
+            if (nodes[i].unit() != units[unitIdVar].unit() ||
+                nodes[i].label != labels[unitIdVar]
             ) {
                 return false
             }
             unitIdVar--
-            i = nodes[i.toInt()].sibling
+            i = nodes[i].sibling
         }
         return true
     }
 
-    private fun hashUnit(id: IdType): IdType {
+    private fun hashUnit(id: Int): IdType {
         var hashValue: IdType = 0u
         var currentId = id
-        while (currentId != 0u) {
-            val unit = units[currentId.toInt()].unit()
-            val label = labels[currentId.toInt()]
+        while (currentId != 0) {
+            val unit = units[currentId].unit()
+            val label = labels[currentId]
             hashValue = hashValue xor hash((label.toUInt() shl 24) xor unit)
 
-            if (!units[currentId.toInt()].hasSibling()) {
+            if (!units[currentId].hasSibling()) {
                 break
             }
             currentId++
@@ -234,39 +236,38 @@ internal class DawgBuilder {
         return hashValue
     }
 
-    private fun hashNode(id: IdType): IdType {
+    private fun hashNode(id: Int): IdType {
         var hashValue: IdType = 0u
-        var currentId = id
-        while (currentId != 0u) {
-            val unit = nodes[currentId.toInt()].unit()
-            val label = nodes[currentId.toInt()].label
+        var currentId: Int = id
+        while (currentId != 0) {
+            val unit = nodes[currentId].unit()
+            val label = nodes[currentId].label
             hashValue = hashValue xor hash((label.toUInt() shl 24) xor unit)
-            currentId = nodes[currentId.toInt()].sibling
+            currentId = nodes[currentId].sibling
         }
         return hashValue
     }
 
-    private fun appendNode(): IdType {
-        val id: IdType
+    private fun appendNode(): Int =
         if (recycleBin.isEmpty()) {
-            id = nodes.size.toSizeType().toUInt()
+            val id = nodes.size
             nodes.add(DawgNode())
+            id
         } else {
-            id = recycleBin[recycleBin.size - 1]
-            nodes[id.toInt()] = DawgNode()
+            val id = recycleBin[recycleBin.size - 1]
+            nodes[id] = DawgNode()
             recycleBin.removeLast()
+            id
         }
-        return id
-    }
 
-    private fun appendUnit(): IdType {
+    private fun appendUnit(): Int {
         isIntersectionsBuilder.append()
         units.add(DawgUnit(0u))
         labels.add(0.toUByte())
-        return (isIntersectionsBuilder.size() - 1uL).toIdType()
+        return isIntersectionsBuilder.size() - 1
     }
 
-    private fun freeNode(id: IdType) {
+    private fun freeNode(id: Int) {
         recycleBin.add(id)
     }
 

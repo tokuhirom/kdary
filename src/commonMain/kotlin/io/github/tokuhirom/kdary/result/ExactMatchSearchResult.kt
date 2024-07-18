@@ -1,6 +1,5 @@
 package io.github.tokuhirom.kdary.result
 
-import io.github.tokuhirom.kdary.internal.SizeType
 import io.github.tokuhirom.kdary.internal.ValueType
 
 /**
@@ -8,18 +7,18 @@ import io.github.tokuhirom.kdary.internal.ValueType
  */
 sealed class ExactMatchSearchResult(
     open val value: ValueType,
-    open val length: SizeType,
+    open val length: Int,
 ) {
     /**
      * Found.
      */
     data class Found(
         override val value: ValueType,
-        override val length: SizeType,
+        override val length: Int,
     ) : ExactMatchSearchResult(value, length)
 
     /**
      * Not found.
      */
-    data object NotFound : ExactMatchSearchResult(-1, 0u)
+    data object NotFound : ExactMatchSearchResult(-1, 0)
 }

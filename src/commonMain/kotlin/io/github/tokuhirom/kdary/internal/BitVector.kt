@@ -5,9 +5,9 @@ package io.github.tokuhirom.kdary.internal
  */
 internal data class BitVector(
     private val units: List<IdType>,
-    private val ranks: List<IdType>,
-    private val numOnes: SizeType = 0u,
-    private val size: SizeType = 0u,
+    private val ranks: List<Int>,
+    private val numOnes: Int,
+    private val size: Int,
 ) {
     /**
      * Returns the bit value at the specified index.
@@ -15,7 +15,7 @@ internal data class BitVector(
      * @param id the index of the bit.
      * @return the bit value at the specified index.
      */
-    operator fun get(id: UInt): Boolean = (units[(id / UNIT_SIZE).toInt()] shr (id % UNIT_SIZE).toInt() and 1u) == 1u
+    operator fun get(id: Int): Boolean = (units[id / UNIT_SIZE] shr (id % UNIT_SIZE) and 1u) == 1u
 
     /**
      * Returns the number of 1's up to the specified index.
@@ -23,12 +23,11 @@ internal data class BitVector(
      * @param id the index up to which to count the number of 1's.
      * @return the number of 1's up to the specified index.
      */
-    fun rank(id: SizeType): IdType {
+    fun rank(id: Int): Int {
         val unitId = id / UNIT_SIZE
-        val offset: SizeType = UNIT_SIZE - (id % UNIT_SIZE) - 1u
-        val mask: UInt = 0U.inv() shr offset.toInt()
-        return ranks[unitId.toInt()] +
-            popCount(units[unitId.toInt()] and mask)
+        val offset = UNIT_SIZE - (id % UNIT_SIZE) - 1
+        val mask: UInt = 0U.inv() shr offset
+        return ranks[unitId] + popCount(units[unitId] and mask)
     }
 
     /**
@@ -36,13 +35,13 @@ internal data class BitVector(
      *
      * @return the total number of 1's.
      */
-    fun numOnes(): SizeType = numOnes
+    fun numOnes(): Int = numOnes
 
     companion object {
         /**
          * Number of bits per unit.
          */
-        internal const val UNIT_SIZE = 32u
+        internal const val UNIT_SIZE = 32
 
         /**
          * Returns the population count (number of 1's) in the given unit.
@@ -50,14 +49,14 @@ internal data class BitVector(
          * @param unit the unit to count the number of 1's in.
          * @return the population count of the unit.
          */
-        internal fun popCount(unit: IdType): IdType {
+        internal fun popCount(unit: IdType): Int {
             var u = unit
             u = ((u and 0xAAAAAAAAu) shr 1) + (u and 0x55555555u)
             u = ((u and 0xCCCCCCCCu) shr 2) + (u and 0x33333333u)
             u = ((u shr 4) + u) and 0x0F0F0F0Fu
             u += u shr 8
             u += u shr 16
-            return u and 0xFFu
+            return (u and 0xFFu).toInt()
         }
     }
 }

@@ -1,17 +1,17 @@
 package io.github.tokuhirom.kdary.internal
 
 fun <T> MutableList<T>.resize(
-    tableSize: SizeType,
+    tableSize: Int,
     value: T,
 ) {
     when {
-        this.size > tableSize.toInt() -> {
-            while (this.size > tableSize.toInt()) {
+        this.size > tableSize -> {
+            while (this.size > tableSize) {
                 this.removeLast()
             }
         }
-        this.size < tableSize.toInt() -> {
-            this.addAll(List(tableSize.toInt() - this.size) { value })
+        this.size < tableSize -> {
+            this.addAll(List(tableSize - this.size) { value })
         }
     }
 }

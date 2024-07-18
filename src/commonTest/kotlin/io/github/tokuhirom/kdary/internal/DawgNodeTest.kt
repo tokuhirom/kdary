@@ -11,8 +11,8 @@ class DawgNodeTest {
         node.child = 1u
         assertEquals(1u, node.child)
 
-        node.sibling = 2u
-        assertEquals(2u, node.sibling)
+        node.sibling = 2
+        assertEquals(2, node.sibling)
 
         node.child = 3.toIdType()
         assertEquals(3, node.child.toValueType())
