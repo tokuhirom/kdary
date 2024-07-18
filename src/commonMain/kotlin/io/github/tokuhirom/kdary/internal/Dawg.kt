@@ -16,7 +16,7 @@ internal data class Dawg(
 
     fun isIntersection(id: IdType): Boolean = isIntersections[id]
 
-    fun intersectionId(id: IdType): IdType = isIntersections.rank(id.toSizeType()) - 1u
+    fun intersectionId(id: Int): IdType = isIntersections.rank(id) - 1u
 
     fun isLeaf(id: Int): Boolean = label(id) == 0.toUByte()
 

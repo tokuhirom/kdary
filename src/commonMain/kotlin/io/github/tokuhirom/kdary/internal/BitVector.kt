@@ -23,12 +23,11 @@ internal data class BitVector(
      * @param id the index up to which to count the number of 1's.
      * @return the number of 1's up to the specified index.
      */
-    fun rank(id: SizeType): IdType {
-        val unitId = id / UNIT_SIZE.toUInt()
-        val offset: SizeType = UNIT_SIZE.toUInt() - (id % UNIT_SIZE.toUInt()) - 1u
-        val mask: UInt = 0U.inv() shr offset.toInt()
-        return ranks[unitId.toInt()] +
-            popCount(units[unitId.toInt()] and mask)
+    fun rank(id: Int): IdType {
+        val unitId = id / UNIT_SIZE
+        val offset = UNIT_SIZE - (id % UNIT_SIZE) - 1
+        val mask: UInt = 0U.inv() shr offset
+        return ranks[unitId] + popCount(units[unitId] and mask)
     }
 
     /**

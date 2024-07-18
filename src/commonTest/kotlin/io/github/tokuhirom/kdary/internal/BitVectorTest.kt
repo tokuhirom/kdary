@@ -25,9 +25,9 @@ class BitVectorTest {
         }
         val bitVector = bitVectorBuilder.build()
 //        assertEquals(listOf(true, false, true, false, true, false, true, false, true, false), bitVector.toList())
-        assertEquals(1u, bitVector.rank(1u))
-        assertEquals(2u, bitVector.rank(3u))
-        assertEquals(5u, bitVector.rank(9u))
+        assertEquals(1u, bitVector.rank(1))
+        assertEquals(2u, bitVector.rank(3))
+        assertEquals(5u, bitVector.rank(9))
     }
 
     @Test
@@ -48,7 +48,7 @@ class BitVectorTest {
         )
         assertEquals(
             listOf(0u, 1u, 1u, 1u),
-            (0 until 4).map { bitVector.rank(it.toSizeType()) },
+            (0 until 4).map { bitVector.rank(it) },
         )
     }
 
