@@ -6,8 +6,10 @@ internal class DawgBuilder {
     internal val labels = mutableListOf<UByte>()
     private val isIntersectionsBuilder = BitVectorBuilder()
     private val table = mutableListOf<IdType>()
-    private val nodeStack = mutableListOf<IdType>()
+    private val nodeStack = mutableListOf<Int>()
     private val recycleBin = mutableListOf<Int>()
+
+    // TODO Int
     private var numStates: SizeType = 0u
 
     init {
@@ -19,11 +21,11 @@ internal class DawgBuilder {
         appendUnit()
         numStates = 1u
         nodes[0].label = 0xFF.toUByte()
-        nodeStack.add(0u)
+        nodeStack.add(0)
     }
 
     fun finish(): Dawg {
-        flush(0u)
+        flush(0)
 
         units[0] = DawgUnit(nodes[0].unit())
         labels[0] = nodes[0].label
@@ -68,7 +70,7 @@ internal class DawgBuilder {
                 throw IllegalArgumentException("failed to insert key: wrong key order")
             } else if (keyLabel > unitLabel) {
                 nodes[childId].hasSibling = true
-                flush(childId.toIdType())
+                flush(childId)
                 break
             }
             id = childId
@@ -89,7 +91,7 @@ internal class DawgBuilder {
             nodes[childId].sibling = nodes[id].child.toInt()
             nodes[childId].label = keyLabel
             nodes[id].child = childId.toUInt()
-            nodeStack.add(childId.toUInt())
+            nodeStack.add(childId)
 
             id = childId
             keyPos++
@@ -97,7 +99,7 @@ internal class DawgBuilder {
         nodes[id].child = value.toIdType()
     }
 
-    private fun flush(id: IdType) {
+    private fun flush(id: Int) {
         while (nodeStack[nodeStack.size - 1] != id) {
             val nodeId = nodeStack[nodeStack.size - 1]
             nodeStack.removeLast()
@@ -107,13 +109,13 @@ internal class DawgBuilder {
             }
 
             var numSiblings: IdType = 0u
-            var i: Int = nodeId.toInt()
+            var i: Int = nodeId
             while (i != 0) {
                 numSiblings++
                 i = nodes[i].sibling
             }
 
-            var (hashId, matchId) = findNode(nodeId.toInt())
+            var (hashId, matchId) = findNode(nodeId)
             if (matchId != 0u) {
                 isIntersectionsBuilder.set(matchId.toSizeType(), true)
             } else {
@@ -133,14 +135,14 @@ internal class DawgBuilder {
                 numStates++
             }
 
-            i = nodeId.toInt()
+            i = nodeId
             while (i != 0) {
                 val next = nodes[i].sibling
                 freeNode(i)
                 i = next
             }
 
-            nodes[nodeStack[nodeStack.size - 1].toInt()].child = matchId
+            nodes[nodeStack[nodeStack.size - 1]].child = matchId
         }
         nodeStack.removeLast()
     }
