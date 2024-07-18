@@ -124,7 +124,7 @@ internal class DawgBuilder {
                 for (j in 0 until numSiblings.toInt()) {
                     unitId = appendUnit()
                 }
-                i = nodeId.toInt()
+                i = nodeId
                 while (i != 0) {
                     units[unitId] = DawgUnit(nodes[i].unit())
                     labels[unitId] = nodes[i].label
