@@ -162,19 +162,19 @@ internal class DawgBuilder {
     }
 
     private fun findUnit(id: Int): Pair<UInt, UInt> {
-        var hashId = hashUnit(id) % table.size.toSizeType().toUInt()
+        var hashId = hashUnit(id) % table.size.toUInt()
         while (true) {
             val unitId = table[hashId.toInt()]
             if (unitId == 0u) {
                 break
             }
-            hashId = (hashId + 1u) % table.size.toSizeType().toUInt()
+            hashId = (hashId + 1u) % table.size.toUInt()
         }
         return hashId to 0u
     }
 
     private fun findNode(nodeId: Int): Pair<UInt, IdType> {
-        var hashId = hashNode(nodeId) % table.size.toSizeType().toUInt()
+        var hashId = hashNode(nodeId) % table.size.toUInt()
         while (true) {
             val unitId = table[hashId.toInt()]
             if (unitId == 0u) {
@@ -185,7 +185,7 @@ internal class DawgBuilder {
                 return hashId to unitId
             }
 
-            hashId = (hashId + 1u) % table.size.toSizeType().toUInt()
+            hashId = (hashId + 1u) % table.size.toUInt()
         }
         return hashId to 0u
     }
