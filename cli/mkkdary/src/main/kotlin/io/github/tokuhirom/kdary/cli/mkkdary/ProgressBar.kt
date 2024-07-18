@@ -1,12 +1,11 @@
 package io.github.tokuhirom.kdary.cli.mkkdary
 
-class ProgressBar {
+class ProgressBar(
+    private val total: Int,
+) {
     private var prevPercentage: Int = 0
 
-    fun update(
-        current: Long,
-        total: Long,
-    ): Int {
+    fun update(current: Int): Int {
         val curPercentage = (100.0 * current / total).toInt()
         val barLen = (1.0 * current * SCALE / total).toInt()
 

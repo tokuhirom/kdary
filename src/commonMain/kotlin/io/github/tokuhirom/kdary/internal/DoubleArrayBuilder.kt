@@ -1,12 +1,10 @@
 package io.github.tokuhirom.kdary.internal
 
-import io.github.tokuhirom.kdary.ProgressCallback
-
 /**
  * DAWG -> double-array converter.
  */
 internal class DoubleArrayBuilder(
-    private val progressCallback: ProgressCallback? = null,
+    private val progressCallback: ((Int) -> Unit)? = null,
 ) {
     private val units = mutableListOf<DoubleArrayBuilderUnit>()
     private val extras = Array(NUM_EXTRAS) { DoubleArrayBuilderExtraUnit() }
@@ -46,7 +44,7 @@ internal class DoubleArrayBuilder(
         val dawgBuilder = DawgBuilder()
         for (i in 0 until keyset.numKeys()) {
             dawgBuilder.insert(keyset.keys(i), keyset.values(i))
-            progressCallback?.invoke(i + 1, keyset.numKeys() + 1)
+            progressCallback?.invoke(i + 1)
         }
         return dawgBuilder.finish()
     }
@@ -220,7 +218,7 @@ internal class DoubleArrayBuilder(
                 if (vaue == -1) {
                     vaue = keyset.values(i)
                 }
-                progressCallback?.invoke(i + 1, keyset.numKeys() + 1)
+                progressCallback?.invoke(i + 1)
             }
 
             if (labels.isEmpty()) {
