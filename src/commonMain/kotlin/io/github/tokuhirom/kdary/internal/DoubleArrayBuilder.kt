@@ -135,7 +135,7 @@ internal class DoubleArrayBuilder(
             val dicChildId: IdType = offset xor labels[i].toIdType()
             reserveId(dicChildId.toInt())
 
-            if (dawg.isLeaf(dawgChildId.toInt())) {
+            if (dawg.isLeaf(dawgChildId)) {
                 units[dicId].setHasLeaf(true)
                 units[dicChildId.toInt()].setValue(dawg.value(dawgChildId))
             } else {
