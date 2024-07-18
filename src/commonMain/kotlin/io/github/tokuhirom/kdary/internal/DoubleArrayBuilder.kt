@@ -83,7 +83,7 @@ internal class DoubleArrayBuilder(
         table: Array<IdType>,
     ) {
         var dawgChildId = dawg.child(dawgId)
-        if (dawg.isIntersection(dawgChildId.toUInt())) {
+        if (dawg.isIntersection(dawgChildId)) {
             val intersectionId: IdType = dawg.intersectionId(dawgChildId)
             var offset: IdType = table[intersectionId.toInt()]
             if (offset != 0u) {
@@ -99,7 +99,7 @@ internal class DoubleArrayBuilder(
         }
 
         val offset: IdType = arrangeFromDawg(dawg, dawgId, dicId)
-        if (dawg.isIntersection(dawgChildId.toUInt())) {
+        if (dawg.isIntersection(dawgChildId)) {
             table[dawg.intersectionId(dawgChildId).toInt()] = offset
         }
 

@@ -44,7 +44,7 @@ class BitVectorTest {
 
         assertEquals(
             listOf(false, true, false, false),
-            (0 until 4).map { bitVector[it.toUInt()] },
+            (0 until 4).map { bitVector[it] },
         )
         assertEquals(
             listOf(0u, 1u, 1u, 1u),

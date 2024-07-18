@@ -15,7 +15,7 @@ internal data class BitVector(
      * @param id the index of the bit.
      * @return the bit value at the specified index.
      */
-    operator fun get(id: UInt): Boolean = (units[(id / UNIT_SIZE.toUInt()).toInt()] shr (id % UNIT_SIZE.toUInt()).toInt() and 1u) == 1u
+    operator fun get(id: Int): Boolean = (units[id / UNIT_SIZE] shr (id % UNIT_SIZE) and 1u) == 1u
 
     /**
      * Returns the number of 1's up to the specified index.
