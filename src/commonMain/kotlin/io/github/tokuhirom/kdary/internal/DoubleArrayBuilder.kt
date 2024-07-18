@@ -105,10 +105,10 @@ internal class DoubleArrayBuilder(
 
         do {
             val childLabel: UByte = dawg.label(dawgChildId)
-            val dicChildId: IdType = offset.toUInt() xor childLabel.toIdType()
+            val dicChildId = (offset.toUInt() xor childLabel.toIdType()).toInt()
             if (childLabel != 0.toUByte()) {
                 // TODO dawgChildId を Int に?
-                buildFromDawg(dawg, dawgChildId, dicChildId.toInt(), table)
+                buildFromDawg(dawg, dawgChildId, dicChildId, table)
             }
             dawgChildId = dawg.sibling(dawgChildId)
         } while (dawgChildId != 0)
