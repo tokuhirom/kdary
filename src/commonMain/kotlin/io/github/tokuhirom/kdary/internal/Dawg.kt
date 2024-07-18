@@ -4,7 +4,7 @@ internal data class Dawg(
     val units: List<DawgUnit>,
     val labels: List<UByte>,
     val isIntersections: BitVector,
-    val numStates: SizeType,
+    private val numStates: SizeType,
 ) {
     fun size(): Int = units.size
 
