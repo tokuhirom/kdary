@@ -149,8 +149,8 @@ internal class DoubleArrayBuilder(
     }
 
     private fun buildFromKeyset(keyset: Keyset) {
-        var numUnits: SizeType = 1uL
-        while (numUnits < keyset.numKeys().toSizeType()) {
+        var numUnits = 1
+        while (numUnits < keyset.numKeys()) {
             numUnits = numUnits shl 1
         }
 
