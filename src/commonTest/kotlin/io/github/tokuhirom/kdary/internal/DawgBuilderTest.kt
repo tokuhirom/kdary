@@ -26,12 +26,12 @@ class DawgBuilderTest {
 
         val dawg = builder.finish()
 
-        assertEquals(5u, dawg.size())
+        assertEquals(5, dawg.size())
         assertEquals(0, dawg.root())
-        for (i: SizeType in 0uL until dawg.size()) {
+        for (i in 0 until dawg.size()) {
             println(
-                "i: $i, unit: ${builder.units[i.toInt()].unit()}," +
-                    " label: ${builder.labels[i.toInt()]}," +
+                "i: $i, unit: ${builder.units[i].unit()}," +
+                    " label: ${builder.labels[i]}," +
                     " is_intersection: ${dawg.isIntersection(i.toUInt())}",
             )
         }
@@ -43,7 +43,7 @@ class DawgBuilderTest {
         val builder = DawgBuilder()
         builder.insert("key".encodeToByteArray(), 1)
         val dawg = builder.finish()
-        assertEquals(5u, dawg.size())
+        assertEquals(5, dawg.size())
     }
 
     @Test
@@ -51,7 +51,7 @@ class DawgBuilderTest {
         val builder = DawgBuilder()
         builder.insert("key".encodeToByteArray(), 1)
         val dawg = builder.finish()
-        assertEquals(5u, dawg.size())
+        assertEquals(5, dawg.size())
         assertFalse(dawg.isIntersection(0u))
     }
 
@@ -130,6 +130,6 @@ class DawgBuilderTest {
         val builder = DawgBuilder()
         builder.insert("key".encodeToByteArray(), 1)
         val dawg = builder.finish()
-        assertEquals(5u, dawg.size())
+        assertEquals(5, dawg.size())
     }
 }

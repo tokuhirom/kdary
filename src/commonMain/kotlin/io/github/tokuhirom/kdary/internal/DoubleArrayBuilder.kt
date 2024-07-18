@@ -52,7 +52,7 @@ internal class DoubleArrayBuilder(
     }
 
     private fun buildFromDawg(dawg: Dawg) {
-        var numUnits: SizeType = 1uL
+        var numUnits = 1
         while (numUnits < dawg.size()) {
             numUnits = numUnits shl 1
         }

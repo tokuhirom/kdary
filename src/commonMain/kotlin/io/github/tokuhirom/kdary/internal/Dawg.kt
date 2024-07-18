@@ -6,7 +6,7 @@ internal data class Dawg(
     val isIntersections: BitVector,
     val numStates: SizeType,
 ) {
-    fun size(): SizeType = units.size.toSizeType()
+    fun size(): Int = units.size
 
     fun numIntersections(): Int = isIntersections.numOnes().toInt()
 
