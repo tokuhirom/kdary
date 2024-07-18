@@ -23,14 +23,14 @@ internal class BitVectorBuilder {
      * @param bit the value to set the bit to (true for 1, false for 0).
      */
     fun set(
-        id: SizeType,
+        id: Int,
         bit: Boolean,
     ) {
-        val unitId = (id / BitVector.UNIT_SIZE.toUInt()).toInt()
+        val unitId = id / BitVector.UNIT_SIZE
         if (bit) {
-            units[unitId] = units[unitId] or (1u shl (id % BitVector.UNIT_SIZE.toUInt()).toInt())
+            units[unitId] = units[unitId] or (1u shl id % BitVector.UNIT_SIZE)
         } else {
-            units[unitId] = units[unitId] and (1u shl (id % BitVector.UNIT_SIZE.toUInt()).toInt()).inv()
+            units[unitId] = units[unitId] and (1u shl id % BitVector.UNIT_SIZE).inv()
         }
     }
 

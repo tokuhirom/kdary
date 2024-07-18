@@ -115,9 +115,10 @@ internal class DawgBuilder {
                 i = nodes[i].sibling
             }
 
+            // TODO: matchId should be Int
             var (hashId, matchId) = findNode(nodeId)
             if (matchId != 0u) {
-                isIntersectionsBuilder.set(matchId.toSizeType(), true)
+                isIntersectionsBuilder.set(matchId.toInt(), true)
             } else {
                 var unitId = 0
                 for (j in 0 until numSiblings.toInt()) {

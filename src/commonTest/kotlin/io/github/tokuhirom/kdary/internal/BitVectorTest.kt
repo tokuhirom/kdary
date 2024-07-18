@@ -10,18 +10,18 @@ class BitVectorTest {
     fun testSetAndGet() {
         val bitVector = BitVectorBuilder()
         bitVector.append()
-        bitVector.set(0u, true)
+        bitVector.set(0, true)
         assertTrue(bitVector[0u])
-        bitVector.set(0u, false)
+        bitVector.set(0, false)
         assertFalse(bitVector[0u])
     }
 
     @Test
     fun testRank() {
         val bitVectorBuilder = BitVectorBuilder()
-        for (i in 0u until 10u) {
+        for (i in 0 until 10) {
             bitVectorBuilder.append()
-            bitVectorBuilder.set(i.toSizeType(), i % 2u == 0u)
+            bitVectorBuilder.set(i, i % 2 == 0)
         }
         val bitVector = bitVectorBuilder.build()
 //        assertEquals(listOf(true, false, true, false, true, false, true, false, true, false), bitVector.toList())
@@ -36,10 +36,10 @@ class BitVectorTest {
         for (i in 0u until 4u) {
             bitVectorBuilder.append()
         }
-        bitVectorBuilder.set(0u, false)
-        bitVectorBuilder.set(1u, true)
-        bitVectorBuilder.set(2u, false)
-        bitVectorBuilder.set(3u, false)
+        bitVectorBuilder.set(0, false)
+        bitVectorBuilder.set(1, true)
+        bitVectorBuilder.set(2, false)
+        bitVectorBuilder.set(3, false)
         val bitVector = bitVectorBuilder.build()
 
         assertEquals(
@@ -55,9 +55,9 @@ class BitVectorTest {
     @Test
     fun testNumOnesAndSize() {
         val bitVectorBuilder = BitVectorBuilder()
-        for (i in 0u until 10u) {
+        for (i in 0 until 10) {
             bitVectorBuilder.append()
-            bitVectorBuilder.set(i.toSizeType(), i % 2u == 0u)
+            bitVectorBuilder.set(i, i % 2 == 0)
         }
         val bitVector = bitVectorBuilder.build()
         assertEquals(5u, bitVector.numOnes())
@@ -66,9 +66,9 @@ class BitVectorTest {
     @Test
     fun testClear() {
         val bitVectorBuilder = BitVectorBuilder()
-        for (i in 0u until 10u) {
+        for (i in 0 until 10) {
             bitVectorBuilder.append()
-            bitVectorBuilder.set(i.toSizeType(), i % 2u == 0u)
+            bitVectorBuilder.set(i, i % 2 == 0)
         }
         val bitVector = bitVectorBuilder.build()
         assertEquals(5u, bitVector.numOnes())
