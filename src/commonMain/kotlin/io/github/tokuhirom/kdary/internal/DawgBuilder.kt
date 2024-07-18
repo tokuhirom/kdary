@@ -37,7 +37,7 @@ internal class DawgBuilder {
 
         val isIntersections = isIntersectionsBuilder.build()
 
-        return Dawg(units, labels, isIntersections, numStates)
+        return Dawg(units, labels, isIntersections)
     }
 
     fun insert(
