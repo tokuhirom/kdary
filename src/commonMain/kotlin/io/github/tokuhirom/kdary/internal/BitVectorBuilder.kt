@@ -55,11 +55,11 @@ internal class BitVectorBuilder {
      */
     fun build(): BitVector {
         // Initialize ranks array with the size of units array
-        val ranks = MutableList(units.size) { 0u }
-        var numOnes: SizeType = 0u
+        val ranks = MutableList(units.size) { 0 }
+        var numOnes: Int = 0
         // Populate ranks array and count the number of 1's
         for (i in 0 until units.size) {
-            ranks[i] = numOnes.toIdType()
+            ranks[i] = numOnes
             numOnes += BitVector.popCount(units[i])
         }
         return BitVector(units, ranks, numOnes, size)

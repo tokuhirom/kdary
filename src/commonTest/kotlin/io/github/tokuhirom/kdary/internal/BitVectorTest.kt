@@ -25,9 +25,9 @@ class BitVectorTest {
         }
         val bitVector = bitVectorBuilder.build()
 //        assertEquals(listOf(true, false, true, false, true, false, true, false, true, false), bitVector.toList())
-        assertEquals(1u, bitVector.rank(1))
-        assertEquals(2u, bitVector.rank(3))
-        assertEquals(5u, bitVector.rank(9))
+        assertEquals(1, bitVector.rank(1))
+        assertEquals(2, bitVector.rank(3))
+        assertEquals(5, bitVector.rank(9))
     }
 
     @Test
@@ -47,7 +47,7 @@ class BitVectorTest {
             (0 until 4).map { bitVector[it] },
         )
         assertEquals(
-            listOf(0u, 1u, 1u, 1u),
+            listOf(0, 1, 1, 1),
             (0 until 4).map { bitVector.rank(it) },
         )
     }
@@ -60,7 +60,7 @@ class BitVectorTest {
             bitVectorBuilder.set(i, i % 2 == 0)
         }
         val bitVector = bitVectorBuilder.build()
-        assertEquals(5u, bitVector.numOnes())
+        assertEquals(5, bitVector.numOnes())
     }
 
     @Test
@@ -71,11 +71,11 @@ class BitVectorTest {
             bitVectorBuilder.set(i, i % 2 == 0)
         }
         val bitVector = bitVectorBuilder.build()
-        assertEquals(5u, bitVector.numOnes())
+        assertEquals(5, bitVector.numOnes())
     }
 
     @Test
     fun testPopCount() {
-        assertEquals(5u, BitVector.Companion.popCount(341u))
+        assertEquals(5, BitVector.Companion.popCount(341u))
     }
 }

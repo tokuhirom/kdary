@@ -114,7 +114,7 @@ class DawgBuilderTest {
         val builder = DawgBuilder()
         builder.insert("key".encodeToByteArray(), 1)
         val dawg = builder.finish()
-        assertEquals(0xFFFFFFFFu, dawg.intersectionId(0))
+        assertEquals(-1, dawg.intersectionId(0))
     }
 
     @Test

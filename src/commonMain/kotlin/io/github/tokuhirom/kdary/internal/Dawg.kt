@@ -8,7 +8,7 @@ internal data class Dawg(
 ) {
     fun size(): Int = units.size
 
-    fun numIntersections(): Int = isIntersections.numOnes().toInt()
+    fun numIntersections(): Int = isIntersections.numOnes()
 
     fun child(id: Int): Int = units[id].child()
 
@@ -16,7 +16,7 @@ internal data class Dawg(
 
     fun isIntersection(id: Int): Boolean = isIntersections[id]
 
-    fun intersectionId(id: Int): IdType = isIntersections.rank(id) - 1u
+    fun intersectionId(id: Int): Int = isIntersections.rank(id) - 1
 
     fun isLeaf(id: Int): Boolean = label(id) == 0.toUByte()
 
