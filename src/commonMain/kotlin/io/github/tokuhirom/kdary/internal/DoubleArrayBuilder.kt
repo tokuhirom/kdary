@@ -308,70 +308,70 @@ internal class DoubleArrayBuilder(
     }
 
     private fun expandUnits() {
-        val srcNumUnits: IdType = units.size.toSizeType().toIdType()
-        val srcNumBlocks: IdType = numBlocks().toIdType()
+        val srcNumUnits = units.size
+        val srcNumBlocks = numBlocks()
 
-        val destNumUnits: IdType = srcNumUnits + BLOCK_SIZE.toIdType()
-        val destNumBlocks: IdType = srcNumBlocks + 1u
+        val destNumUnits = srcNumUnits + BLOCK_SIZE
+        val destNumBlocks = srcNumBlocks + 1
 
-        if (destNumBlocks > NUM_EXTRA_BLOCKS.toSizeType()) {
-            fixBlock(srcNumBlocks - NUM_EXTRA_BLOCKS.toIdType())
+        if (destNumBlocks > NUM_EXTRA_BLOCKS) {
+            fixBlock(srcNumBlocks - NUM_EXTRA_BLOCKS)
         }
 
         units.resizeWithBlock(destNumUnits.toSizeType()) {
             DoubleArrayBuilderUnit()
         }
 
-        if (destNumBlocks > NUM_EXTRA_BLOCKS.toIdType()) {
+        if (destNumBlocks > NUM_EXTRA_BLOCKS) {
             for (id in srcNumUnits until destNumUnits) {
-                extras(id.toInt()).isUsed = false
-                extras(id.toInt()).isFixed = false
+                extras(id).isUsed = false
+                extras(id).isFixed = false
             }
         }
 
-        for (i: IdType in srcNumUnits + 1u until destNumUnits) {
-            extras((i - 1u).toInt()).next = i
-            extras(i.toInt()).prev = i - 1u
+        for (i in srcNumUnits + 1 until destNumUnits) {
+            extras(i - 1).next = i.toUInt()
+            extras(i).prev = i.toUInt() - 1u
         }
 
-        extras(srcNumUnits.toInt()).prev = destNumUnits - 1u
-        extras((destNumUnits - 1u).toInt()).next = srcNumUnits
+        extras(srcNumUnits).prev = (destNumUnits - 1).toUInt()
+        extras(destNumUnits - 1).next = srcNumUnits.toUInt()
 
-        extras(srcNumUnits.toInt()).prev = extras(extrasHead).prev
-        extras((destNumUnits - 1u).toInt()).next = extrasHead.toUInt()
+        extras(srcNumUnits).prev = extras(extrasHead).prev
+        extras(destNumUnits - 1).next = extrasHead.toUInt()
 
-        extras(extras(extrasHead.toInt()).prev.toInt()).next = srcNumUnits
-        extras(extrasHead.toInt()).prev = destNumUnits - 1u
+        extras(extras(extrasHead).prev.toInt()).next = srcNumUnits.toUInt()
+        extras(extrasHead).prev = (destNumUnits - 1).toIdType()
     }
 
     private fun fixAllBlocks() {
-        var begin: IdType = 0u
+        var begin = 0
         if (numBlocks() > NUM_EXTRA_BLOCKS) {
-            begin = numBlocks().toIdType() - NUM_EXTRA_BLOCKS.toIdType()
+            begin = numBlocks() - NUM_EXTRA_BLOCKS
         }
-        val end: IdType = numBlocks().toIdType()
+        val end = numBlocks()
 
-        for (blockId: IdType in begin until end) {
+        for (blockId in begin until end) {
             fixBlock(blockId)
         }
     }
 
-    private fun fixBlock(blockId: IdType) {
-        val begin: IdType = (blockId * BLOCK_SIZE.toSizeType()).toIdType()
-        val end: IdType = (begin + BLOCK_SIZE.toSizeType()).toIdType()
+    private fun fixBlock(blockId: Int) {
+        val begin = blockId * BLOCK_SIZE
+        val end = begin + BLOCK_SIZE
 
-        var unusedOffset: IdType = 0u
+        var unusedOffset = 0
         for (offset in begin until end) {
-            if (!extras(offset.toInt()).isUsed) {
+            if (!extras(offset).isUsed) {
                 unusedOffset = offset
                 break
             }
         }
 
-        for (id in begin.toInt() until end.toInt()) {
+        for (id in begin until end) {
             if (!extras(id).isFixed) {
                 reserveId(id)
-                units[id].setLabel((id.toIdType() xor unusedOffset).toUByte())
+                units[id].setLabel((id.toIdType() xor unusedOffset.toUInt()).toUByte())
             }
         }
     }
