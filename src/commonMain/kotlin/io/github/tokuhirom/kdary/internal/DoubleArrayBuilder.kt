@@ -98,14 +98,14 @@ internal class DoubleArrayBuilder(
             }
         }
 
-        val offset: IdType = arrangeFromDawg(dawg, dawgId, dicId)
+        val offset = arrangeFromDawg(dawg, dawgId, dicId)
         if (dawg.isIntersection(dawgChildId)) {
-            table[dawg.intersectionId(dawgChildId)] = offset
+            table[dawg.intersectionId(dawgChildId)] = offset.toUInt()
         }
 
         do {
             val childLabel: UByte = dawg.label(dawgChildId)
-            val dicChildId: IdType = offset xor childLabel.toIdType()
+            val dicChildId: IdType = offset.toUInt() xor childLabel.toIdType()
             if (childLabel != 0.toUByte()) {
                 // TODO dawgChildId を Int に?
                 buildFromDawg(dawg, dawgChildId, dicChildId.toInt(), table)
@@ -118,7 +118,7 @@ internal class DoubleArrayBuilder(
         dawg: Dawg,
         dawgId: Int,
         dicId: Int,
-    ): UInt {
+    ): Int {
         labels.resize(0, 0.toUByte())
 
         var dawgChildId = dawg.child(dawgId)
@@ -127,12 +127,12 @@ internal class DoubleArrayBuilder(
             dawgChildId = dawg.sibling(dawgChildId)
         }
 
-        val offset: IdType = findValidOffset(dicId)
-        units[dicId].setOffset(dicId.toUInt() xor offset)
+        val offset = findValidOffset(dicId)
+        units[dicId].setOffset(dicId.toUInt() xor offset.toUInt())
 
         dawgChildId = dawg.child(dawgId)
         for (i in 0 until labels.size) {
-            val dicChildId: IdType = offset xor labels[i].toIdType()
+            val dicChildId: IdType = offset.toUInt() xor labels[i].toIdType()
             reserveId(dicChildId.toInt())
 
             if (dawg.isLeaf(dawgChildId)) {
@@ -143,7 +143,7 @@ internal class DoubleArrayBuilder(
             }
             dawgChildId = dawg.sibling(dawgChildId)
         }
-        extras(offset.toInt()).isUsed = true
+        extras(offset).isUsed = true
 
         return offset
     }
@@ -175,7 +175,7 @@ internal class DoubleArrayBuilder(
         depth: SizeType,
         dicId: IdType,
     ) {
-        val offset: IdType = arrangeFromKeyset(keyset, begin, end, depth, dicId.toInt())
+        val offset = arrangeFromKeyset(keyset, begin, end, depth, dicId.toInt())
 
         var i = begin
         while (i < end) {
@@ -193,12 +193,12 @@ internal class DoubleArrayBuilder(
         while (++i < end) {
             val label: UByte = keyset.keys(i, depth.toInt())
             if (label != lastLabel) {
-                buildFromKeyset(keyset, lastBegin, i, depth + 1uL, offset xor lastLabel.toIdType())
+                buildFromKeyset(keyset, lastBegin, i, depth + 1uL, offset.toUInt() xor lastLabel.toIdType())
                 lastBegin = i
                 lastLabel = keyset.keys(i, depth.toInt())
             }
         }
-        buildFromKeyset(keyset, lastBegin, end, depth + 1uL, offset xor lastLabel.toIdType())
+        buildFromKeyset(keyset, lastBegin, end, depth + 1uL, offset.toUInt() xor lastLabel.toIdType())
     }
 
     private fun arrangeFromKeyset(
@@ -207,7 +207,7 @@ internal class DoubleArrayBuilder(
         end: Int,
         depth: SizeType,
         dicId: Int,
-    ): IdType {
+    ): Int {
         labels.resize(0, 0.toUByte())
 
         var vaue: ValueType = -1
@@ -234,11 +234,11 @@ internal class DoubleArrayBuilder(
             }
         }
 
-        val offset: IdType = findValidOffset(dicId)
-        units[dicId].setOffset(dicId.toUInt() xor offset)
+        val offset: Int = findValidOffset(dicId)
+        units[dicId].setOffset(dicId.toUInt() xor offset.toUInt())
 
         for (i in 0 until labels.size) {
-            val dicChildId = (offset xor labels[i].toIdType()).toInt()
+            val dicChildId = (offset xor labels[i].toInt())
             reserveId(dicChildId)
             if (labels[i] == 0.toUByte()) {
                 units[dicId].setHasLeaf(true)
@@ -247,26 +247,26 @@ internal class DoubleArrayBuilder(
                 units[dicChildId].setLabel(labels[i])
             }
         }
-        extras(offset.toInt()).isUsed = true
+        extras(offset).isUsed = true
 
         return offset
     }
 
-    private fun findValidOffset(id: Int): IdType {
+    private fun findValidOffset(id: Int): Int {
         if (extrasHead >= units.size.toSizeType().toIdType()) {
-            return units.size.toSizeType().toIdType() or (id.toUInt() and LOWER_MASK.toIdType())
+            return (units.size.toIdType() or (id.toUInt() and LOWER_MASK.toIdType())).toInt()
         }
 
         var unfixedId = extrasHead
         do {
             val offset: IdType = unfixedId xor labels[0].toIdType()
             if (isValidOffset(id, offset)) {
-                return offset
+                return offset.toInt()
             }
             unfixedId = extras(unfixedId.toInt()).next
         } while (unfixedId != extrasHead)
 
-        return units.size.toSizeType().toUInt() or (id.toUInt() and LOWER_MASK.toUInt())
+        return (units.size.toSizeType().toUInt() or (id.toUInt() and LOWER_MASK.toUInt())).toInt()
     }
 
     private fun isValidOffset(
