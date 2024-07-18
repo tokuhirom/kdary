@@ -18,17 +18,28 @@ class KdaryApplication : CliktCommand() {
     override fun run() {
         val dic = loadKDary(dictionary)
 
-        val keys =
-            loadFile(lexicon)
-                .map {
-                    it.first
-                }.toList()
+        if (lexicon == "-") {
+            while (true) {
+                val key = readlnOrNull()?.trim() ?: break
+                val result: List<CommonPrefixSearchResult> = dic.commonPrefixSearch(key.toByteArray())
+                println("Searching: $key, num: ${result.size}")
+                result.forEach { item ->
+                    println(" ${item.value} ${item.length}")
+                }
+            }
+        } else {
+            val keys =
+                loadFile(lexicon)
+                    .map {
+                        it.first
+                    }.toList()
 
-        keys.forEach { key ->
-            val result: List<CommonPrefixSearchResult> = dic.commonPrefixSearch(key.toByteArray())
-            println("Searching: $key, num: ${result.size}")
-            result.forEach { item ->
-                println(" ${item.value} ${item.length}")
+            keys.forEach { key ->
+                val result: List<CommonPrefixSearchResult> = dic.commonPrefixSearch(key.toByteArray())
+                println("Searching: $key, num: ${result.size}")
+                result.forEach { item ->
+                    println(" ${item.value} ${item.length}")
+                }
             }
         }
     }
