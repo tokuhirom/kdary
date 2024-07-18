@@ -94,7 +94,7 @@ class KDary {
         val length = key.size
 
         var unit: DoubleArrayUnit = array[nodePos]
-        nodePos = nodePos xor unit.offset().toInt()
+        nodePos = nodePos xor unit.offset()
 
         val results = mutableListOf<CommonPrefixSearchResult>()
 

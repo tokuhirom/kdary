@@ -87,25 +87,48 @@ val loadedDat = loadKDary("dat.trie")
 
 ### KDary
 
-#### Constructor
+#### Builder
 
-`KDary.build(words: List<String>): KDary`
+```
+fun build(
+    keys: List<ByteArray>,
+    values: List<Int>? = null,
+    progressCallback: ((Int) -> Unit)? = null,
+): KDary
+```
 
 Creates a Double Array Trie from the given list of words.
 
 #### Methods
 
-- `fun commonPrefixSearch(query: String): List<String>`
+```
+fun commonPrefixSearch(
+    key: ByteArray,
+    maxNumResults: Int? = null,
+    nodePos: Int = 0,
+): List<CommonPrefixSearchResult>
+```
 
-  Returns a list of words that are common prefixes of the given query.
+Returns a list of words that are common prefixes of the given query.
 
-- `fun exactMatchSearch(word: String): Boolean`
+```
+fun exactMatchSearch(
+    key: ByteArray,
+    nodePos: Int = 0,
+): ExactMatchSearchResult
+```
 
-  Returns `true` if the exact word exists in the trie, `false` otherwise.
+Returns `true` if the exact word exists in the trie, `false` otherwise.
 
-- `fun traverse(prefix: String, action: (String, String) -> Unit)`
+```
+fun traverse(
+    key: ByteArray,
+    nodePos: Int,
+    keyPos: Int,
+): TraverseResult
+```
 
-  Traverses the trie starting from the given prefix, applying the provided action to each word found.
+Traverses the trie starting from the given prefix, applying the provided action to each word found.
 
 ### KDaryIO
 
