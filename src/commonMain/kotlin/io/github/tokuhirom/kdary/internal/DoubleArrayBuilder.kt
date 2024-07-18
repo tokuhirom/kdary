@@ -11,7 +11,7 @@ internal class DoubleArrayBuilder(
     private val units = mutableListOf<DoubleArrayBuilderUnit>()
     private val extras = Array(NUM_EXTRAS) { DoubleArrayBuilderExtraUnit() }
     private val labels = mutableListOf<UByte>()
-    private var extrasHead: IdType = 0u
+    private var extrasHead = 0
 
     companion object {
         const val BLOCK_SIZE = 256
@@ -253,17 +253,17 @@ internal class DoubleArrayBuilder(
     }
 
     private fun findValidOffset(id: Int): Int {
-        if (extrasHead >= units.size.toSizeType().toIdType()) {
+        if (extrasHead >= units.size) {
             return (units.size.toIdType() or (id.toUInt() and LOWER_MASK.toIdType())).toInt()
         }
 
         var unfixedId = extrasHead
         do {
-            val offset: IdType = unfixedId xor labels[0].toIdType()
+            val offset: IdType = unfixedId.toUInt() xor labels[0].toIdType()
             if (isValidOffset(id, offset)) {
                 return offset.toInt()
             }
-            unfixedId = extras(unfixedId.toInt()).next
+            unfixedId = extras(unfixedId).next.toInt()
         } while (unfixedId != extrasHead)
 
         return (units.size.toSizeType().toUInt() or (id.toUInt() and LOWER_MASK.toUInt())).toInt()
@@ -296,10 +296,10 @@ internal class DoubleArrayBuilder(
             expandUnits()
         }
 
-        if (id == extrasHead.toInt()) {
-            extrasHead = extras(id).next
-            if (extrasHead.toInt() == id) {
-                extrasHead = units.size.toSizeType().toUInt()
+        if (id == extrasHead) {
+            extrasHead = extras(id).next.toInt()
+            if (extrasHead == id) {
+                extrasHead = units.size
             }
         }
         extras(extras(id).prev.toInt()).next = extras(id).next
@@ -337,8 +337,8 @@ internal class DoubleArrayBuilder(
         extras(srcNumUnits.toInt()).prev = destNumUnits - 1u
         extras((destNumUnits - 1u).toInt()).next = srcNumUnits
 
-        extras(srcNumUnits.toInt()).prev = extras(extrasHead.toInt()).prev
-        extras((destNumUnits - 1u).toInt()).next = extrasHead
+        extras(srcNumUnits.toInt()).prev = extras(extrasHead).prev
+        extras((destNumUnits - 1u).toInt()).next = extrasHead.toUInt()
 
         extras(extras(extrasHead.toInt()).prev.toInt()).next = srcNumUnits
         extras(extrasHead.toInt()).prev = destNumUnits - 1u
