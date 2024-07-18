@@ -14,13 +14,13 @@ class DawgBuilderTest {
             )
 
         val builder = DawgBuilder()
-        for (i: SizeType in 0uL until keyset.numKeys().toSizeType()) {
-            builder.insert(keyset.keys(i.toInt()), keyset.values(i.toInt()))
+        for (i in 0 until keyset.numKeys()) {
+            builder.insert(keyset.keys(i), keyset.values(i))
         }
 
-        for (i: SizeType in 0uL until builder.nodes.size.toSizeType()) {
+        for (i in 0 until builder.nodes.size) {
             println(
-                "i: $i, unit=${builder.nodes[i.toInt()].unit()}",
+                "i: $i, unit=${builder.nodes[i].unit()}",
             )
         }
 
