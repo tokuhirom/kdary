@@ -108,7 +108,7 @@ internal class DawgBuilder {
                 expandTable()
             }
 
-            var numSiblings: IdType = 0u
+            var numSiblings = 0
             var i: Int = nodeId
             while (i != 0) {
                 numSiblings++
@@ -121,7 +121,7 @@ internal class DawgBuilder {
                 isIntersectionsBuilder.set(matchId.toInt(), true)
             } else {
                 var unitId = 0
-                for (j in 0 until numSiblings.toInt()) {
+                for (j in 0 until numSiblings) {
                     unitId = appendUnit()
                 }
                 i = nodeId
