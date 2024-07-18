@@ -297,7 +297,7 @@ internal class DoubleArrayBuilder(
         }
 
         if (id == extrasHead) {
-            extrasHead = extras(id).next.toInt()
+            extrasHead = extras(id).next
             if (extrasHead == id) {
                 extrasHead = units.size
             }
@@ -330,18 +330,18 @@ internal class DoubleArrayBuilder(
         }
 
         for (i in srcNumUnits + 1 until destNumUnits) {
-            extras(i - 1).next = i.toUInt()
-            extras(i).prev = i.toUInt() - 1u
+            extras(i - 1).next = i
+            extras(i).prev = i - 1
         }
 
-        extras(srcNumUnits).prev = (destNumUnits - 1).toUInt()
-        extras(destNumUnits - 1).next = srcNumUnits.toUInt()
+        extras(srcNumUnits).prev = destNumUnits - 1
+        extras(destNumUnits - 1).next = srcNumUnits
 
         extras(srcNumUnits).prev = extras(extrasHead).prev
-        extras(destNumUnits - 1).next = extrasHead.toUInt()
+        extras(destNumUnits - 1).next = extrasHead
 
-        extras(extras(extrasHead).prev.toInt()).next = srcNumUnits.toUInt()
-        extras(extrasHead).prev = (destNumUnits - 1).toIdType()
+        extras(extras(extrasHead).prev.toInt()).next = srcNumUnits
+        extras(extrasHead).prev = destNumUnits - 1
     }
 
     private fun fixAllBlocks() {
