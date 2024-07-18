@@ -177,28 +177,28 @@ internal class DoubleArrayBuilder(
     ) {
         val offset: IdType = arrangeFromKeyset(keyset, begin, end, depth, dicId.toInt())
 
-        var i: SizeType = begin.toSizeType()
-        while (i < end.toSizeType()) {
-            if (keyset.keys(i.toInt(), depth.toInt()) != 0.toUByte()) {
+        var i = begin
+        while (i < end) {
+            if (keyset.keys(i, depth.toInt()) != 0.toUByte()) {
                 break
             }
             i++
         }
-        if (i == end.toSizeType()) {
+        if (i == end) {
             return
         }
 
-        var lastBegin: SizeType = i
-        var lastLabel: UByte = keyset.keys(i.toInt(), depth.toInt())
-        while (++i < end.toSizeType()) {
-            val label: UByte = keyset.keys(i.toInt(), depth.toInt())
+        var lastBegin = i
+        var lastLabel: UByte = keyset.keys(i, depth.toInt())
+        while (++i < end) {
+            val label: UByte = keyset.keys(i, depth.toInt())
             if (label != lastLabel) {
-                buildFromKeyset(keyset, lastBegin.toInt(), i.toInt(), depth + 1uL, offset xor lastLabel.toIdType())
+                buildFromKeyset(keyset, lastBegin, i, depth + 1uL, offset xor lastLabel.toIdType())
                 lastBegin = i
-                lastLabel = keyset.keys(i.toInt(), depth.toInt())
+                lastLabel = keyset.keys(i, depth.toInt())
             }
         }
-        buildFromKeyset(keyset, lastBegin.toInt(), end, depth + 1uL, offset xor lastLabel.toIdType())
+        buildFromKeyset(keyset, lastBegin, end, depth + 1uL, offset xor lastLabel.toIdType())
     }
 
     private fun arrangeFromKeyset(
