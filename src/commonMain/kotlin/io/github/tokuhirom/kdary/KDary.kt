@@ -10,12 +10,6 @@ import io.github.tokuhirom.kdary.result.ExactMatchSearchResult
 import io.github.tokuhirom.kdary.result.ExactMatchSearchResult.NotFound.length
 import io.github.tokuhirom.kdary.result.TraverseResult
 
-/**
- * A callback function to check the progress of dictionary construction.
- * The first argument is the number of processed keys, and the second argument is the total number of keys.
- */
-typealias ProgressCallback = (Int, Int) -> Int
-
 class KDary {
     internal val array: Array<DoubleArrayUnit>
 
@@ -192,7 +186,7 @@ class KDary {
         fun build(
             keys: List<ByteArray>,
             values: List<Int>? = null,
-            progressCallback: ProgressCallback? = null,
+            progressCallback: ((Int) -> Unit)? = null,
         ): KDary {
             val keyset = Keyset(keys, values)
 
@@ -202,7 +196,7 @@ class KDary {
             val kdary = KDary(buf)
 
             val numKeys = keys.size
-            progressCallback?.invoke(numKeys + 1, numKeys + 1)
+            progressCallback?.invoke(numKeys + 1)
 
             return kdary
         }

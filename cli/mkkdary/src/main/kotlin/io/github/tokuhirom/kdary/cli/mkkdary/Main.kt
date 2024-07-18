@@ -20,14 +20,14 @@ class MkkdaryApplication : CliktCommand() {
         val rows = sortIfRequired(loadFile(input))
         val keys = rows.map { it.first.toByteArray() }.toList()
         val values = rows.map { it.second }.toList()
-        val progressBar = ProgressBar()
+        val progressBar = ProgressBar(rows.size)
 
         val kdary =
             KDary.build(
                 keys,
                 values,
-            ) { current, total ->
-                progressBar.update(current.toLong(), total.toLong())
+            ) { current ->
+                progressBar.update(current)
             }
 
         saveKDary(kdary, output)

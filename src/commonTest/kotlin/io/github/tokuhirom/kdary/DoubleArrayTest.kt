@@ -223,6 +223,15 @@ class DoubleArrayTest {
         assertTrue(800000 < dic.totalSize())
     }
 
+    @Test
+    fun testProgressFunc() {
+        val result = mutableListOf<Int>()
+        KDary.build(keys, values) {
+            result.add(it)
+        }
+        assertEquals((1..keys.size + 1).toList(), result)
+    }
+
     companion object {
         const val NUM_VALID_KEYS = 1 shl 16
         const val NUM_INVALID_KEYS = 1 shl 17
