@@ -11,9 +11,9 @@ class BitVectorTest {
         val bitVector = BitVectorBuilder()
         bitVector.append()
         bitVector.set(0, true)
-        assertTrue(bitVector[0u])
+        assertTrue(bitVector[0])
         bitVector.set(0, false)
-        assertFalse(bitVector[0u])
+        assertFalse(bitVector[0])
     }
 
     @Test
