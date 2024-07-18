@@ -1,9 +1,9 @@
 package io.github.tokuhirom.kdary.internal
 
 internal class DawgBuilder {
-    internal val nodes = mutableListOf<DawgNode>()
-    internal val units = mutableListOf<DawgUnit>()
-    internal val labels = mutableListOf<UByte>()
+    private val nodes = mutableListOf<DawgNode>()
+    private val units = mutableListOf<DawgUnit>()
+    private val labels = mutableListOf<UByte>()
     private val isIntersectionsBuilder = BitVectorBuilder()
     private val table = mutableListOf<IdType>()
     private val nodeStack = mutableListOf<Int>()

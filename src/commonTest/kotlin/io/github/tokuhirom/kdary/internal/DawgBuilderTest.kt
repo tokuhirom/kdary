@@ -18,21 +18,13 @@ class DawgBuilderTest {
             builder.insert(keyset.keys(i), keyset.values(i))
         }
 
-        for (i in 0 until builder.nodes.size) {
-            println(
-                "i: $i, unit=${builder.nodes[i].unit()}",
-            )
-        }
-
         val dawg = builder.finish()
 
         assertEquals(5, dawg.size())
         assertEquals(0, dawg.root())
         for (i in 0 until dawg.size()) {
             println(
-                "i: $i, unit: ${builder.units[i].unit()}," +
-                    " label: ${builder.labels[i]}," +
-                    " is_intersection: ${dawg.isIntersection(i)}",
+                "i: $i is_intersection: ${dawg.isIntersection(i)}",
             )
         }
         assertEquals(0, dawg.numIntersections())
