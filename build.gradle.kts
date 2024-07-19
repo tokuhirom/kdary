@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
@@ -10,6 +12,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.23.6"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
     id("com.vanniktech.maven.publish") version "0.29.0"
+    id("org.jetbrains.dokka") version "1.9.20"
 }
 
 group = "io.github.tokuhirom.kdary"
@@ -80,6 +83,7 @@ kotlin {
 }
 
 mavenPublishing {
+    configure(KotlinMultiplatform(javadocJar = JavadocJar.Dokka("dokkaHtml")))
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     if (project.hasProperty("mavenCentralUsername") ||
         System.getenv("ORG_GRADLE_PROJECT_mavenCentralUsername") != null
