@@ -1,6 +1,6 @@
 package io.github.tokuhirom.kdary.internal
 
-fun <T> MutableList<T>.resize(
+internal fun <T> MutableList<T>.resize(
     tableSize: Int,
     value: T,
 ) {
@@ -16,7 +16,7 @@ fun <T> MutableList<T>.resize(
     }
 }
 
-fun <T> MutableList<T>.resizeWithBlock(
+internal fun <T> MutableList<T>.resizeWithBlock(
     tableSize: SizeType,
     builder: () -> T,
 ) {
