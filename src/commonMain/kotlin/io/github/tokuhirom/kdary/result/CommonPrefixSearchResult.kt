@@ -3,7 +3,10 @@ package io.github.tokuhirom.kdary.result
 import io.github.tokuhirom.kdary.internal.ValueType
 
 /**
- * Result of common prefix search.
+ * Represents the result of a common prefix search.
+ *
+ * @property value The value associated with the found prefix.
+ * @property length The length of the found prefix.
  */
 data class CommonPrefixSearchResult(
     var value: ValueType,

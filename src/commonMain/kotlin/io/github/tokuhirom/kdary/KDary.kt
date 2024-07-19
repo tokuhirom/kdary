@@ -7,7 +7,6 @@ import io.github.tokuhirom.kdary.internal.toIdType
 import io.github.tokuhirom.kdary.internal.toSizeType
 import io.github.tokuhirom.kdary.result.CommonPrefixSearchResult
 import io.github.tokuhirom.kdary.result.ExactMatchSearchResult
-import io.github.tokuhirom.kdary.result.ExactMatchSearchResult.NotFound.length
 import io.github.tokuhirom.kdary.result.TraverseResult
 
 class KDary {
@@ -36,12 +35,12 @@ class KDary {
     fun totalSize(): Int = UNIT_SIZE * size()
 
     /**
-     * Tests whether the given key exists or not, and if it exists, sets its value and length in the result.
-     * Otherwise, the return value is ExactMatchSearchResult.NotFound.
+     * Tests whether the given key exists or not. If it exists, the return value is [ExactMatchSearchResult.Found],
+     * which contains the value and length. Otherwise, the return value is [ExactMatchSearchResult.NotFound].
      *
      * @param key The key to search for.
      * @param nodePos The starting position of the node.
-     * @return A ExactMatchSearchResult containing the value and length.
+     * @return An [ExactMatchSearchResult.Found] containing the value and length if the key is found, otherwise [ExactMatchSearchResult.NotFound].
      */
     fun exactMatchSearch(
         key: ByteArray,
@@ -118,17 +117,20 @@ class KDary {
     }
 
     /**
-     * In Darts-clone, a dictionary is a deterministic finite-state automaton (DFA) and traverse() tests transitions on the DFA.
-     * The initial state is `nodePos` and traverse() chooses transitions labeled key[keyPos], key[keyPos + 1], ... in order.
-     * If there is not a transition labeled key[keyPos + i], traverse() terminates the transitions at that state and returns -2.
-     * Otherwise, traverse() ends without a termination and returns -1 or a nonnegative value. -1 indicates that the final state was not an accept state.
-     * When a nonnegative value is returned, it is the value associated with the final accept state.
-     * That is, traverse() returns the value associated with the given key if it exists. Note that traverse() updates `nodePos` and `keyPos` after each transition.
+     * In KDary, a dictionary is a deterministic finite-state automaton (DFA).
+     * The `traverse` method tests transitions on the DFA starting from the initial state `nodePos`.
+     * It processes the transitions labeled by `key[keyPos]`, `key[keyPos + 1]`, ..., in order.
+     *
+     * If there is no transition labeled by `key[keyPos + i]`, the method terminates the transitions at that state and returns -2.
+     * Otherwise, the method continues without termination and returns -1 or a nonnegative value.
+     * -1 indicates that the final state was not an accept state.
+     * A nonnegative value indicates the value associated with the final accept state.
+     *
+     * Note that `traverse` updates `nodePos` and `keyPos` after each transition.
      *
      * @param key The key to traverse.
      * @param nodePos The starting position of the node.
      * @param keyPos The starting position of the key.
-     * @param length The length of the key.
      * @return A TraverseResult containing the status, node position, and key position.
      */
     fun traverse(
