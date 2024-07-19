@@ -7,7 +7,6 @@ import io.github.tokuhirom.kdary.internal.toIdType
 import io.github.tokuhirom.kdary.internal.toSizeType
 import io.github.tokuhirom.kdary.result.CommonPrefixSearchResult
 import io.github.tokuhirom.kdary.result.ExactMatchSearchResult
-import io.github.tokuhirom.kdary.result.ExactMatchSearchResult.NotFound.length
 import io.github.tokuhirom.kdary.result.TraverseResult
 
 class KDary {
