@@ -35,12 +35,12 @@ class KDary {
     fun totalSize(): Int = UNIT_SIZE * size()
 
     /**
-     * Tests whether the given key exists or not, and if it exists, sets its value and length in the result.
-     * Otherwise, the return value is ExactMatchSearchResult.NotFound.
+     * Tests whether the given key exists or not. If it exists, the return value is [ExactMatchSearchResult.Found],
+     * which contains the value and length. Otherwise, the return value is [ExactMatchSearchResult.NotFound].
      *
      * @param key The key to search for.
      * @param nodePos The starting position of the node.
-     * @return A ExactMatchSearchResult containing the value and length.
+     * @return An [ExactMatchSearchResult.Found] containing the value and length if the key is found, otherwise [ExactMatchSearchResult.NotFound].
      */
     fun exactMatchSearch(
         key: ByteArray,
