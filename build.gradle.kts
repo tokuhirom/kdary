@@ -91,3 +91,11 @@ mavenPublishing {
         signAllPublications()
     }
 }
+
+tasks.dokkaHtml {
+    dokkaSourceSets {
+        configureEach {
+            includeNonPublic = false
+        }
+    }
+}
