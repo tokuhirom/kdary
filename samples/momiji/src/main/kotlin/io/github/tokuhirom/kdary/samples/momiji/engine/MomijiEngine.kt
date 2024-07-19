@@ -17,6 +17,8 @@ data class MomijiEngine(
     fun analysis(src: String): List<WordResult> {
         val lattice = buildLattice(src)
         dumpLattice(lattice)
+
+        // ラティス構造を元にした探索、まったく動いていない。
         return findOptimalPath(lattice)
     }
 
@@ -36,6 +38,7 @@ data class MomijiEngine(
             if (results.isEmpty()) {
                 val c = src.substring(i, i + 1)
                 // 未知語
+                // TODO: 未知語として、一旦、1文字だけ登録する。改善の余地あり。
                 val entry =
                     WordEntry(
                         surface = c,
