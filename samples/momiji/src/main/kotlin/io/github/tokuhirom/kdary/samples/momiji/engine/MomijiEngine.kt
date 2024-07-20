@@ -18,7 +18,7 @@ data class MomijiEngine(
         val lattice = buildLattice(src)
         dumpLattice(lattice)
 
-        // ラティス構造を元にした探索、まったく動いていない。
+        // ラティス構造を元に最適経路を探索
         return findOptimalPath(lattice)
     }
 
@@ -37,8 +37,7 @@ data class MomijiEngine(
 
             if (results.isEmpty()) {
                 val c = src.substring(i, i + 1)
-                // 未知語
-                // TODO: 未知語として、一旦、1文字だけ登録する。改善の余地あり。
+                // 未知語として1文字だけ登録。将来的には改善の余地あり。
                 val entry =
                     WordEntry(
                         surface = c,
@@ -63,12 +62,15 @@ data class MomijiEngine(
 
     private fun findOptimalPath(lattice: List<List<Node>>): List<WordResult> {
         val dp = mutableListOf<MutableList<Path>>()
+
         for (i in lattice.indices) {
             dp.add(mutableListOf())
             for (node in lattice[i]) {
                 if (i == 0) {
+                    // 最初の位置では、直接コストを追加
                     dp[i].add(Path(node, node.wordEntry.cost))
                 } else {
+                    // 前の位置から最小コストの経路を見つける
                     val bestPath =
                         dp[i - 1].minByOrNull { path ->
                             path.cost + getConnectionCost(path.node.wordEntry.rightId, node.wordEntry.leftId)
@@ -80,13 +82,16 @@ data class MomijiEngine(
                                 cost =
                                     bestPath.cost + node.wordEntry.cost +
                                         getConnectionCost(bestPath.node.wordEntry.rightId, node.wordEntry.leftId),
+                                previous = bestPath,
                             )
                         dp[i].add(newPath)
                     }
                 }
             }
         }
-        return reconstructPath(dp.last().minByOrNull { it.cost }!!)
+        // 最後の位置から最小コストの経路を再構築
+        val optimalPath = dp.last().minByOrNull { it.cost } ?: throw IllegalStateException("No path found")
+        return reconstructPath(optimalPath)
     }
 
     private fun getConnectionCost(
