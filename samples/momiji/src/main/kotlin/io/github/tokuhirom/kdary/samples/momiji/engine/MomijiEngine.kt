@@ -30,6 +30,9 @@ data class MomijiEngine(
 
     private fun buildLattice(src: String): List<List<Node>> {
         val beginNodes = mutableListOf<MutableList<Node>>()
+        for (i in src.indices) {
+            beginNodes.add(mutableListOf())
+        }
 
         for (i in src.indices) {
             val results = kdary.commonPrefixSearch(src.substring(i).toByteArray(Charsets.UTF_8))
@@ -45,19 +48,15 @@ data class MomijiEngine(
                         cost = 1000,
                         annotations = emptyList(),
                     )
-                beginNodes.add(
-                    mutableListOf(
-                        Node(entry, i, i + c.encodeToByteArray().size),
-                    ),
+                beginNodes[i].add(
+                    Node(entry, start = i, end = i + c.encodeToByteArray().size),
                 )
             } else {
-                beginNodes.add(
-                    results
-                        .map { result ->
-                            val entry = wordEntries[result.value]
-                            Node(entry, i, i + result.length)
-                        }.toMutableList(),
-                )
+                results.forEach { result ->
+                    val entry = wordEntries[result.value]
+                    val node = Node(entry, start = i, end = i + result.length)
+                    beginNodes[i].add(node)
+                }
             }
         }
 
@@ -127,6 +126,7 @@ data class MomijiEngine(
         val wordEntry: WordEntry,
         val start: Int,
         val end: Int,
+        var totalCost: Int = 0,
     )
 
     data class Path(
