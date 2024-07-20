@@ -29,10 +29,9 @@ data class MomijiEngine(
     }
 
     private fun buildLattice(src: String): List<List<Node>> {
-        val lattice = mutableListOf<MutableList<Node>>()
+        val beginNodes = mutableListOf<MutableList<Node>>()
 
         for (i in src.indices) {
-            val nodes = mutableListOf<Node>()
             val results = kdary.commonPrefixSearch(src.substring(i).toByteArray(Charsets.UTF_8))
 
             if (results.isEmpty()) {
@@ -46,18 +45,23 @@ data class MomijiEngine(
                         cost = 1000,
                         annotations = emptyList(),
                     )
-                nodes.add(Node(entry, i, i + c.encodeToByteArray().size))
+                beginNodes.add(
+                    mutableListOf(
+                        Node(entry, i, i + c.encodeToByteArray().size),
+                    ),
+                )
             } else {
-                for (result in results) {
-                    val entry = wordEntries[result.value]
-                    nodes.add(Node(entry, i, i + result.length))
-                }
+                beginNodes.add(
+                    results
+                        .map { result ->
+                            val entry = wordEntries[result.value]
+                            Node(entry, i, i + result.length)
+                        }.toMutableList(),
+                )
             }
-
-            lattice.add(nodes)
         }
 
-        return lattice
+        return beginNodes
     }
 
     private fun findOptimalPath(lattice: List<List<Node>>): List<WordResult> {
