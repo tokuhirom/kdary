@@ -16,26 +16,33 @@ data class MomijiEngine(
 ) {
     fun analysis(src: String): List<WordResult> {
         val lattice = buildLattice(src)
-        dumpLattice(lattice)
+        dumpLattice("begin", lattice)
 
         // ラティス構造を元に最適経路を探索
         return findOptimalPath(lattice)
     }
 
-    private fun dumpLattice(lattice: List<List<Node>>) {
+    private fun dumpLattice(
+        type: String,
+        lattice: List<List<Node>>,
+    ) {
         for (i in lattice.indices) {
-            println("Lattice[$i]: ${lattice[i].joinToString { it.wordEntry.surface }}")
+            println("$type[$i]: ${lattice[i].joinToString { it.wordEntry.surface }}")
         }
     }
 
     private fun buildLattice(src: String): List<List<Node>> {
         val beginNodes = mutableListOf<MutableList<Node>>()
+        val endNodes = mutableListOf<MutableList<Node>>()
         for (i in src.indices) {
             beginNodes.add(mutableListOf())
+            endNodes.add(mutableListOf())
         }
+        endNodes.add(mutableListOf())
 
         for (i in src.indices) {
-            val results = kdary.commonPrefixSearch(src.substring(i).toByteArray(Charsets.UTF_8))
+            val bytes = src.substring(i).toByteArray(Charsets.UTF_8)
+            val results = kdary.commonPrefixSearch(bytes)
 
             if (results.isEmpty()) {
                 val c = src.substring(i, i + 1)
@@ -48,18 +55,21 @@ data class MomijiEngine(
                         cost = 1000,
                         annotations = emptyList(),
                     )
-                beginNodes[i].add(
-                    Node(entry, start = i, end = i + c.encodeToByteArray().size),
-                )
+                val node = Node(entry, start = i, end = i + 1)
+                beginNodes[i].add(node)
+                endNodes[i + 1].add(node)
             } else {
                 results.forEach { result ->
+                    val word = bytes.decodeToString(0, result.length)
                     val entry = wordEntries[result.value]
-                    val node = Node(entry, start = i, end = i + result.length)
+                    val node = Node(entry, start = i, end = i + word.length)
                     beginNodes[i].add(node)
+                    endNodes[i + word.length].add(node)
                 }
             }
         }
 
+        dumpLattice("end", endNodes)
         return beginNodes
     }
 
