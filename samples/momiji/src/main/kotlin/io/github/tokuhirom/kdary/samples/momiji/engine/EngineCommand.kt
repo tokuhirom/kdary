@@ -7,6 +7,8 @@ class EngineCommand : CliktCommand() {
 
     override fun run() {
         val engine = MomijiEngineLoader(dictDir).load()
+//        engine.analysis("東京都")
+//        engine.analysis("自然言語")
         println(engine.analysis("吾輩はネコである。"))
     }
 }

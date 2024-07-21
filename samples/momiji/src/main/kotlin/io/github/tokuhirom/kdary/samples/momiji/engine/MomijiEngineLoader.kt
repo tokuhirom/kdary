@@ -19,8 +19,20 @@ class MomijiEngineLoader(
         val connections = readMatrix()
 
         println("Loaded dictionary: ${wordEntries.size} words, ${connections.size} connections")
+        val wordEntryMap =
+            wordEntries.groupBy {
+                it.surface
+            }
 
-        return MomijiEngine(kdary, wordEntries, connections)
+        val costManager =
+            CostManager(
+                wordEntryMap,
+                connections.associate {
+                    (it.leftContextId to it.rightContextId) to it.cost
+                },
+            )
+
+        return MomijiEngine(kdary, wordEntryMap, costManager)
     }
 
     private fun readDict(): List<WordEntry> {

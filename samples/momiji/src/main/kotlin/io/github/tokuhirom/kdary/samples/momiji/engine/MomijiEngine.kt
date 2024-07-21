@@ -1,147 +1,242 @@
 package io.github.tokuhirom.kdary.samples.momiji.engine
 
 import io.github.tokuhirom.kdary.KDary
+import io.github.tokuhirom.kdary.samples.momiji.engine.MomijiEngine.Node
 import io.github.tokuhirom.kdary.samples.momiji.entity.WordEntry
+import java.io.File
 
-data class WordResult(
-    val surface: String,
-    val cost: Int, // 単語コスト
-    val annotations: List<String>, // その他の情報
-)
+data class CostManager(
+    private val wordEntries: Map<String, List<WordEntry>>,
+    // Map<Pair<leftContextId, rightContextId>, cost>
+    private val connections: Map<Pair<Int, Int>, Short>,
+) {
+    /**
+     * 生起コスト
+     */
+    fun getEmissionCost(node: Node): Int = node.wordEntry?.cost ?: 0
+
+    /**
+     * 連接コスト
+     */
+    fun getTransitionCost(
+        left: Node,
+        right: Node,
+    ): Short {
+        val leftRightId =
+            if (left.surface == "__BOS__") {
+                0
+            } else {
+                val lWordEntry = left.wordEntry ?: return 0
+                lWordEntry.rightId
+            }
+        val rightLeftId =
+            if (right.surface == "__EOS__") {
+                0
+            } else {
+                val rWordEntry = right.wordEntry ?: return 0
+                rWordEntry.leftId
+            }
+
+        return connections.getOrDefault(leftRightId to rightLeftId, 0)
+    }
+}
 
 data class MomijiEngine(
-    val kdary: KDary,
-    val wordEntries: List<WordEntry>,
-    val connections: List<Connection>,
+    private val kdary: KDary,
+    private val wordEntries: Map<String, List<WordEntry>>,
+    private val costManager: CostManager,
 ) {
-    fun analysis(src: String): List<WordResult> {
+    fun analysis(src: String): List<Node> {
         val lattice = buildLattice(src)
-        dumpLattice("begin", lattice)
+
+        lattice.dump()
+
+        lattice.exportToDot("/tmp/foo.dot")
 
         // ラティス構造を元に最適経路を探索
-        return findOptimalPath(lattice)
+        val result = lattice.viterbi()
+        result.forEachIndexed { index, node ->
+            val transitionCost =
+                node.minPrev?.let { prev ->
+                    costManager.getTransitionCost(prev, node)
+                } ?: 0
+            println(" $index ${node.surface} 連接=$transitionCost minCost=${node.minCost} ${node.wordEntry?.cost}")
+        }
+        return result
     }
 
-    private fun dumpLattice(
-        type: String,
-        lattice: List<List<Node>>,
-    ) {
-        for (i in lattice.indices) {
-            println("$type[$i]: ${lattice[i].joinToString { it.wordEntry.surface }}")
-        }
-    }
-
-    private fun buildLattice(src: String): List<List<Node>> {
-        val beginNodes = mutableListOf<MutableList<Node>>()
-        val endNodes = mutableListOf<MutableList<Node>>()
-        for (i in src.indices) {
-            beginNodes.add(mutableListOf())
-            endNodes.add(mutableListOf())
-        }
-        endNodes.add(mutableListOf())
+    private fun buildLattice(src: String): Lattice {
+        val lattice = Lattice(src, costManager)
 
         for (i in src.indices) {
             val bytes = src.substring(i).toByteArray(Charsets.UTF_8)
             val results = kdary.commonPrefixSearch(bytes)
 
-            if (results.isEmpty()) {
-                val c = src.substring(i, i + 1)
-                // 未知語として1文字だけ登録。将来的には改善の余地あり。
-                val entry =
-                    WordEntry(
-                        surface = c,
-                        leftId = 0,
-                        rightId = 0,
-                        cost = 1000,
-                        annotations = emptyList(),
-                    )
-                val node = Node(entry, start = i, end = i + 1)
-                beginNodes[i].add(node)
-                endNodes[i + 1].add(node)
-            } else {
-                results.forEach { result ->
-                    val word = bytes.decodeToString(0, result.length)
-                    val entry = wordEntries[result.value]
-                    val node = Node(entry, start = i, end = i + word.length)
-                    beginNodes[i].add(node)
-                    endNodes[i + word.length].add(node)
+            var hasSingleWord = false
+            results.forEach { word ->
+                val s = bytes.decodeToString(0, word.length)
+                wordEntries[s]?.forEach { wordEntry ->
+                    lattice.insert(i, i + s.length, wordEntry)
                 }
+                if (s.length == 1) {
+                    hasSingleWord = true
+                }
+            }
+            if (!hasSingleWord) {
+                // 1文字の単語がない場合は、1文字の未知語を追加する。
+                lattice.insert(i, i + 1, null)
             }
         }
 
-        dumpLattice("end", endNodes)
-        return beginNodes
+        return lattice
     }
 
-    private fun findOptimalPath(lattice: List<List<Node>>): List<WordResult> {
-        val dp = mutableListOf<MutableList<Path>>()
+    /**
+     * Every index should be the character index.
+     */
+    class Lattice(
+        private val sentence: String,
+        private val costManager: CostManager,
+    ) {
+        val beginNodes: MutableList<MutableList<Node>> = mutableListOf()
+        val endNodes: MutableList<MutableList<Node>> = mutableListOf()
 
-        for (i in lattice.indices) {
-            dp.add(mutableListOf())
-            for (node in lattice[i]) {
-                if (i == 0) {
-                    // 最初の位置では、直接コストを追加
-                    dp[i].add(Path(node, node.wordEntry.cost))
-                } else {
-                    // 前の位置から最小コストの経路を見つける
-                    val bestPath =
-                        dp[i - 1].minByOrNull { path ->
-                            path.cost + getConnectionCost(path.node.wordEntry.rightId, node.wordEntry.leftId)
+        init {
+            // +1 for EOS node
+            for (i in 0 until sentence.length + 1) {
+                beginNodes.add(mutableListOf())
+                endNodes.add(mutableListOf())
+            }
+
+            // register BOS node
+            val bos = Node(surface = "__BOS__", length = 0, wordEntry = null)
+            endNodes[0].add(bos)
+
+            // register EOS node
+            val eos = Node(surface = "__EOS__", length = 0, wordEntry = null)
+            beginNodes[sentence.length].add(eos)
+        }
+
+        fun insert(
+            begin: Int,
+            end: Int,
+            wordEntry: WordEntry? = null,
+        ): Node {
+            val node =
+                Node(
+                    surface = sentence.substring(begin, end),
+                    length = end - begin,
+                    wordEntry = wordEntry,
+                )
+            beginNodes[begin].add(node)
+            endNodes[end].add(node)
+            return node
+        }
+
+        fun dump() {
+            dump("begin", beginNodes)
+            dump("end", endNodes)
+        }
+
+        private fun dump(
+            type: String,
+            lattice: List<List<Node>>,
+        ) {
+            for (i in lattice.indices) {
+                println(
+                    "$type[$i]: ${lattice[i].joinToString {
+                        it.surface + " (cost=${it.wordEntry?.cost}, " + if (it.minCost != Int.MAX_VALUE) "(${it.minCost})" else ""
+                    }}",
+                )
+            }
+        }
+
+        // 微旅系列を返す
+        fun viterbi(): List<Node> {
+            val bos = endNodes[0][0]
+            bos.minPrev = null
+            bos.minCost = 0
+
+            for (i in 0 until sentence.length + 1) {
+                for (rnode in beginNodes[i]) {
+                    rnode.minPrev = null
+                    rnode.minCost = Int.MAX_VALUE
+
+                    for (lnode in endNodes[i]) {
+                        val cost =
+                            lnode.minCost +
+                                costManager.getTransitionCost(lnode, rnode) + // transition cost
+                                costManager.getEmissionCost(rnode) // emission cost
+                        if (cost < rnode.minCost) {
+                            rnode.minCost = cost
+                            rnode.minPrev = lnode
                         }
-                    if (bestPath != null) {
-                        val newPath =
-                            bestPath.copy(
-                                node = node,
-                                cost =
-                                    bestPath.cost + node.wordEntry.cost +
-                                        getConnectionCost(bestPath.node.wordEntry.rightId, node.wordEntry.leftId),
-                                previous = bestPath,
-                            )
-                        dp[i].add(newPath)
                     }
                 }
             }
-        }
-        // 最後の位置から最小コストの経路を再構築
-        val optimalPath = dp.last().minByOrNull { it.cost } ?: throw IllegalStateException("No path found")
-        return reconstructPath(optimalPath)
-    }
 
-    private fun getConnectionCost(
-        leftId: Int,
-        rightId: Int,
-    ): Int {
-        val connection = connections.find { it.leftContextId == leftId && it.rightContextId == rightId }
-        return connection?.cost?.toInt() ?: Int.MAX_VALUE
-    }
+            dump()
 
-    private fun reconstructPath(path: Path): List<WordResult> {
-        val result = mutableListOf<WordResult>()
-        var currentPath: Path? = path
-        while (currentPath != null) {
-            result.add(
-                0,
-                WordResult(
-                    surface = currentPath.node.wordEntry.surface,
-                    cost = currentPath.node.wordEntry.cost,
-                    annotations = currentPath.node.wordEntry.annotations,
-                ),
-            )
-            currentPath = currentPath.previous
+            // minPrev を EOS から BOS までたどり、最後に反転する
+            val results = mutableListOf<Node>()
+            val eos = beginNodes[sentence.length][0]
+            var node: Node? = eos
+            while (node != null) {
+                results.add(node)
+                node = node.minPrev
+            }
+            return results.reversed()
         }
-        return result
+
+        // DOT形式でエクスポートするメソッド
+        fun exportToDot(filePath: String) {
+            val file = File(filePath)
+            file.printWriter().use { out ->
+                out.println("digraph lattice {")
+                out.println("rankdir=LR;")
+
+                val bos = endNodes[0][0]
+                out.println("node_${bos.hashCode().toUInt()} [label=\"__BOS__\"];")
+
+                // ノードのエクスポート
+                for (i in beginNodes.indices) {
+                    for (node in beginNodes[i]) {
+                        val label = node.surface.replace("\"", "\\\"") + node.wordEntry?.annotations?.joinToString(",")
+                        out.println("node_${node.hashCode().toUInt()} [label=\"$label (${node.wordEntry?.cost ?: "?"})\"];")
+                    }
+                }
+
+                // エッジのエクスポート
+                for (i in beginNodes.indices) {
+                    out.println("/* $i */")
+                    for (rnode in beginNodes[i]) {
+                        out.println("  /* rnode:${rnode.surface} */")
+                        for (lnode in endNodes[i]) {
+                            val transitionCost = costManager.getTransitionCost(lnode, rnode)
+                            val emissionCost = costManager.getEmissionCost(rnode)
+                            val totalCost = transitionCost + emissionCost
+                            out.println(
+                                "    /* lnode:${lnode.surface}(rid=${lnode.wordEntry?.rightId}) rnode:${rnode.surface}(lid=${rnode.wordEntry?.leftId}) */",
+                            )
+                            out.println(
+                                "    node_${lnode.hashCode().toUInt()} -> node_${rnode.hashCode().toUInt()} [label=\"${totalCost}\"];",
+                            )
+                        }
+                    }
+                }
+
+                out.println("}")
+            }
+        }
     }
 
     data class Node(
-        val wordEntry: WordEntry,
-        val start: Int,
-        val end: Int,
-        var totalCost: Int = 0,
-    )
-
-    data class Path(
-        val node: Node,
-        val cost: Int,
-        val previous: Path? = null,
+        val surface: String,
+        val length: Int,
+        val wordEntry: WordEntry?,
+        // 最小コスト
+        var minCost: Int = Int.MAX_VALUE,
+        // 最小コスト経路(直近のみ保存)
+        var minPrev: Node? = null,
     )
 }
