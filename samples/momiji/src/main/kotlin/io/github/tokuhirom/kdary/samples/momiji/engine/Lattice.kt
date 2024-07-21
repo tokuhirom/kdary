@@ -1,7 +1,6 @@
 package io.github.tokuhirom.kdary.samples.momiji.engine
 
 import io.github.tokuhirom.kdary.samples.momiji.entity.WordEntry
-import java.io.File
 
 /**
  * Every index should be the character index.
@@ -99,43 +98,42 @@ class Lattice(
     }
 
     // DOT形式でエクスポートするメソッド
-    fun exportToDot(filePath: String) {
-        val file = File(filePath)
-        file.printWriter().use { out ->
-            out.println("digraph lattice {")
-            out.println("rankdir=LR;")
+    fun exportToDot(): String {
+        val sb = StringBuilder()
+        sb.append("digraph lattice {\n")
+        sb.append("rankdir=LR;\n")
 
-            val bos = endNodes[0][0]
-            out.println("node_${bos.hashCode().toUInt()} [label=\"__BOS__\"];")
+        val bos = endNodes[0][0]
+        sb.append("node_${bos.hashCode().toUInt()} [label=\"__BOS__\"];\n")
 
-            // ノードのエクスポート
-            for (i in beginNodes.indices) {
-                for (node in beginNodes[i]) {
-                    val label = node.surface.replace("\"", "\\\"") + node.wordEntry?.annotations?.joinToString(",")
-                    out.println("node_${node.hashCode().toUInt()} [label=\"$label (${node.wordEntry?.cost ?: "?"})\"];")
-                }
+        // ノードのエクスポート
+        for (i in beginNodes.indices) {
+            for (node in beginNodes[i]) {
+                val label = node.surface.replace("\"", "\\\"") + node.wordEntry?.annotations?.joinToString(",")
+                sb.append("node_${node.hashCode().toUInt()} [label=\"$label (${node.wordEntry?.cost ?: "?"})\"];\n")
             }
-
-            // エッジのエクスポート
-            for (i in beginNodes.indices) {
-                out.println("/* $i */")
-                for (rnode in beginNodes[i]) {
-                    out.println("  /* rnode:${rnode.surface} */")
-                    for (lnode in endNodes[i]) {
-                        val transitionCost = costManager.getTransitionCost(lnode, rnode)
-                        val emissionCost = costManager.getEmissionCost(rnode)
-                        val totalCost = transitionCost + emissionCost
-                        out.println(
-                            "    /* lnode:${lnode.surface}(rid=${lnode.wordEntry?.rightId}) rnode:${rnode.surface}(lid=${rnode.wordEntry?.leftId}) */",
-                        )
-                        out.println(
-                            "    node_${lnode.hashCode().toUInt()} -> node_${rnode.hashCode().toUInt()} [label=\"${totalCost}\"];",
-                        )
-                    }
-                }
-            }
-
-            out.println("}")
         }
+
+        // エッジのエクスポート
+        for (i in beginNodes.indices) {
+            sb.append("/* $i */\n")
+            for (rnode in beginNodes[i]) {
+                sb.append("  /* rnode:${rnode.surface} */\n")
+                for (lnode in endNodes[i]) {
+                    val transitionCost = costManager.getTransitionCost(lnode, rnode)
+                    val emissionCost = costManager.getEmissionCost(rnode)
+                    val totalCost = transitionCost + emissionCost
+                    sb.append(
+                        "    /* lnode:${lnode.surface}(rid=${lnode.wordEntry?.rightId}) rnode:${rnode.surface}(lid=${rnode.wordEntry?.leftId}) */\n",
+                    )
+                    sb.append(
+                        "    node_${lnode.hashCode().toUInt()} -> node_${rnode.hashCode().toUInt()} [label=\"$totalCost\"];\n",
+                    )
+                }
+            }
+        }
+
+        sb.append("}\n")
+        return sb.toString()
     }
 }
