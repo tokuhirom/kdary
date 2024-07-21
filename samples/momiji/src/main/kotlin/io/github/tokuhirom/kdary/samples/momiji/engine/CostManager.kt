@@ -20,18 +20,16 @@ data class CostManager(
         right: Node,
     ): Short {
         val leftRightId =
-            if (left.surface == "__BOS__") {
-                0
-            } else {
-                val lWordEntry = left.wordEntry ?: return 0
-                lWordEntry.rightId
+            when (left) {
+                is Node.BOS -> 0
+                is Node.EOS -> error("Should not reach here")
+                is Node.Word -> left.wordEntry?.rightId ?: return 0
             }
         val rightLeftId =
-            if (right.surface == "__EOS__") {
-                0
-            } else {
-                val rWordEntry = right.wordEntry ?: return 0
-                rWordEntry.leftId
+            when (right) {
+                is Node.BOS -> error("Should not reach here")
+                is Node.EOS -> 0
+                is Node.Word -> right.wordEntry?.leftId ?: return 0
             }
 
         return connections.getOrDefault(leftRightId to rightLeftId, 0)

@@ -21,12 +21,10 @@ class Lattice(
         }
 
         // register BOS node
-        val bos = Node(surface = "__BOS__", length = 0, wordEntry = null)
-        endNodes[0].add(bos)
+        endNodes[0].add(Node.BOS())
 
         // register EOS node
-        val eos = Node(surface = "__EOS__", length = 0, wordEntry = null)
-        beginNodes[sentence.length].add(eos)
+        beginNodes[sentence.length].add(Node.EOS())
     }
 
     fun insert(
@@ -35,7 +33,7 @@ class Lattice(
         wordEntry: WordEntry? = null,
     ): Node {
         val node =
-            Node(
+            Node.Word(
                 surface = sentence.substring(begin, end),
                 length = end - begin,
                 wordEntry = wordEntry,

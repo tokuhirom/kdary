@@ -6,7 +6,7 @@ import io.github.tokuhirom.kdary.samples.momiji.entity.WordEntry
 data class MomijiEngine(
     private val kdary: KDary,
     private val wordEntries: Map<String, List<WordEntry>>,
-    private val costManager: CostManager,
+    internal val costManager: CostManager,
 ) {
     fun analysis(src: String): List<Node> {
         val lattice = buildLattice(src)
@@ -15,13 +15,6 @@ data class MomijiEngine(
 
         // ラティス構造を元に最適経路を探索
         val result = lattice.viterbi()
-        result.forEachIndexed { index, node ->
-            val transitionCost =
-                node.minPrev?.let { prev ->
-                    costManager.getTransitionCost(prev, node)
-                } ?: 0
-            println(" $index ${node.surface} 連接=$transitionCost minCost=${node.minCost} ${node.wordEntry?.cost}")
-        }
         return result
     }
 

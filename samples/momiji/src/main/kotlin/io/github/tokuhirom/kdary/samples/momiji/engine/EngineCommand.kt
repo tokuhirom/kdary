@@ -9,8 +9,21 @@ class EngineCommand : CliktCommand() {
         val engine = MomijiEngineLoader(dictDir).load()
 //        engine.analysis("東京都")
 //        engine.analysis("自然言語")
-        engine.analysis("吾輩はネコである。").forEach {
-            println(it)
+        engine.analysis("吾輩はネコである。").forEachIndexed { index, node ->
+            val transitionCost =
+                node.minPrev?.let { prev ->
+                    engine.costManager.getTransitionCost(prev, node)
+                } ?: 0
+            println(
+                String.format(
+                    "%3d transition=%-10d emission=%-10d %-20s %s",
+                    index,
+                    transitionCost,
+                    node.wordEntry?.cost,
+                    node.surface,
+                    node.wordEntry?.annotations?.joinToString(","),
+                ),
+            )
         }
     }
 }
