@@ -9,7 +9,9 @@ class EngineCommand : CliktCommand() {
         val engine = MomijiEngineLoader(dictDir).load()
 //        engine.analysis("東京都")
 //        engine.analysis("自然言語")
-        engine.analysis("吾輩はネコである。").forEachIndexed { index, node ->
+//        val sample = "吾輩はネコである。"
+        val sample = "Taiyakiは形態素解析エンジンである"
+        engine.analysis(sample).forEachIndexed { index, node ->
             val transitionCost =
                 node.minPrev?.let { prev ->
                     engine.costManager.getTransitionCost(prev, node)

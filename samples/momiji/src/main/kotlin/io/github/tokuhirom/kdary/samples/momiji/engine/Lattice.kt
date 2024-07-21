@@ -42,24 +42,6 @@ class Lattice(
         return node
     }
 
-    fun dump() {
-        dump("begin", beginNodes)
-        dump("end", endNodes)
-    }
-
-    private fun dump(
-        type: String,
-        lattice: List<List<Node>>,
-    ) {
-        for (i in lattice.indices) {
-            println(
-                "$type[$i]: ${lattice[i].joinToString {
-                    it.surface + " (cost=${it.wordEntry?.cost}, " + if (it.minCost != Int.MAX_VALUE) "(${it.minCost})" else ""
-                }}",
-            )
-        }
-    }
-
     // 微旅系列を返す
     fun viterbi(): List<Node> {
         val bos = endNodes[0][0]
@@ -83,8 +65,6 @@ class Lattice(
                 }
             }
         }
-
-        dump()
 
         // minPrev を EOS から BOS までたどり、最後に反転する
         val results = mutableListOf<Node>()

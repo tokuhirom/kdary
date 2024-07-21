@@ -10,12 +10,7 @@ data class MomijiEngine(
 ) {
     fun analysis(src: String): List<Node> {
         val lattice = buildLattice(src)
-
-        lattice.dump()
-
-        // ラティス構造を元に最適経路を探索
-        val result = lattice.viterbi()
-        return result
+        return lattice.viterbi()
     }
 
     private fun buildLattice(src: String): Lattice {
