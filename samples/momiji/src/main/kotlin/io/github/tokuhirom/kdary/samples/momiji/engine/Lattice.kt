@@ -78,7 +78,7 @@ class Lattice(
     }
 
     // DOT形式でエクスポートするメソッド
-    fun exportToDot(): String {
+    fun toDot(): String {
         val sb = StringBuilder()
         sb.append("digraph lattice {\n")
         sb.append("rankdir=LR;\n")
