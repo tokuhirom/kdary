@@ -26,7 +26,7 @@ class Lattice(
         beginNodes[sentence.length].add(Node.EOS())
     }
 
-    fun insert(
+    internal fun insert(
         begin: Int,
         end: Int,
         wordEntry: WordEntry? = null,
@@ -42,7 +42,11 @@ class Lattice(
         return node
     }
 
-    // 微旅系列を返す
+    /**
+     * Viterbi algorithm.
+     *
+     * @return List of nodes from BOS to EOS.
+     */
     fun viterbi(): List<Node> {
         val bos = endNodes[0][0]
         bos.minPrev = null
@@ -77,7 +81,9 @@ class Lattice(
         return results.reversed()
     }
 
-    // DOT形式でエクスポートするメソッド
+    /**
+     * Export lattice to DOT format.
+     */
     fun toDot(): String {
         val sb = StringBuilder()
         sb.append("digraph lattice {\n")
