@@ -13,7 +13,8 @@ class EngineCommand : CliktCommand() {
 //        val sample = "Taiyaki"
         val sample = "Taiyakiは形態素解析エンジンである"
 
-        engine.analysis(sample).forEachIndexed { index, node ->
+        val lattice = engine.buildLattice(sample)
+        lattice.viterbi().forEachIndexed { index, node ->
             val transitionCost =
                 node.minPrev?.let { prev ->
                     engine.costManager.getTransitionCost(prev, node)
