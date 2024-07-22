@@ -7,6 +7,8 @@ data class MomijiEngine(
     private val kdary: KDary,
     private val wordEntries: Map<String, List<WordEntry>>,
     internal val costManager: CostManager,
+    private val charMap: CharMap,
+    private val unknownWords: List<WordEntry>,
 ) {
     fun analysis(src: String): List<Node> {
         val lattice = buildLattice(src)

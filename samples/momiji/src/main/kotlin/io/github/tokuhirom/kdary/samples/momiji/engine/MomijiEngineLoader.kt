@@ -5,6 +5,7 @@ import io.github.tokuhirom.kdary.samples.momiji.entity.WordEntry
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
+import java.io.File
 
 class MomijiEngineLoader(
     dictDirectory: String,
@@ -12,13 +13,20 @@ class MomijiEngineLoader(
     private val dictCsv = "$dictDirectory/momiji.csv"
     private val dictKdary = "$dictDirectory/momiji.kdary"
     private val matrixFile = "$dictDirectory/matrix.def"
+    private val charFile = "$dictDirectory/char.def"
+    private val unkFile = "$dictDirectory/unk.def"
 
     fun load(): MomijiEngine {
         val kdary = loadKDary(dictKdary)
-        val wordEntries = readDict()
+        val wordEntries = readDict(dictCsv.toPath())
         val connections = readMatrix()
+        val charMap = parseCharDef(File(charFile))
+        val unknownWords = readDict(unkFile.toPath())
 
-        println("Loaded dictionary: ${wordEntries.size} words, ${connections.size} connections")
+        println(
+            "Loaded dictionary: ${wordEntries.size} words, ${connections.size} connections," +
+                " unknown words: ${unknownWords.size} types",
+        )
         val wordEntryMap =
             wordEntries.groupBy {
                 it.surface
@@ -32,11 +40,10 @@ class MomijiEngineLoader(
                 },
             )
 
-        return MomijiEngine(kdary, wordEntryMap, costManager)
+        return MomijiEngine(kdary, wordEntryMap, costManager, charMap, unknownWords)
     }
 
-    private fun readDict(): List<WordEntry> {
-        val path: Path = dictCsv.toPath()
+    private fun readDict(path: Path): List<WordEntry> {
         val fileSystem = FileSystem.SYSTEM
         println("READ DICT")
         return fileSystem.read(path) {

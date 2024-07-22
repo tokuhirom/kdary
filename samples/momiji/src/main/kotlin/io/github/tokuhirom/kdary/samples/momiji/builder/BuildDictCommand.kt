@@ -71,9 +71,31 @@ class BuildDictCommand : CliktCommand() {
     }
 
     private fun copyFiles() {
-        // mecabDictDir の中の matrix.def を dict ディレクトリにコピー
-        val matrixDef = File(mecabDictDir, "matrix.def")
-        matrixDef.copyTo(File(outputDir, "matrix.def"), overwrite = true)
-        println("Copied matrix.def to $outputDir")
+        // mecabDictDir の中のファイルを dict ディレクトリにコピー
+        listOf("matrix.def", "char.def", "unk.def").forEach { file ->
+            val sourceFile = File(mecabDictDir, file)
+            val targetFile = File(outputDir, file)
+            copyFileWithEncoding(sourceFile, targetFile, "EUC-JP", "UTF-8")
+            println("Copied $file to $outputDir")
+        }
+    }
+
+    private fun copyFileWithEncoding(
+        source: File,
+        target: File,
+        sourceEncoding: String,
+        targetEncoding: String,
+    ) {
+        val sourceCharset = Charset.forName(sourceEncoding)
+        val targetCharset = Charset.forName(targetEncoding)
+
+        source.bufferedReader(sourceCharset).use { reader ->
+            target.bufferedWriter(targetCharset).use { writer ->
+                reader.lineSequence().forEach { line ->
+                    writer.write(line)
+                    writer.newLine()
+                }
+            }
+        }
     }
 }
