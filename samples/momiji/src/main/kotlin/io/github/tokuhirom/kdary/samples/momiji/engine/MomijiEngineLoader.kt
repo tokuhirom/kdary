@@ -31,6 +31,10 @@ class MomijiEngineLoader(
             wordEntries.groupBy {
                 it.surface
             }
+        val unknownWordsMap =
+            unknownWords.groupBy {
+                it.surface
+            }
 
         val costManager =
             CostManager(
@@ -40,7 +44,7 @@ class MomijiEngineLoader(
                 },
             )
 
-        return MomijiEngine(kdary, wordEntryMap, costManager, charMap, unknownWords)
+        return MomijiEngine(kdary, wordEntryMap, costManager, charMap, unknownWordsMap)
     }
 
     private fun readDict(path: Path): List<WordEntry> {

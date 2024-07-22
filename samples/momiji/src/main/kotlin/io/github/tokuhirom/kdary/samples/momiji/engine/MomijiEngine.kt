@@ -2,20 +2,21 @@ package io.github.tokuhirom.kdary.samples.momiji.engine
 
 import io.github.tokuhirom.kdary.KDary
 import io.github.tokuhirom.kdary.samples.momiji.entity.WordEntry
+import kotlin.math.max
 
 data class MomijiEngine(
     private val kdary: KDary,
     private val wordEntries: Map<String, List<WordEntry>>,
     internal val costManager: CostManager,
     private val charMap: CharMap,
-    private val unknownWords: List<WordEntry>,
+    private val unknownWordsMap: Map<String, List<WordEntry>>,
 ) {
     fun analysis(src: String): List<Node> {
         val lattice = buildLattice(src)
         return lattice.viterbi()
     }
 
-    private fun buildLattice(src: String): Lattice {
+    fun buildLattice(src: String): Lattice {
         val lattice = Lattice(src, costManager)
 
         for (i in src.indices) {
@@ -32,6 +33,44 @@ data class MomijiEngine(
                     hasSingleWord = true
                 }
             }
+
+            // 未知語処理
+            charMap.resolve(src[i])?.let { charCategory ->
+                if (charCategory.alwaysInvoke == 1 || results.isEmpty()) {
+                    if (charCategory.grouping == 1) {
+                        // make a new word by grouping the same character category
+                        val m = max(src.length - i, charCategory.length)
+                        println("Matching $charCategory at $i length=${src.length} m=$m")
+                        val last =
+                            (0 until m).last {
+                                val prevCharCategory = charMap.resolve(src[i + it])
+                                val result = prevCharCategory == charCategory
+                                println("$it $result ${src[i + it]}")
+                                result
+                            }
+                        println("Missing last $last")
+                        val s =
+                            src.substring(
+                                i,
+                                i + last + 1, // +1 since this parameter is exclusive.
+                            )
+                        println("Got unknown word: $s")
+                        unknownWordsMap[charCategory.name]!!.forEach { wordEntry ->
+                            println("Insert it. $wordEntry")
+                            lattice.insert(i, i + last + 1, wordEntry)
+                        }
+                        if (s.length == 1) {
+                            hasSingleWord = true
+                        }
+                    } else {
+                        unknownWordsMap[charCategory.name]!!.forEach { wordEntry ->
+                            lattice.insert(i, i + 1, wordEntry)
+                        }
+                        hasSingleWord = true
+                    }
+                }
+            }
+
             if (!hasSingleWord) {
                 // 1文字の単語がない場合は、1文字の未知語を追加する。
                 lattice.insert(i, i + 1, null)

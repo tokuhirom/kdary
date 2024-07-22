@@ -27,9 +27,15 @@ class CharMap(
     override fun toString(): String = "CharMap(categories=$categories, ranges=$ranges)"
 }
 
+/**
+ * - CATEGORY_NAME: Name of category. you have to define DEFAULT class.
+ * - INVOKE: 1/0:   always invoke unknown word processing, evan when the word can be found in the lexicon
+ * - GROUP:  1/0:   make a new word by grouping the same chracter category
+ * - LENGTH: n:     1 to n length new words are added
+ */
 data class CharCategory(
     val name: String,
-    val timing: Int,
+    val alwaysInvoke: Int,
     val grouping: Int,
     val length: Int,
 )

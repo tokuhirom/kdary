@@ -10,7 +10,11 @@ class EngineCommand : CliktCommand() {
 //        engine.analysis("東京都")
 //        engine.analysis("自然言語")
 //        val sample = "吾輩はネコである。"
+//        val sample = "Taiyaki"
         val sample = "Taiyakiは形態素解析エンジンである"
+        val dot = engine.buildLattice(sample).exportToDot()
+        println(dot)
+
         engine.analysis(sample).forEachIndexed { index, node ->
             val transitionCost =
                 node.minPrev?.let { prev ->
