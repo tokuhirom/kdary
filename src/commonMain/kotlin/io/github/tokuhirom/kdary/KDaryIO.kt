@@ -92,7 +92,7 @@ fun loadKDary(fileName: String): KDary {
             doubleArrayUnits[i + 256] = readUIntLeFromBuffer(i, buf)
         }
 
-        KDary(doubleArrayUnits)
+        KDary(doubleArrayUnits.toList())
     }
 }
 

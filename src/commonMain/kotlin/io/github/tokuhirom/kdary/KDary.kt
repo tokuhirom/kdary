@@ -10,14 +10,27 @@ import io.github.tokuhirom.kdary.result.ExactMatchSearchResult
 import io.github.tokuhirom.kdary.result.TraverseResult
 
 class KDary {
-    internal val array: Array<DoubleArrayUnit>
+    internal val array: List<DoubleArrayUnit>
 
-    internal constructor(array: Array<DoubleArrayUnit>) {
+    internal constructor(array: List<DoubleArrayUnit>) {
         check(array.isNotEmpty()) {
             "You can't create a double array with an empty array"
         }
 
         this.array = array
+    }
+
+    fun toByteArray(): ByteArray {
+        val byteArray = ByteArray(array.size * UNIT_SIZE)
+        for (i in array.indices) {
+            val value = array[i].unit
+            val offset = i * UNIT_SIZE
+            byteArray[offset] = (value and 0xFFU).toByte()
+            byteArray[offset + 1] = ((value shr 8) and 0xFFU).toByte()
+            byteArray[offset + 2] = ((value shr 16) and 0xFFU).toByte()
+            byteArray[offset + 3] = ((value shr 24) and 0xFFU).toByte()
+        }
+        return byteArray
     }
 
     /**
@@ -195,12 +208,33 @@ class KDary {
             val builder = DoubleArrayBuilder(progressCallback)
             val buf = builder.build(keyset)
 
-            val kdary = KDary(buf)
+            val kdary = KDary(buf.toList())
 
             val numKeys = keys.size
             progressCallback?.invoke(numKeys + 1)
 
             return kdary
+        }
+
+        fun fromByteArray(bytes: ByteArray): KDary {
+            if (bytes.size % UNIT_SIZE != 0) {
+                throw IllegalArgumentException("Byte array size must be a multiple of $UNIT_SIZE")
+            }
+
+            val units =
+                List(bytes.size / UNIT_SIZE) { i ->
+                    val offset = i * UNIT_SIZE
+                    val value =
+                        (
+                            (bytes[offset].toInt() and 0xFF) or
+                                ((bytes[offset + 1].toInt() and 0xFF) shl 8) or
+                                ((bytes[offset + 2].toInt() and 0xFF) shl 16) or
+                                ((bytes[offset + 3].toInt() and 0xFF) shl 24)
+                        ).toUInt()
+                    DoubleArrayUnit(value)
+                }
+
+            return KDary(units)
         }
 
         /**
