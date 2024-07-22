@@ -29,9 +29,11 @@ Add the following dependency to your `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("me.geso.kdary:kdary:1.0.0")
+    implementation("io.github.tokuhirom.kdary:kdary:<VERSION>")
 }
 ```
+
+See https://central.sonatype.com/artifact/io.github.tokuhirom.kdary/kdary for the latest version.
 
 ## Usage
 
