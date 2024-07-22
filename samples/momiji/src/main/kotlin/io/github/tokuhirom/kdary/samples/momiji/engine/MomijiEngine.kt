@@ -40,23 +40,17 @@ data class MomijiEngine(
                     if (charCategory.grouping == 1) {
                         // make a new word by grouping the same character category
                         val m = max(src.length - i, charCategory.length)
-                        println("Matching $charCategory at $i length=${src.length} m=$m")
                         val last =
                             (0 until m).last {
                                 val prevCharCategory = charMap.resolve(src[i + it])
-                                val result = prevCharCategory == charCategory
-                                println("$it $result ${src[i + it]}")
-                                result
+                                prevCharCategory == charCategory
                             }
-                        println("Missing last $last")
                         val s =
                             src.substring(
                                 i,
                                 i + last + 1, // +1 since this parameter is exclusive.
                             )
-                        println("Got unknown word: $s")
                         unknownWordsMap[charCategory.name]!!.forEach { wordEntry ->
-                            println("Insert it. $wordEntry")
                             lattice.insert(i, i + last + 1, wordEntry)
                         }
                         if (s.length == 1) {
