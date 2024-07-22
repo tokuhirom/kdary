@@ -115,6 +115,55 @@ class DoubleArrayTest {
         testDic(dicCopy, keys, values, invalidKeys)
     }
 
+    @Test
+    fun fromByteArrayAndToByteArray() {
+        val dic = KDary.build(keys, values)
+        val gotBa = dic.toByteArray()
+        val dicCopy = KDary.fromByteArray(gotBa)
+
+        assertEquals(dic.array.size, dicCopy.array.size)
+        println(dic.array.size)
+        dic.array.forEachIndexed { index, doubleArrayUnit ->
+            assertEquals(dicCopy.array[index], doubleArrayUnit, "index=$index")
+        }
+        testDic(dicCopy, keys, values, invalidKeys)
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    @Test
+    fun fromByteArrayAndToByteArrayBasic() {
+        val byteArray =
+            byteArrayOf(
+                0xAA.toByte(),
+                0xBB.toByte(),
+                0xCC.toByte(),
+                0xDD.toByte(),
+                //
+                0xEE.toByte(),
+                0xFF.toByte(),
+                0x1A.toByte(),
+                0x2B.toByte(),
+                //
+                0x3C.toByte(),
+                0x4D.toByte(),
+                0x5E.toByte(),
+                0x6F.toByte(),
+                //
+                0x7A.toByte(),
+                0x8B.toByte(),
+                0x9C.toByte(),
+                0xFD.toByte(),
+            )
+        val kdary = KDary.fromByteArray(byteArray)
+        val got = kdary.toByteArray()
+        println("Original bytes: ${byteArray.joinToString { it.toHexString(HexFormat.Default) }}")
+        println("Converted bytes: ${got.joinToString { it.toHexString(HexFormat.Default) }}")
+        assertEquals(got.size, byteArray.size)
+        for (index in got.indices) {
+            assertEquals(got[index], byteArray[index])
+        }
+    }
+
     private fun testDic(
         dic: KDary,
         keys: List<ByteArray>,
