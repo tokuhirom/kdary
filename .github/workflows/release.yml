@@ -15,6 +15,8 @@ jobs:
     strategy:
       matrix:
         include:
+          - target: publishMacosX64PublicationToMavenCentralRepository
+            os: macos-latest
           - target: publishMacosArm64PublicationToMavenCentralRepository
             os: macos-latest
           - target: publishJvmPublicationToMavenCentralRepository
