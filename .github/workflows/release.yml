@@ -8,26 +8,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    uses: ./.github/workflows/ci.yml
   deploy:
-    needs: build
-    strategy:
-      matrix:
-        include:
-          - target: publishMacosX64PublicationToMavenCentralRepository
-            os: macos-latest
-          - target: publishMacosArm64PublicationToMavenCentralRepository
-            os: macos-latest
-          - target: publishJvmPublicationToMavenCentralRepository
-            os: ubuntu-latest
-          - target: publishJsPublicationToMavenCentralRepository
-            os: ubuntu-latest
-          - target: publishLinuxX64PublicationToMavenCentralRepository
-            os: ubuntu-latest
-          - target: publishKotlinMultiplatformPublicationToMavenCentralRepository
-            os: ubuntu-latest
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - name: Validate Gradle Wrapper
@@ -59,6 +41,6 @@ jobs:
             -PmavenCentralPassword=${{secrets.OSSRH_PASSWORD}}
             -PsigningInMemoryKeyId=${{secrets.OSSRH_GPG_SECRET_KEY_ID}}
             -PsigningInMemoryPassword=${{secrets.OSSRH_GPG_SECRET_KEY_PASSWORD}}
-            ${{ matrix.target }}
+            publishAllPublicationsToMavenCentralRepository
         env:
           LIB_VERSION: ${{ github.event.release.tag_name }}
