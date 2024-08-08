@@ -34,7 +34,7 @@ jobs:
         run: |
           echo "Version=${{ github.event.release.tag_name }}"
       - name: Gradle publish
-        uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
+        uses: gradle/gradle-build-action@093dfe9d598ec5a42246855d09b49dc76803c005
         with:
           arguments: |
             -PmavenCentralUsername=${{secrets.OSSRH_USERNAME}}
