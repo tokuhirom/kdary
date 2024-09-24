@@ -1,6 +1,7 @@
 package io.github.tokuhirom.kdary.samples.momiji
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.core.subcommands
 import io.github.tokuhirom.kdary.samples.momiji.builder.BuildDictCommand
 import io.github.tokuhirom.kdary.samples.momiji.engine.EngineCommand

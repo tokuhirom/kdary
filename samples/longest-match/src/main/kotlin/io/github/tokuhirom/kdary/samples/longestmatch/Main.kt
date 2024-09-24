@@ -1,6 +1,7 @@
 package io.github.tokuhirom.kdary.samples.longestmatch
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.core.subcommands
 
 class LongestMatch : CliktCommand(name = "longest-match") {
