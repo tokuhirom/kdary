@@ -6,7 +6,7 @@ plugins {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(rootProject)
-    implementation("com.github.ajalt.clikt:clikt:4.4.0")
+    implementation("com.github.ajalt.clikt:clikt:5.0.0")
 }
 
 application {
