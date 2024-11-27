@@ -7,7 +7,7 @@ plugins {
     id("root.publication")
     id("module.publication")
 
-    kotlin("multiplatform") version "2.0.21"
+    kotlin("multiplatform") version "2.1.0"
 
     id("io.gitlab.arturbosch.detekt") version "1.23.7"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
