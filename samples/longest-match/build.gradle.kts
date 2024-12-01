@@ -6,7 +6,7 @@ plugins {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(rootProject)
-    implementation("com.github.ajalt.clikt:clikt:5.0.1")
+    implementation("com.github.ajalt.clikt:clikt:5.0.2")
 
     implementation("io.ktor:ktor-client-core:3.0.1")
     implementation("io.ktor:ktor-client-cio:3.0.1")
