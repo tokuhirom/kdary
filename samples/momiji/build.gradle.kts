@@ -13,7 +13,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:3.0.3")
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3")
 
-    implementation("com.squareup.okio:okio:3.9.1")
+    implementation("com.squareup.okio:okio:3.10.2")
 }
 
 application {
