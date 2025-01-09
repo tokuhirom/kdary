@@ -71,7 +71,7 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation("com.squareup.okio:okio:3.10.2")
-                implementation("com.squareup.okio:okio-nodefilesystem:3.9.1")
+                implementation("com.squareup.okio:okio-nodefilesystem:3.10.2")
             }
         }
         val macosArm64Main by getting {
